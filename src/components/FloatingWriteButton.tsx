@@ -7,12 +7,17 @@ interface FloatingWriteButtonProps {
 
 export function FloatingWriteButton({ onClick }: FloatingWriteButtonProps) {
   return (
-    <Button
-      onClick={onClick}
-      className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-primary hover:bg-primary/90 shadow-gentle hover:shadow-soft transition-all duration-300 z-50"
-      size="icon"
-    >
-      <PenTool className="w-6 h-6 text-primary-foreground" />
-    </Button>
+    <div className="fixed bottom-8 right-8 z-50">
+      <Button
+        onClick={onClick}
+        className="w-16 h-16 rounded-full bg-gradient-sage hover:shadow-glow shadow-floating transition-all duration-300 hover:scale-110 group"
+        size="icon"
+      >
+        <PenTool className="w-7 h-7 text-primary-foreground group-hover:rotate-12 transition-transform duration-300" />
+      </Button>
+      
+      {/* Ripple effect */}
+      <div className="absolute inset-0 rounded-full bg-gradient-sage opacity-30 animate-ping"></div>
+    </div>
   );
 }

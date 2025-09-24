@@ -1,4 +1,4 @@
-import { Search, Calendar, Camera, Music } from "lucide-react";
+import { Search, Calendar, Camera, Music, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -9,37 +9,61 @@ interface JournalHeaderProps {
 
 export function JournalHeader({ searchQuery, onSearchChange }: JournalHeaderProps) {
   return (
-    <header className="bg-gradient-warm border-b border-journal-accent/20 px-6 py-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-3xl font-serif text-foreground mb-2">Your Digital Journal</h1>
-          <p className="text-journal-text-soft">Automatically weaving your life's moments into meaningful stories</p>
+    <header className="relative bg-gradient-hero border-b border-journal-accent/20 px-6 py-12 overflow-hidden">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 paper-texture opacity-30"></div>
+      <div className="absolute top-0 left-1/4 w-32 h-32 bg-gradient-sage rounded-full opacity-10 blur-3xl animate-float"></div>
+      <div className="absolute bottom-0 right-1/4 w-40 h-40 bg-gradient-warm rounded-full opacity-10 blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+      
+      <div className="relative max-w-4xl mx-auto">
+        <div className="mb-8 text-center">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="p-3 bg-gradient-sage rounded-2xl shadow-glow">
+              <Sparkles className="w-8 h-8 text-primary-foreground animate-pulse-slow" />
+            </div>
+          </div>
+          <h1 className="text-hero font-serif text-foreground mb-3 text-shimmer">
+            Your Digital Journal
+          </h1>
+          <p className="text-xl text-journal-text-soft max-w-2xl mx-auto leading-relaxed">
+            Automatically weaving your life's moments into meaningful stories, 
+            <span className="text-primary font-medium"> beautifully preserved</span>
+          </p>
         </div>
         
-        <div className="flex flex-col sm:flex-row gap-4 items-center">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-            <Input
-              placeholder="Search your memories..."
-              value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-10 bg-card border-journal-accent/30 focus:border-primary shadow-soft"
-            />
+        <div className="flex flex-col sm:flex-row gap-6 items-center">
+          <div className="relative flex-1 max-w-md group">
+            <div className="absolute inset-0 bg-gradient-sage rounded-lg opacity-20 blur-sm group-focus-within:opacity-30 transition-opacity duration-300"></div>
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+              <Input
+                placeholder="Search your memories..."
+                value={searchQuery}
+                onChange={(e) => onSearchChange(e.target.value)}
+                className="pl-12 pr-4 py-4 text-lg bg-card/80 backdrop-blur-sm border-journal-accent/30 focus:border-primary shadow-paper hover:shadow-gentle transition-all duration-300 rounded-lg"
+              />
+            </div>
           </div>
           
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="border-journal-accent/30 hover:bg-journal-accent/10">
-              <Calendar className="w-4 h-4 mr-2" />
-              Today
-            </Button>
-            <Button variant="outline" size="sm" className="border-journal-accent/30 hover:bg-journal-accent/10">
-              <Camera className="w-4 h-4 mr-2" />
-              Photos
-            </Button>
-            <Button variant="outline" size="sm" className="border-journal-accent/30 hover:bg-journal-accent/10">
-              <Music className="w-4 h-4 mr-2" />
-              Music
-            </Button>
+          <div className="flex gap-3">
+            {[
+              { icon: Calendar, label: "Today", color: "hover:bg-blue-500/10 hover:text-blue-600" },
+              { icon: Camera, label: "Photos", color: "hover:bg-purple-500/10 hover:text-purple-600" },
+              { icon: Music, label: "Music", color: "hover:bg-green-500/10 hover:text-green-600" }
+            ].map(({ icon: Icon, label, color }) => (
+              <Button 
+                key={label}
+                variant="outline" 
+                size="lg" 
+                className={`
+                  glass border-journal-accent/30 hover:shadow-gentle transition-all duration-300 
+                  group ${color}
+                `}
+              >
+                <Icon className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
+                <span className="hidden sm:inline">{label}</span>
+              </Button>
+            ))}
           </div>
         </div>
       </div>

@@ -100,31 +100,31 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-warm">
+    <div className="min-h-screen bg-gradient-hero custom-scrollbar">
       <JournalHeader searchQuery={searchQuery} onSearchChange={setSearchQuery} />
       
-      <main className="max-w-4xl mx-auto px-6 py-8">
+      <main className="max-w-4xl mx-auto px-6 py-section relative">
         <PrivacyBanner />
         
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-serif text-foreground">Your Story</h2>
-          <div className="flex gap-2">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-title font-serif text-foreground">Your Story</h2>
+          <div className="flex gap-3">
             <Button 
               variant="outline" 
               onClick={() => setIsWritingModalOpen(true)}
-              className="border-journal-accent/30 hover:bg-journal-accent/10"
+              className="glass border-journal-accent/30 hover:shadow-gentle transition-all duration-300 hover:scale-105"
             >
-              <PenTool className="w-4 h-4 mr-2" />
-              Write
+              <PenTool className="w-5 h-5 mr-2" />
+              <span className="hidden sm:inline">Write</span>
             </Button>
-            <Button className="bg-primary hover:bg-primary/90 shadow-soft">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Entry
+            <Button className="bg-gradient-sage hover:shadow-glow shadow-soft transition-all duration-300 hover:scale-105">
+              <Plus className="w-5 h-5 mr-2" />
+              <span className="hidden sm:inline">Add Entry</span>
             </Button>
           </div>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-8">
           {filteredEntries.length > 0 ? (
             filteredEntries.map((entry) => (
               <JournalEntry
@@ -134,9 +134,12 @@ const Index = () => {
               />
             ))
           ) : (
-            <div className="text-center py-12">
-              <p className="text-journal-text-soft mb-4">No entries found matching your search.</p>
-              <Button variant="outline" onClick={() => setSearchQuery("")}>
+            <div className="text-center py-16">
+              <div className="w-24 h-24 bg-gradient-sage rounded-full mx-auto mb-6 flex items-center justify-center">
+                <PenTool className="w-12 h-12 text-primary-foreground" />
+              </div>
+              <p className="text-journal-text-soft mb-6 text-lg">No entries found matching your search.</p>
+              <Button variant="outline" onClick={() => setSearchQuery("")} className="hover:scale-105 transition-transform duration-200">
                 Clear search
               </Button>
             </div>
@@ -144,11 +147,11 @@ const Index = () => {
         </div>
 
         {filteredEntries.length > 0 && (
-          <div className="text-center mt-12 py-8">
-            <p className="text-journal-text-soft mb-4">
+          <div className="text-center mt-16 py-12 border-t border-journal-accent/20">
+            <p className="text-journal-text-soft mb-6 text-lg">
               Your journal grows automatically as you live your life.
             </p>
-            <Button variant="outline" className="border-journal-accent/30 hover:bg-journal-accent/10">
+            <Button variant="outline" className="glass hover:shadow-gentle transition-all duration-300 hover:scale-105">
               Load Earlier Entries
             </Button>
           </div>

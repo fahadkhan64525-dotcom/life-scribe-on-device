@@ -22,70 +22,91 @@ interface JournalEntryProps {
 
 export function JournalEntry({ entry, onAddContext }: JournalEntryProps) {
   return (
-    <Card className="p-6 bg-card shadow-gentle border-journal-accent/20 hover:shadow-soft transition-all duration-300">
+    <Card className="group relative overflow-hidden p-6 bg-gradient-card shadow-paper border-journal-accent/20 hover:shadow-floating transition-all duration-500 animate-fade-in">
+      {/* Decorative elements */}
+      <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-sage rounded-full opacity-5 -translate-y-8 translate-x-8 group-hover:scale-110 transition-transform duration-500"></div>
       {/* Header */}
-      <div className="flex items-start justify-between mb-4">
+      <div className="relative flex items-start justify-between mb-6">
         <div>
-          <h3 className="font-serif text-lg text-foreground mb-1">{entry.date}</h3>
-          <div className="flex items-center gap-4 text-sm text-journal-text-soft">
-            <div className="flex items-center gap-1">
-              <Clock className="w-3 h-3" />
-              {entry.time}
+          <h3 className="font-serif text-xl text-foreground mb-2 group-hover:text-primary transition-colors duration-300">
+            {entry.date}
+          </h3>
+          <div className="flex items-center gap-6 text-sm text-journal-text-soft">
+            <div className="flex items-center gap-2 px-3 py-1 bg-journal-warm rounded-full">
+              <Clock className="w-4 h-4" />
+              <span className="font-medium">{entry.time}</span>
             </div>
             {entry.location && (
-              <div className="flex items-center gap-1">
-                <MapPin className="w-3 h-3" />
-                {entry.location}
+              <div className="flex items-center gap-2 px-3 py-1 bg-journal-warm rounded-full">
+                <MapPin className="w-4 h-4" />
+                <span className="font-medium">{entry.location}</span>
               </div>
             )}
           </div>
         </div>
-        <div className="flex gap-1">
-          {entry.photos && <Camera className="w-4 h-4 text-journal-accent" />}
-          {entry.music && <Music className="w-4 h-4 text-journal-accent" />}
-          {entry.calendarEvent && <Calendar className="w-4 h-4 text-journal-accent" />}
+        <div className="flex gap-2">
+          {entry.photos && (
+            <div className="p-2 bg-purple-500/10 rounded-xl">
+              <Camera className="w-5 h-5 text-purple-600" />
+            </div>
+          )}
+          {entry.music && (
+            <div className="p-2 bg-green-500/10 rounded-xl">
+              <Music className="w-5 h-5 text-green-600" />
+            </div>
+          )}
+          {entry.calendarEvent && (
+            <div className="p-2 bg-blue-500/10 rounded-xl">
+              <Calendar className="w-5 h-5 text-blue-600" />
+            </div>
+          )}
         </div>
       </div>
 
       {/* Photos */}
       {entry.photos && entry.photos.length > 0 && (
-        <div className="mb-4">
-          <div className="flex gap-2 overflow-x-auto pb-2">
+        <div className="mb-6">
+          <div className="flex gap-3 overflow-x-auto pb-3 custom-scrollbar">
             {entry.photos.map((photo, index) => (
-              <img
+              <div 
                 key={index}
-                src={photo}
-                alt={`Memory from ${entry.date}`}
-                className="w-20 h-20 object-cover rounded-md shadow-soft flex-shrink-0"
-              />
+                className="relative flex-shrink-0 group/photo"
+              >
+                <img
+                  src={photo}
+                  alt={`Memory from ${entry.date}`}
+                  className="w-24 h-24 object-cover rounded-xl shadow-soft group-hover/photo:shadow-gentle transition-all duration-300 group-hover/photo:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-sage opacity-0 group-hover/photo:opacity-10 rounded-xl transition-opacity duration-300"></div>
+              </div>
             ))}
           </div>
         </div>
       )}
 
       {/* Auto-generated content */}
-      <div className="mb-4">
-        <p className="text-foreground leading-relaxed">{entry.autoText}</p>
+      <div className="mb-6">
+        <p className="text-foreground leading-relaxed text-lg font-light tracking-wide">{entry.autoText}</p>
       </div>
 
       {/* User-added context */}
       {entry.userText && (
-        <div className="mb-4 p-3 bg-journal-warm rounded-lg border-l-2 border-primary">
-          <p className="text-foreground italic leading-relaxed">"{entry.userText}"</p>
+        <div className="mb-6 p-4 bg-gradient-warm rounded-xl border-l-4 border-primary shadow-soft">
+          <p className="text-foreground italic leading-relaxed font-medium">"{entry.userText}"</p>
         </div>
       )}
 
       {/* Smart prompts */}
       {entry.prompts && entry.prompts.length > 0 && (
-        <div className="mb-4">
-          <p className="text-sm text-journal-text-soft mb-2">What would you like to remember about this moment?</p>
+        <div className="mb-6">
+          <p className="text-sm text-journal-text-soft mb-3 font-medium">What would you like to remember about this moment?</p>
           <div className="flex flex-wrap gap-2">
             {entry.prompts.map((prompt, index) => (
               <Button
                 key={index}
                 variant="outline"
                 size="sm"
-                className="text-xs border-journal-accent/30 hover:bg-journal-accent/10 text-journal-text-soft"
+                className="text-xs border-journal-accent/40 hover:bg-journal-accent/15 text-journal-text-soft hover:border-primary transition-all duration-300 hover:scale-105"
               >
                 {prompt}
               </Button>
@@ -95,11 +116,15 @@ export function JournalEntry({ entry, onAddContext }: JournalEntryProps) {
       )}
 
       {/* Footer */}
-      <div className="flex items-center justify-between pt-4 border-t border-journal-accent/20">
-        <div className="flex gap-1 flex-wrap">
+      <div className="flex items-center justify-between pt-6 border-t border-journal-accent/20">
+        <div className="flex gap-2 flex-wrap">
           {entry.tags.map((tag) => (
-            <Badge key={tag} variant="secondary" className="text-xs bg-journal-accent/10 text-journal-text-soft border-journal-accent/20">
-              {tag}
+            <Badge 
+              key={tag} 
+              variant="secondary" 
+              className="text-xs bg-journal-accent/15 text-journal-text-soft border-journal-accent/25 hover:bg-journal-accent/25 transition-colors duration-200 px-3 py-1"
+            >
+              #{tag}
             </Badge>
           ))}
         </div>
@@ -107,9 +132,9 @@ export function JournalEntry({ entry, onAddContext }: JournalEntryProps) {
           variant="ghost"
           size="sm"
           onClick={() => onAddContext(entry.id)}
-          className="text-primary hover:bg-primary/10"
+          className="text-primary hover:bg-primary/15 hover:text-primary font-medium transition-all duration-300 hover:scale-105"
         >
-          <MessageCircle className="w-4 h-4 mr-1" />
+          <MessageCircle className="w-4 h-4 mr-2" />
           Add thoughts
         </Button>
       </div>
