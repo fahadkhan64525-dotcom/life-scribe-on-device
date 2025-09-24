@@ -2,8 +2,11 @@ import { useState } from "react";
 import { JournalHeader } from "@/components/JournalHeader";
 import { JournalEntry } from "@/components/JournalEntry";
 import { PrivacyBanner } from "@/components/PrivacyBanner";
+import { DiaryWritingModal } from "@/components/DiaryWritingModal";
+import { FloatingWriteButton } from "@/components/FloatingWriteButton";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, PenTool } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 // Mock data for demonstration
 const mockEntries = [
@@ -43,6 +46,8 @@ const mockEntries = [
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [entries, setEntries] = useState(mockEntries);
+  const [isWritingModalOpen, setIsWritingModalOpen] = useState(false);
+  const { toast } = useToast();
 
   const filteredEntries = entries.filter(entry =>
     entry.autoText.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -56,6 +61,44 @@ const Index = () => {
     console.log("Adding context to entry:", entryId);
   };
 
+  const handleSaveDiaryEntry = (newEntry: {
+    title: string;
+    content: string;
+    location?: string;
+    photos: string[];
+    mood?: string;
+    tags: string[];
+  }) => {
+    const diaryEntry = {
+      id: Date.now().toString(),
+      date: new Date().toLocaleDateString("en-US", { 
+        weekday: "long", 
+        year: "numeric", 
+        month: "long", 
+        day: "numeric" 
+      }),
+      time: new Date().toLocaleTimeString("en-US", { 
+        hour: "numeric", 
+        minute: "2-digit" 
+      }),
+      location: newEntry.location,
+      photos: newEntry.photos.length > 0 ? newEntry.photos : undefined,
+      music: undefined,
+      calendarEvent: undefined,
+      autoText: newEntry.content,
+      userText: newEntry.mood ? `Feeling ${newEntry.mood.toLowerCase()}` : undefined,
+      prompts: ["What else would you like to add?", "How did this make you feel?"],
+      tags: [...newEntry.tags, "diary", "personal"],
+    };
+
+    setEntries([diaryEntry, ...entries]);
+    
+    toast({
+      title: "Entry saved!",
+      description: "Your diary entry has been added to your journal.",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-warm">
       <JournalHeader searchQuery={searchQuery} onSearchChange={setSearchQuery} />
@@ -65,10 +108,20 @@ const Index = () => {
         
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-serif text-foreground">Your Story</h2>
-          <Button className="bg-primary hover:bg-primary/90 shadow-soft">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Entry
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setIsWritingModalOpen(true)}
+              className="border-journal-accent/30 hover:bg-journal-accent/10"
+            >
+              <PenTool className="w-4 h-4 mr-2" />
+              Write
+            </Button>
+            <Button className="bg-primary hover:bg-primary/90 shadow-soft">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Entry
+            </Button>
+          </div>
         </div>
 
         <div className="space-y-6">
@@ -101,6 +154,14 @@ const Index = () => {
           </div>
         )}
       </main>
+
+      <FloatingWriteButton onClick={() => setIsWritingModalOpen(true)} />
+      
+      <DiaryWritingModal
+        isOpen={isWritingModalOpen}
+        onClose={() => setIsWritingModalOpen(false)}
+        onSave={handleSaveDiaryEntry}
+      />
     </div>
   );
 };
