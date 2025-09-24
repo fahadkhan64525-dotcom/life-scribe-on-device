@@ -47,6 +47,11 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        journal: {
+          warm: "hsl(var(--journal-warm))",
+          accent: "hsl(var(--journal-accent))",
+          "text-soft": "hsl(var(--journal-text-soft))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -62,6 +67,18 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      backgroundImage: {
+        "gradient-warm": "var(--gradient-warm)",
+        "gradient-sage": "var(--gradient-sage)",
+      },
+      boxShadow: {
+        soft: "var(--shadow-soft)",
+        gentle: "var(--shadow-gentle)",
+      },
+      fontFamily: {
+        sans: ["Inter", "system-ui", "sans-serif"],
+        serif: ["Crimson Text", "serif"],
       },
       keyframes: {
         "accordion-down": {
