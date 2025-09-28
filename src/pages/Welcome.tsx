@@ -52,8 +52,12 @@ const Welcome = () => {
                 className="glass p-8 rounded-2xl text-center animate-scale-in border border-white/10"
                 style={{ animationDelay: `${index * 200}ms` }}
               >
-                <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-elegant flex items-center justify-center shadow-elegant">
-                  <feature.icon className="w-8 h-8 text-white" />
+                <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-sm flex items-center justify-center shadow-elegant border border-white/20">
+                  <feature.icon className={`w-8 h-8 ${
+                    index === 0 ? 'text-orange-400' : 
+                    index === 1 ? 'text-emerald-400' : 
+                    'text-purple-400'
+                  }`} />
                 </div>
                 <h3 className="text-xl font-semibold mb-3 text-foreground">
                   {feature.title}
