@@ -22,9 +22,9 @@ interface JournalEntryProps {
 
 export function JournalEntry({ entry, onAddContext }: JournalEntryProps) {
   return (
-    <Card className="group relative overflow-hidden p-6 bg-gradient-card shadow-paper border-journal-accent/20 hover:shadow-floating transition-all duration-500 animate-fade-in">
+    <Card className="group relative overflow-hidden p-6 bg-gradient-card shadow-paper border-journal-accent/20 hover:shadow-floating hover-glow transition-all duration-500 animate-fade-in gradient-border">
       {/* Decorative elements */}
-      <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-sage rounded-full opacity-5 -translate-y-8 translate-x-8 group-hover:scale-110 transition-transform duration-500"></div>
+      <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-elegant rounded-full opacity-10 -translate-y-8 translate-x-8 group-hover:scale-110 transition-transform duration-500"></div>
       {/* Header */}
       <div className="relative flex items-start justify-between mb-6">
         <div>
@@ -132,9 +132,9 @@ export function JournalEntry({ entry, onAddContext }: JournalEntryProps) {
           variant="ghost"
           size="sm"
           onClick={() => onAddContext(entry.id)}
-          className="text-primary hover:bg-primary/15 hover:text-primary font-medium transition-all duration-300 hover:scale-105"
+          className="text-primary hover:bg-primary/15 hover:text-primary font-medium hover-glow"
         >
-          <MessageCircle className="w-4 h-4 mr-2" />
+          <MessageCircle className="w-4 h-4 mr-2 text-blue-500" />
           Add thoughts
         </Button>
       </div>

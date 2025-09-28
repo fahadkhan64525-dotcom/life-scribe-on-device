@@ -74,6 +74,9 @@ export default {
         "gradient-paper": "var(--gradient-paper)",
         "gradient-hero": "var(--gradient-hero)",
         "gradient-card": "var(--gradient-card)",
+        "gradient-elegant": "var(--gradient-elegant)",
+        "gradient-subtle": "var(--gradient-subtle)",
+        "gradient-vibrant": "var(--gradient-vibrant)",
       },
       boxShadow: {
         soft: "var(--shadow-soft)",
@@ -81,10 +84,12 @@ export default {
         floating: "var(--shadow-floating)",
         paper: "var(--shadow-paper)",
         glow: "var(--shadow-glow)",
+        elegant: "var(--shadow-elegant)",
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
         serif: ["Crimson Text", "serif"],
+        display: ["Playfair Display", "serif"],
       },
       fontSize: {
         hero: "var(--font-size-hero)",

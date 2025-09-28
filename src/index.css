@@ -44,19 +44,23 @@ All colors MUST be HSL.
     --journal-shadow: 25 15% 10%; /* Warm shadows */
     --journal-glow: 158 45% 85%; /* Soft glow */
     
-    /* Gradients */
+    /* Enhanced Gradients */
     --gradient-warm: linear-gradient(135deg, hsl(38 25% 98%), hsl(38 20% 94%));
     --gradient-sage: linear-gradient(135deg, hsl(158 25% 45%), hsl(158 35% 55%));
     --gradient-paper: linear-gradient(145deg, hsl(38 30% 97%) 0%, hsl(38 25% 95%) 50%, hsl(38 20% 93%) 100%);
     --gradient-hero: linear-gradient(135deg, hsl(38 25% 98%) 0%, hsl(158 15% 92%) 50%, hsl(38 20% 96%) 100%);
     --gradient-card: linear-gradient(145deg, hsl(38 30% 98%) 0%, hsl(38 25% 96%) 100%);
+    --gradient-elegant: linear-gradient(135deg, hsl(158 45% 55%) 0%, hsl(38 45% 65%) 50%, hsl(158 35% 45%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(38 25% 98%) 0%, hsl(38 20% 94%) 100%);
+    --gradient-vibrant: linear-gradient(135deg, hsl(25 85% 65%) 0%, hsl(45 85% 60%) 25%, hsl(158 55% 55%) 50%, hsl(280 55% 65%) 75%, hsl(340 75% 65%) 100%);
     
-    /* Shadows */
+    /* Enhanced Shadows */
     --shadow-soft: 0 2px 12px -2px hsl(var(--journal-shadow) / 0.08);
     --shadow-gentle: 0 4px 20px -4px hsl(var(--journal-shadow) / 0.12);
     --shadow-floating: 0 8px 32px -8px hsl(var(--journal-shadow) / 0.16);
     --shadow-paper: 0 1px 3px hsl(var(--journal-shadow) / 0.06), 0 4px 16px hsl(var(--journal-shadow) / 0.08);
     --shadow-glow: 0 0 20px hsl(var(--journal-glow) / 0.3);
+    --shadow-elegant: 0 10px 40px -10px hsl(158 45% 55% / 0.3);
 
     /* Typography */
     --font-size-hero: clamp(2rem, 5vw, 3.5rem);
@@ -122,19 +126,23 @@ All colors MUST be HSL.
     --journal-shadow: 25 25% 5%; /* Deep shadows */
     --journal-glow: 158 45% 65%; /* Bright glow for dark mode */
     
-    /* Dark gradients */
+    /* Enhanced Dark gradients */
     --gradient-warm: linear-gradient(135deg, hsl(25 20% 12%), hsl(25 15% 8%));
     --gradient-sage: linear-gradient(135deg, hsl(158 35% 65%), hsl(158 45% 75%));
     --gradient-paper: linear-gradient(145deg, hsl(25 20% 12%) 0%, hsl(25 18% 10%) 50%, hsl(25 15% 8%) 100%);
     --gradient-hero: linear-gradient(135deg, hsl(25 20% 12%) 0%, hsl(158 20% 18%) 50%, hsl(25 18% 10%) 100%);
     --gradient-card: linear-gradient(145deg, hsl(25 22% 12%) 0%, hsl(25 18% 10%) 100%);
+    --gradient-elegant: linear-gradient(135deg, hsl(158 55% 65%) 0%, hsl(38 55% 75%) 50%, hsl(158 45% 55%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(25 20% 12%) 0%, hsl(25 15% 8%) 100%);
+    --gradient-vibrant: linear-gradient(135deg, hsl(25 75% 55%) 0%, hsl(45 75% 50%) 25%, hsl(158 45% 45%) 50%, hsl(280 45% 55%) 75%, hsl(340 65% 55%) 100%);
     
-    /* Dark shadows */
+    /* Enhanced Dark shadows */
     --shadow-soft: 0 2px 12px -2px hsl(var(--journal-shadow) / 0.3);
     --shadow-gentle: 0 4px 20px -4px hsl(var(--journal-shadow) / 0.4);
     --shadow-floating: 0 8px 32px -8px hsl(var(--journal-shadow) / 0.5);
     --shadow-paper: 0 1px 3px hsl(var(--journal-shadow) / 0.4), 0 4px 16px hsl(var(--journal-shadow) / 0.5);
     --shadow-glow: 0 0 20px hsl(var(--journal-glow) / 0.2);
+    --shadow-elegant: 0 10px 40px -10px hsl(158 55% 65% / 0.4);
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -202,23 +210,48 @@ All colors MUST be HSL.
     50% { transform: translateY(-10px); }
   }
 
-  /* Text shimmer effect */
+  /* Enhanced text shimmer effect */
   .text-shimmer {
-    background: linear-gradient(
-      90deg,
-      hsl(var(--foreground)),
-      hsl(var(--primary)),
-      hsl(var(--foreground))
-    );
+    background: var(--gradient-vibrant);
     background-size: 200% 100%;
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: shimmer 3s ease-in-out infinite;
+    animation: shimmer 4s ease-in-out infinite;
   }
   
   @keyframes shimmer {
     0%, 100% { background-position: 200% 0; }
     50% { background-position: -200% 0; }
+  }
+
+  /* Hover glow effect */
+  .hover-glow {
+    transition: all 0.3s ease;
+  }
+  
+  .hover-glow:hover {
+    box-shadow: var(--shadow-elegant);
+    transform: translateY(-2px);
+  }
+
+  /* Gradient border effect */
+  .gradient-border {
+    position: relative;
+    background: hsl(var(--card));
+    border-radius: calc(var(--radius) + 2px);
+  }
+  
+  .gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 2px;
+    background: var(--gradient-elegant);
+    border-radius: inherit;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: xor;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
   }
 }

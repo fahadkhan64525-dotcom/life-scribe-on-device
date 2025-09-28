@@ -18,14 +18,14 @@ export function JournalHeader({ searchQuery, onSearchChange }: JournalHeaderProp
       <div className="relative max-w-4xl mx-auto">
         <div className="mb-8 text-center">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="p-3 bg-gradient-sage rounded-2xl shadow-glow">
+            <div className="p-3 bg-gradient-elegant rounded-2xl shadow-elegant hover-glow">
               <Sparkles className="w-8 h-8 text-primary-foreground animate-pulse-slow" />
             </div>
           </div>
-          <h1 className="text-hero font-serif text-foreground mb-3 text-shimmer">
+          <h1 className="text-hero font-display font-medium text-foreground mb-4 text-shimmer tracking-wide">
             Your Digital Journal
           </h1>
-          <p className="text-xl text-journal-text-soft max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl text-journal-text-soft max-w-2xl mx-auto leading-relaxed font-light">
             Automatically weaving your life's moments into meaningful stories, 
             <span className="text-primary font-medium"> beautifully preserved</span>
           </p>

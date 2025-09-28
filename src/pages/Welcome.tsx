@@ -35,11 +35,11 @@ const Welcome = () => {
         <div className="min-h-screen flex flex-col items-center justify-center">
           {/* Logo Section */}
           <div className="text-center mb-16 animate-fade-in">
-            <Logo size="xl" className="mb-6" />
-            <h2 className="text-2xl md:text-3xl text-foreground/80 font-light mb-4">
+            <Logo size="xl" className="mb-8" />
+            <h2 className="text-3xl md:text-4xl text-foreground/90 font-display font-medium mb-6 tracking-wide">
               Digital Journal
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-light">
               Your life, automatically captured. A private, passive journaling app that turns your digital data into meaningful memories.
             </p>
           </div>
@@ -73,11 +73,12 @@ const Welcome = () => {
           <div className="animate-slide-in-right" style={{ animationDelay: "800ms" }}>
             <Button
               onClick={() => navigate("/journal")}
+              variant="elegant"
               size="lg"
-              className="group px-8 py-6 text-lg font-medium bg-gradient-elegant hover:shadow-elegant transition-all duration-300 transform hover:scale-105"
+              className="group px-8 py-6 text-lg font-medium"
             >
               Start Journaling
-              <ArrowRight className="ml-3 w-5 h-5 text-yellow-400 group-hover:translate-x-1 group-hover:text-yellow-300 transition-all" />
+              <ArrowRight className="ml-3 w-5 h-5 text-yellow-300 group-hover:translate-x-1 group-hover:text-yellow-200 transition-all group-hover:scale-110" />
             </Button>
           </div>
 
