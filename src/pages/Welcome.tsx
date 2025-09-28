@@ -77,7 +77,7 @@ const Welcome = () => {
               className="group px-8 py-6 text-lg font-medium bg-gradient-elegant hover:shadow-elegant transition-all duration-300 transform hover:scale-105"
             >
               Start Journaling
-              <ArrowRight className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="ml-3 w-5 h-5 text-orange-300 group-hover:translate-x-1 group-hover:text-orange-200 transition-all" />
             </Button>
           </div>
 
