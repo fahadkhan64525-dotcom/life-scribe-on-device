@@ -6,6 +6,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { z } from "zod";
 
 interface DiaryWritingModalProps {
   isOpen: boolean;
@@ -33,7 +35,20 @@ const writingPrompts = [
 
 const moodOptions = ["😊 Happy", "😌 Peaceful", "🤔 Thoughtful", "😴 Tired", "😎 Confident", "💭 Reflective", "🌟 Inspired", "😅 Grateful"];
 
+// Input validation schema
+const diaryEntrySchema = z.object({
+  title: z.string().max(200, "Title must be less than 200 characters").optional(),
+  content: z.string()
+    .min(1, "Content is required")
+    .max(10000, "Content must be less than 10,000 characters"),
+  location: z.string().max(200, "Location must be less than 200 characters").optional(),
+  tags: z.array(z.string().max(50, "Tag must be less than 50 characters")).max(20, "Maximum 20 tags allowed"),
+  mood: z.string().max(50, "Mood must be less than 50 characters").optional(),
+  photos: z.array(z.string())
+});
+
 export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModalProps) {
+  const { toast } = useToast();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [location, setLocation] = useState("");
@@ -43,15 +58,36 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
   const [newTag, setNewTag] = useState("");
 
   const handleSave = () => {
-    if (!content.trim()) return;
+    // Prepare entry data with trimmed values
+    const entryData = {
+      title: title.trim() || undefined,
+      content: content.trim(),
+      location: location.trim() || undefined,
+      photos,
+      mood: selectedMood.trim() || undefined,
+      tags,
+    };
+
+    // Validate using Zod schema
+    const validation = diaryEntrySchema.safeParse(entryData);
+    
+    if (!validation.success) {
+      const firstError = validation.error.errors[0];
+      toast({
+        title: "Validation Error",
+        description: firstError.message,
+        variant: "destructive",
+      });
+      return;
+    }
     
     onSave({
-      title: title || `Entry from ${new Date().toLocaleDateString()}`,
-      content,
-      location: location || undefined,
-      photos,
-      mood: selectedMood || undefined,
-      tags,
+      title: entryData.title || `Entry from ${new Date().toLocaleDateString()}`,
+      content: entryData.content,
+      location: entryData.location,
+      photos: entryData.photos,
+      mood: entryData.mood,
+      tags: entryData.tags,
     });
     
     // Reset form
@@ -66,10 +102,40 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
   };
 
   const addTag = () => {
-    if (newTag.trim() && !tags.includes(newTag.trim())) {
-      setTags([...tags, newTag.trim()]);
-      setNewTag("");
+    const trimmedTag = newTag.trim();
+    
+    // Validate tag
+    if (!trimmedTag) return;
+    
+    if (trimmedTag.length > 50) {
+      toast({
+        title: "Tag too long",
+        description: "Tags must be less than 50 characters",
+        variant: "destructive",
+      });
+      return;
     }
+    
+    if (tags.length >= 20) {
+      toast({
+        title: "Too many tags",
+        description: "Maximum 20 tags allowed per entry",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (tags.includes(trimmedTag)) {
+      toast({
+        title: "Duplicate tag",
+        description: "This tag has already been added",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setTags([...tags, trimmedTag]);
+    setNewTag("");
   };
 
   const removeTag = (tagToRemove: string) => {
@@ -113,6 +179,7 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
               placeholder="Give this beautiful moment a title..."
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              maxLength={200}
               className="border-journal-accent/30 focus:border-primary bg-gradient-warm shadow-soft hover:shadow-gentle transition-all duration-300 focus:shadow-glow font-serif text-lg"
             />
           </div>
@@ -152,10 +219,11 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
                 placeholder="What's dancing in your mind? Let your thoughts flow freely onto this digital paper..."
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
+                maxLength={10000}
                 className="min-h-[240px] border-journal-accent/30 focus:border-primary bg-gradient-paper shadow-soft hover:shadow-gentle focus:shadow-glow transition-all duration-300 resize-none text-base leading-relaxed font-serif placeholder:text-journal-text-soft/60 placeholder:font-light"
               />
               <div className="absolute bottom-4 right-4 text-xs text-journal-text-soft/50 font-light">
-                {content.length} characters
+                {content.length} / 10,000 characters
               </div>
             </div>
           </div>
@@ -198,6 +266,7 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
                 placeholder="The cozy corner where your story begins..."
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
+                maxLength={200}
                 className="pl-12 border-journal-accent/30 focus:border-primary bg-gradient-warm shadow-soft hover:shadow-gentle focus:shadow-glow transition-all duration-300"
               />
             </div>
@@ -220,6 +289,7 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
                     addTag();
                   }
                 }}
+                maxLength={50}
                 className="flex-1 border-journal-accent/30 focus:border-primary bg-gradient-warm shadow-soft hover:shadow-gentle focus:shadow-glow transition-all duration-300"
               />
               <Button 
