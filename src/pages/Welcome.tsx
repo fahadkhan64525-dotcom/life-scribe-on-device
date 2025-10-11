@@ -37,10 +37,10 @@ const Welcome = () => {
           <div className="text-center mb-16 animate-fade-in">
             <Logo size="xl" className="mb-8" />
             <h2 className="text-3xl md:text-4xl text-foreground/90 font-display font-medium mb-6 tracking-wide">
-              Digital Journal
+              Whispers of Time
             </h2>
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-light">
-              Your life, automatically captured. A private, passive journaling app that turns your digital data into meaningful memories.
+              A sanctuary for your soul's journey. Capture life's precious moments in a beautiful, private diary where your story unfolds.
             </p>
           </div>
 

@@ -23,11 +23,11 @@ export function JournalHeader({ searchQuery, onSearchChange }: JournalHeaderProp
             </div>
           </div>
           <h1 className="text-hero font-display font-medium text-foreground mb-4 text-shimmer tracking-wide">
-            Your Digital Journal
+            Whispers of Time
           </h1>
           <p className="text-xl text-journal-text-soft max-w-2xl mx-auto leading-relaxed font-light">
-            Automatically weaving your life's moments into meaningful stories, 
-            <span className="text-primary font-medium"> beautifully preserved</span>
+            Where your thoughts become timeless memories, 
+            <span className="text-primary font-medium"> beautifully preserved forever</span>
           </p>
         </div>
         
