@@ -57,6 +57,41 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
   const [tags, setTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState("");
 
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    Array.from(files).forEach((file) => {
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "File too large",
+          description: "Photos must be less than 5MB",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!file.type.startsWith("image/")) {
+        toast({
+          title: "Invalid file type",
+          description: "Please upload image files only",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotos((prev) => [...prev, reader.result as string]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removePhoto = (index: number) => {
+    setPhotos((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleSave = () => {
     // Prepare entry data with trimmed values
     const entryData = {
@@ -323,24 +358,61 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
               <Camera className="w-4 h-4" />
               Capture the visual essence of this moment
             </Label>
-            <Button
-              variant="outline"
-              className="w-full border-dashed border-journal-accent/40 hover:bg-journal-accent/10 py-12 transition-all duration-300 hover:border-primary hover:shadow-soft group hover:scale-[1.02]"
-            >
-              <div className="flex flex-col items-center gap-3">
-                <div className="p-3 bg-journal-accent/10 rounded-full group-hover:bg-primary/15 transition-colors duration-300">
-                  <Camera className="w-6 h-6 text-journal-accent group-hover:text-primary transition-colors duration-300" />
-                </div>
-                <div className="text-center">
-                  <div className="text-sm font-medium text-journal-text-soft group-hover:text-primary transition-colors duration-300">
-                    Add photos to your beautiful entry
+            <input
+              type="file"
+              id="photo-upload"
+              accept="image/*"
+              multiple
+              onChange={handlePhotoUpload}
+              className="hidden"
+            />
+            <label htmlFor="photo-upload">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full border-dashed border-journal-accent/40 hover:bg-journal-accent/10 py-12 transition-all duration-300 hover:border-primary hover:shadow-soft group hover:scale-[1.02]"
+                asChild
+              >
+                <div>
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="p-3 bg-journal-accent/10 rounded-full group-hover:bg-primary/15 transition-colors duration-300">
+                      <Camera className="w-6 h-6 text-journal-accent group-hover:text-primary transition-colors duration-300" />
+                    </div>
+                    <div className="text-center">
+                      <div className="text-sm font-medium text-journal-text-soft group-hover:text-primary transition-colors duration-300">
+                        Add photos to your beautiful entry
+                      </div>
+                      <div className="text-xs text-journal-text-soft/60 mt-1">
+                        Let images tell part of your story (max 5MB each)
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-xs text-journal-text-soft/60 mt-1">
-                    Let images tell part of your story
-                  </div>
                 </div>
+              </Button>
+            </label>
+            
+            {photos.length > 0 && (
+              <div className="mt-4 grid grid-cols-3 gap-3">
+                {photos.map((photo, index) => (
+                  <div key={index} className="relative group/photo">
+                    <img
+                      src={photo}
+                      alt={`Upload ${index + 1}`}
+                      className="w-full h-24 object-cover rounded-lg shadow-soft"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      className="absolute -top-2 -right-2 w-6 h-6 rounded-full opacity-0 group-hover/photo:opacity-100 transition-opacity"
+                      onClick={() => removePhoto(index)}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
               </div>
-            </Button>
+            )}
           </div>
 
           {/* Action Buttons */}
