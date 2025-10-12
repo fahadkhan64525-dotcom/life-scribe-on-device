@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { JournalHeader } from "@/components/JournalHeader";
 import { JournalEntry } from "@/components/JournalEntry";
 import { PrivacyBanner } from "@/components/PrivacyBanner";
@@ -45,9 +45,17 @@ const mockEntries = [
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [entries, setEntries] = useState(mockEntries);
+  const [entries, setEntries] = useState<typeof mockEntries>(() => {
+    const saved = localStorage.getItem("journalEntries");
+    return saved ? JSON.parse(saved) : mockEntries;
+  });
   const [isWritingModalOpen, setIsWritingModalOpen] = useState(false);
   const { toast } = useToast();
+
+  // Save entries to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("journalEntries", JSON.stringify(entries));
+  }, [entries]);
 
   const filteredEntries = entries.filter(entry =>
     entry.autoText.toLowerCase().includes(searchQuery.toLowerCase()) ||
