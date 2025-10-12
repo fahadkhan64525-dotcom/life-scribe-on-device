@@ -59,13 +59,28 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (!files) return;
+    if (!files || files.length === 0) return;
 
-    Array.from(files).forEach((file) => {
+    const maxPhotos = 10;
+    const remainingSlots = maxPhotos - photos.length;
+
+    if (files.length > remainingSlots) {
+      toast({
+        title: "Too many photos",
+        description: `You can only add ${remainingSlots} more photo(s). Maximum ${maxPhotos} photos per entry.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const fileArray = Array.from(files);
+    let validFiles = 0;
+
+    fileArray.forEach((file) => {
       if (file.size > 5 * 1024 * 1024) {
         toast({
           title: "File too large",
-          description: "Photos must be less than 5MB",
+          description: `${file.name} is too large. Photos must be less than 5MB`,
           variant: "destructive",
         });
         return;
@@ -74,18 +89,29 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
       if (!file.type.startsWith("image/")) {
         toast({
           title: "Invalid file type",
-          description: "Please upload image files only",
+          description: `${file.name} is not an image file`,
           variant: "destructive",
         });
         return;
       }
 
+      validFiles++;
       const reader = new FileReader();
       reader.onloadend = () => {
         setPhotos((prev) => [...prev, reader.result as string]);
       };
       reader.readAsDataURL(file);
     });
+
+    if (validFiles > 0) {
+      toast({
+        title: "Photos added",
+        description: `${validFiles} photo(s) added successfully`,
+      });
+    }
+
+    // Reset the input
+    e.target.value = '';
   };
 
   const removePhoto = (index: number) => {
@@ -383,8 +409,13 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
                         Add photos to your beautiful entry
                       </div>
                       <div className="text-xs text-journal-text-soft/60 mt-1">
-                        Let images tell part of your story (max 5MB each)
+                        Select multiple images (max 10 photos, 5MB each)
                       </div>
+                      {photos.length > 0 && (
+                        <div className="text-xs text-primary font-medium mt-1">
+                          {photos.length}/10 photos added
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
