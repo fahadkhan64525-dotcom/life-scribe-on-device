@@ -1,7 +1,10 @@
-import { MapPin, Clock, Camera, Music, Calendar, MessageCircle } from "lucide-react";
+import { MapPin, Clock, Camera, Music, Calendar, MessageCircle, Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface JournalEntryProps {
   entry: {
@@ -21,6 +24,41 @@ interface JournalEntryProps {
 }
 
 export function JournalEntry({ entry, onAddContext }: JournalEntryProps) {
+  const [aiInsight, setAiInsight] = useState<string>("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const { toast } = useToast();
+
+  const generateInsight = async () => {
+    setIsGenerating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-insight', {
+        body: {
+          content: entry.autoText + (entry.userText ? " " + entry.userText : ""),
+          mood: entry.prompts?.[0],
+          tags: entry.tags
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.insight) {
+        setAiInsight(data.insight);
+        toast({
+          title: "Insight Generated ✨",
+          description: "AI has reflected on your entry",
+        });
+      }
+    } catch (error) {
+      console.error("Error generating insight:", error);
+      toast({
+        title: "Error",
+        description: "Could not generate insight. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
   return (
     <Card className="group relative overflow-hidden p-6 bg-gradient-card shadow-paper border-journal-accent/20 hover:shadow-floating hover-glow transition-all duration-500 animate-fade-in gradient-border">
       {/* Decorative elements */}
@@ -114,6 +152,41 @@ export function JournalEntry({ entry, onAddContext }: JournalEntryProps) {
           </div>
         </div>
       )}
+
+      {/* AI Insight Section */}
+      <div className="pt-4 border-t border-journal-accent/20 mb-4">
+        {!aiInsight ? (
+          <Button
+            onClick={generateInsight}
+            disabled={isGenerating}
+            variant="outline"
+            className="w-full glass border-journal-accent/40 hover:bg-gradient-elegant hover:text-white hover:border-primary transition-all duration-300 group"
+          >
+            <Sparkles className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform" />
+            {isGenerating ? "Generating Insight..." : "Generate AI Insight ✨"}
+          </Button>
+        ) : (
+          <div className="p-4 bg-gradient-sage rounded-lg border border-journal-accent/20 animate-fade-in">
+            <div className="flex items-start gap-2 mb-2">
+              <Sparkles className="w-5 h-5 text-primary mt-1 animate-pulse-slow" />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-primary mb-1">AI Reflection</p>
+                <p className="text-sm text-journal-text-soft leading-relaxed">{aiInsight}</p>
+              </div>
+            </div>
+            <Button
+              onClick={generateInsight}
+              disabled={isGenerating}
+              variant="ghost"
+              size="sm"
+              className="mt-2 text-xs text-journal-text-soft/70 hover:text-primary"
+            >
+              <Sparkles className="w-3 h-3 mr-1" />
+              Generate New Insight
+            </Button>
+          </div>
+        )}
+      </div>
 
       {/* Footer */}
       <div className="flex items-center justify-between pt-6 border-t border-journal-accent/20">
