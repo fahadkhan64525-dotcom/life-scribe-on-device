@@ -209,260 +209,266 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-gradient-card shadow-floating border border-journal-accent/20 backdrop-blur-sm animate-scale-in">
-        {/* Decorative background elements */}
-        <div className="absolute inset-0 bg-gradient-warm opacity-5 rounded-lg"></div>
-        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-sage rounded-full opacity-10 -translate-y-16 translate-x-16"></div>
-        <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-hero rounded-full opacity-10 translate-y-12 -translate-x-12"></div>
-        
-        <DialogHeader className="relative">
-          <DialogTitle className="text-2xl font-serif text-foreground flex items-center gap-3 mb-2">
-            <div className="p-2 bg-primary/15 rounded-xl shadow-soft">
-              <Sparkles className="w-6 h-6 text-primary animate-pulse-slow" />
-            </div>
-            <span className="bg-gradient-to-r from-primary to-journal-accent bg-clip-text text-transparent">
-              Write in Your Diary
-            </span>
-          </DialogTitle>
-          <p className="text-sm text-journal-text-soft/80 font-light">
-            Capture your thoughts, feelings, and memories in a beautiful, private space
-          </p>
-        </DialogHeader>
-
-        <div className="space-y-8 relative">
-          {/* Title */}
-          <div className="group">
-            <Label htmlFor="title" className="text-sm font-medium text-journal-text-soft mb-2 block group-hover:text-primary transition-colors duration-300">
-              ✨ Entry Title (optional)
-            </Label>
-            <Input
-              id="title"
-              placeholder="Give this beautiful moment a title..."
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              maxLength={200}
-              className="border-journal-accent/30 focus:border-primary bg-gradient-warm shadow-soft hover:shadow-gentle transition-all duration-300 focus:shadow-glow font-serif text-lg"
-            />
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden bg-[#8B7355] shadow-2xl border-8 border-[#654321] animate-scale-in p-0">
+        {/* Book binding on left */}
+        <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-[#654321] to-[#8B7355] border-r-4 border-[#543210]">
+          <div className="flex flex-col h-full justify-evenly px-1">
+            {[...Array(15)].map((_, i) => (
+              <div key={i} className="h-1 bg-[#543210] rounded"></div>
+            ))}
           </div>
+        </div>
 
-          {/* Writing Prompts */}
-          <div className="p-6 bg-gradient-sage rounded-xl shadow-soft border border-journal-accent/20 group hover:shadow-gentle transition-all duration-300">
-            <Label className="text-sm font-medium text-journal-text-soft mb-4 flex items-center gap-2">
-              <div className="w-2 h-2 bg-primary rounded-full animate-pulse-slow"></div>
-              Need inspiration? Try one of these gentle prompts:
-            </Label>
-            <div className="flex flex-wrap gap-3">
-              {writingPrompts.slice(0, 4).map((prompt, index) => (
-                <Button
-                  key={prompt}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => insertPrompt(prompt)}
-                  className="text-xs border-journal-accent/40 hover:bg-journal-accent/15 text-journal-text-soft hover:border-primary transition-all duration-300 hover:scale-105 hover:shadow-soft"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <Sparkles className="w-3 h-3 mr-1 opacity-60" />
-                  {prompt}
-                </Button>
-              ))}
-            </div>
-          </div>
+        {/* Paper pages */}
+        <div className="ml-12 bg-[#FFF8DC] h-full overflow-y-auto relative" style={{
+          backgroundImage: `repeating-linear-gradient(transparent, transparent 31px, #E8DCC4 31px, #E8DCC4 32px)`,
+          backgroundSize: '100% 32px'
+        }}>
+          {/* Red margin line */}
+          <div className="absolute left-16 top-0 bottom-0 w-[2px] bg-red-300"></div>
+          
+          {/* Coffee stain decoration */}
+          <div className="absolute top-8 right-8 w-16 h-16 rounded-full bg-[#D2691E] opacity-5"></div>
+          
+          <div className="relative pl-20 pr-8 py-8">
+            <DialogHeader className="relative mb-8">
+              <DialogTitle className="text-3xl font-serif text-[#654321] flex items-center gap-3 mb-2" style={{ fontFamily: 'Georgia, serif' }}>
+                <Sparkles className="w-6 h-6 text-[#8B7355] animate-pulse-slow" />
+                <span>My Diary</span>
+              </DialogTitle>
+              <p className="text-sm text-[#654321]/70 font-light italic" style={{ fontFamily: 'Georgia, serif' }}>
+                {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+              </p>
+            </DialogHeader>
 
-          {/* Main Content */}
-          <div className="group">
-            <Label htmlFor="content" className="text-sm font-medium text-journal-text-soft mb-3 block group-hover:text-primary transition-colors duration-300 flex items-center gap-2">
-              <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-              Pour your heart onto paper
-            </Label>
-            <div className="relative">
-              <Textarea
-                id="content"
-                placeholder="What's dancing in your mind? Let your thoughts flow freely onto this digital paper..."
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                maxLength={10000}
-                className="min-h-[240px] border-journal-accent/30 focus:border-primary bg-gradient-paper shadow-soft hover:shadow-gentle focus:shadow-glow transition-all duration-300 resize-none text-base leading-relaxed font-serif placeholder:text-journal-text-soft/60 placeholder:font-light"
-              />
-              <div className="absolute bottom-4 right-4 text-xs text-journal-text-soft/50 font-light">
-                {content.length} / 10,000 characters
+            <div className="space-y-6 relative">
+              {/* Title */}
+              <div className="group">
+                <Label htmlFor="title" className="text-sm font-medium text-[#654321] mb-2 block" style={{ fontFamily: 'Georgia, serif' }}>
+                  Dear Diary,
+                </Label>
+                <Input
+                  id="title"
+                  placeholder="Today's chapter..."
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  maxLength={200}
+                  className="border-none bg-transparent text-xl text-[#654321] placeholder:text-[#654321]/40 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 font-light"
+                  style={{ fontFamily: 'Courier New, monospace' }}
+                />
               </div>
-            </div>
-          </div>
 
-          {/* Mood Selection */}
-          <div className="p-5 bg-gradient-warm rounded-xl shadow-soft border border-journal-accent/15">
-            <Label className="text-sm font-medium text-journal-text-soft mb-4 block flex items-center gap-2">
-              <div className="w-2 h-2 bg-journal-accent rounded-full animate-pulse-slow"></div>
-              How is your heart feeling right now?
-            </Label>
-            <div className="flex flex-wrap gap-3">
-              {moodOptions.map((mood, index) => (
-                <Button
-                  key={mood}
-                  variant={selectedMood === mood ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSelectedMood(selectedMood === mood ? "" : mood)}
-                  className={selectedMood === mood 
-                    ? "bg-primary text-primary-foreground shadow-glow animate-scale-in" 
-                    : "border-journal-accent/40 hover:bg-journal-accent/15 text-journal-text-soft hover:border-primary transition-all duration-300 hover:scale-105 hover:shadow-soft"
-                  }
-                  style={{ animationDelay: `${index * 0.05}s` }}
-                >
-                  {mood}
-                </Button>
-              ))}
-            </div>
-          </div>
-
-          {/* Location */}
-          <div className="group">
-            <Label htmlFor="location" className="text-sm font-medium text-journal-text-soft mb-2 block group-hover:text-primary transition-colors duration-300 flex items-center gap-2">
-              <MapPin className="w-4 h-4" />
-              Where is this moment unfolding? (optional)
-            </Label>
-            <div className="relative">
-              <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 text-journal-accent w-4 h-4 group-hover:text-primary transition-colors duration-300" />
-              <Input
-                id="location"
-                placeholder="The cozy corner where your story begins..."
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                maxLength={200}
-                className="pl-12 border-journal-accent/30 focus:border-primary bg-gradient-warm shadow-soft hover:shadow-gentle focus:shadow-glow transition-all duration-300"
-              />
-            </div>
-          </div>
-
-          {/* Tags */}
-          <div className="p-5 bg-gradient-sage rounded-xl shadow-soft border border-journal-accent/15">
-            <Label className="text-sm font-medium text-journal-text-soft mb-3 block flex items-center gap-2">
-              <div className="w-1.5 h-1.5 bg-journal-accent rounded-full"></div>
-              Add magical tags to organize your memories
-            </Label>
-            <div className="flex gap-3 mb-4">
-              <Input
-                placeholder="memories, gratitude, adventure..."
-                value={newTag}
-                onChange={(e) => setNewTag(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    addTag();
-                  }
-                }}
-                maxLength={50}
-                className="flex-1 border-journal-accent/30 focus:border-primary bg-gradient-warm shadow-soft hover:shadow-gentle focus:shadow-glow transition-all duration-300"
-              />
-              <Button 
-                variant="outline" 
-                onClick={addTag}
-                className="border-journal-accent/40 hover:bg-journal-accent/15 hover:border-primary transition-all duration-300 hover:scale-105 shadow-soft"
-              >
-                Add
-              </Button>
-            </div>
-            {tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 animate-fade-in">
-                {tags.map((tag, index) => (
-                  <Badge
-                    key={tag}
-                    variant="secondary"
-                    className="bg-journal-accent/15 text-journal-text-soft border-journal-accent/25 cursor-pointer hover:bg-journal-accent/25 transition-all duration-200 hover:scale-105 px-3 py-1.5 shadow-soft"
-                    onClick={() => removeTag(tag)}
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                  >
-                    #{tag} ×
-                  </Badge>
-                ))}
+              {/* Writing Prompts */}
+              <div className="p-4 bg-[#FFF8DC] border-l-4 border-[#D2691E] my-4">
+                <Label className="text-xs font-medium text-[#654321]/70 mb-3 block italic" style={{ fontFamily: 'Georgia, serif' }}>
+                  Need inspiration?
+                </Label>
+                <div className="flex flex-wrap gap-2">
+                  {writingPrompts.slice(0, 4).map((prompt, index) => (
+                    <Button
+                      key={prompt}
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => insertPrompt(prompt)}
+                      className="text-xs text-[#654321]/70 hover:text-[#654321] hover:bg-[#8B7355]/10 transition-all"
+                      style={{ fontFamily: 'Georgia, serif' }}
+                    >
+                      {prompt}
+                    </Button>
+                  ))}
+                </div>
               </div>
-            )}
-          </div>
 
-          {/* Photos */}
-          <div className="group">
-            <Label className="text-sm font-medium text-journal-text-soft mb-3 block group-hover:text-primary transition-colors duration-300 flex items-center gap-2">
-              <Camera className="w-4 h-4" />
-              Capture the visual essence of this moment
-            </Label>
-            <input
-              type="file"
-              id="photo-upload"
-              accept="image/*"
-              multiple
-              onChange={handlePhotoUpload}
-              className="hidden"
-            />
-            <label htmlFor="photo-upload">
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full border-dashed border-journal-accent/40 hover:bg-journal-accent/10 py-12 transition-all duration-300 hover:border-primary hover:shadow-soft group hover:scale-[1.02]"
-                asChild
-              >
-                <div>
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="p-3 bg-journal-accent/10 rounded-full group-hover:bg-primary/15 transition-colors duration-300">
-                      <Camera className="w-6 h-6 text-journal-accent group-hover:text-primary transition-colors duration-300" />
-                    </div>
-                    <div className="text-center">
-                      <div className="text-sm font-medium text-journal-text-soft group-hover:text-primary transition-colors duration-300">
-                        Add photos to your beautiful entry
-                      </div>
-                      <div className="text-xs text-journal-text-soft/60 mt-1">
-                        Select multiple images (max 10 photos, 5MB each)
-                      </div>
-                      {photos.length > 0 && (
-                        <div className="text-xs text-primary font-medium mt-1">
-                          {photos.length}/10 photos added
-                        </div>
-                      )}
-                    </div>
+              {/* Main Content */}
+              <div className="group">
+                <div className="relative">
+                  <Textarea
+                    id="content"
+                    placeholder="Today was..."
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    maxLength={10000}
+                    className="min-h-[280px] border-none bg-transparent text-[#654321] placeholder:text-[#654321]/30 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none text-base leading-8 px-0"
+                    style={{ fontFamily: 'Courier New, monospace' }}
+                  />
+                  <div className="text-xs text-[#654321]/40 mt-1 italic" style={{ fontFamily: 'Georgia, serif' }}>
+                    {content.length} / 10,000 words
                   </div>
                 </div>
-              </Button>
-            </label>
-            
-            {photos.length > 0 && (
-              <div className="mt-4 grid grid-cols-3 gap-3">
-                {photos.map((photo, index) => (
-                  <div key={index} className="relative group/photo">
-                    <img
-                      src={photo}
-                      alt={`Upload ${index + 1}`}
-                      className="w-full h-24 object-cover rounded-lg shadow-soft"
-                    />
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="icon"
-                      className="absolute -top-2 -right-2 w-6 h-6 rounded-full opacity-0 group-hover/photo:opacity-100 transition-opacity"
-                      onClick={() => removePhoto(index)}
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
-                  </div>
-                ))}
               </div>
-            )}
-          </div>
 
-          {/* Action Buttons */}
-          <div className="flex gap-4 pt-8 border-t border-journal-accent/20 relative">
-            <Button
-              variant="outline"
-              onClick={onClose}
-              className="flex-1 border-journal-accent/40 hover:bg-journal-accent/10 hover:border-journal-accent transition-all duration-300 hover:scale-105 shadow-soft py-3"
-            >
-              Maybe later
-            </Button>
-            <Button
-              onClick={handleSave}
-              disabled={!content.trim()}
-              className="flex-1 bg-gradient-to-r from-primary to-journal-accent hover:from-primary/90 hover:to-journal-accent/90 shadow-glow disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 py-3 font-medium"
-            >
-              <Save className="w-5 h-5 mr-2" />
-              Preserve this moment
-            </Button>
+              {/* Mood Selection */}
+              <div className="p-4 bg-[#FFF8DC] border border-[#D2691E]/20 rounded">
+                <Label className="text-xs font-medium text-[#654321]/70 mb-3 block italic" style={{ fontFamily: 'Georgia, serif' }}>
+                  Today I'm feeling...
+                </Label>
+                <div className="flex flex-wrap gap-2">
+                  {moodOptions.map((mood, index) => (
+                    <Button
+                      key={mood}
+                      variant={selectedMood === mood ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => setSelectedMood(selectedMood === mood ? "" : mood)}
+                      className={selectedMood === mood 
+                        ? "bg-[#8B7355] text-white hover:bg-[#654321]" 
+                        : "text-[#654321] hover:bg-[#8B7355]/10"
+                      }
+                      style={{ fontFamily: 'Georgia, serif' }}
+                    >
+                      {mood}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Location */}
+              <div className="group">
+                <Label htmlFor="location" className="text-xs font-medium text-[#654321]/70 mb-2 block flex items-center gap-2 italic" style={{ fontFamily: 'Georgia, serif' }}>
+                  <MapPin className="w-3 h-3" />
+                  Where am I?
+                </Label>
+                <Input
+                  id="location"
+                  placeholder="My favorite place..."
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  maxLength={200}
+                  className="border-none border-b border-[#654321]/20 bg-transparent text-[#654321] placeholder:text-[#654321]/30 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none px-0"
+                  style={{ fontFamily: 'Courier New, monospace' }}
+                />
+              </div>
+
+              {/* Tags */}
+              <div className="p-4 bg-[#FFF8DC] border border-[#D2691E]/20 rounded">
+                <Label className="text-xs font-medium text-[#654321]/70 mb-3 block italic" style={{ fontFamily: 'Georgia, serif' }}>
+                  Tags & memories
+                </Label>
+                <div className="flex gap-2 mb-3">
+                  <Input
+                    placeholder="Add a tag..."
+                    value={newTag}
+                    onChange={(e) => setNewTag(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        addTag();
+                      }
+                    }}
+                    maxLength={50}
+                    className="flex-1 border-none border-b border-[#654321]/20 bg-transparent text-[#654321] placeholder:text-[#654321]/30 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none px-0 text-sm"
+                    style={{ fontFamily: 'Courier New, monospace' }}
+                  />
+                  <Button 
+                    variant="ghost" 
+                    onClick={addTag}
+                    size="sm"
+                    className="text-[#654321] hover:bg-[#8B7355]/10"
+                  >
+                    Add
+                  </Button>
+                </div>
+                {tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 animate-fade-in">
+                    {tags.map((tag, index) => (
+                      <Badge
+                        key={tag}
+                        variant="secondary"
+                        className="bg-[#8B7355]/20 text-[#654321] border-[#8B7355]/30 cursor-pointer hover:bg-[#8B7355]/30 transition-all"
+                        onClick={() => removeTag(tag)}
+                        style={{ fontFamily: 'Georgia, serif' }}
+                      >
+                        #{tag} ×
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Photos */}
+              <div className="group">
+                <Label className="text-xs font-medium text-[#654321]/70 mb-3 block flex items-center gap-2 italic" style={{ fontFamily: 'Georgia, serif' }}>
+                  <Camera className="w-3 h-3" />
+                  Memories in pictures
+                </Label>
+                <input
+                  type="file"
+                  id="photo-upload"
+                  accept="image/*"
+                  multiple
+                  onChange={handlePhotoUpload}
+                  className="hidden"
+                />
+                <label htmlFor="photo-upload">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full border-dashed border-[#8B7355]/40 hover:bg-[#8B7355]/10 py-8 transition-all bg-transparent"
+                    asChild
+                  >
+                    <div>
+                      <div className="flex flex-col items-center gap-2">
+                        <Camera className="w-5 h-5 text-[#8B7355]" />
+                        <div className="text-center">
+                          <div className="text-xs text-[#654321]/70" style={{ fontFamily: 'Georgia, serif' }}>
+                            Attach photos (max 10, 5MB each)
+                          </div>
+                          {photos.length > 0 && (
+                            <div className="text-xs text-[#654321] font-medium mt-1">
+                              {photos.length}/10 photos
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </Button>
+                </label>
+                
+                {photos.length > 0 && (
+                  <div className="mt-3 grid grid-cols-3 gap-2">
+                    {photos.map((photo, index) => (
+                      <div key={index} className="relative group/photo">
+                         <img
+                          src={photo}
+                          alt={`Memory ${index + 1}`}
+                          className="w-full h-20 object-cover rounded border-2 border-[#8B7355]/30"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute -top-2 -right-2 w-5 h-5 rounded-full opacity-0 group-hover/photo:opacity-100 transition-opacity text-xs"
+                          onClick={() => removePhoto(index)}
+                        >
+                          <X className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 justify-end pt-6 border-t-2 border-[#D2691E]/30">
+                <Button 
+                  variant="ghost" 
+                  onClick={onClose}
+                  className="text-[#654321]/70 hover:text-[#654321] hover:bg-[#8B7355]/10"
+                  style={{ fontFamily: 'Georgia, serif' }}
+                >
+                  <X className="w-4 h-4 mr-2" />
+                  Close
+                </Button>
+                <Button 
+                  onClick={handleSave}
+                  disabled={!content.trim()}
+                  className="bg-[#8B7355] text-white hover:bg-[#654321] shadow-md disabled:opacity-50"
+                  style={{ fontFamily: 'Georgia, serif' }}
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  Save Entry
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </DialogContent>
