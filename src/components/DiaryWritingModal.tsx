@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 
 interface DiaryWritingModalProps {
@@ -56,8 +57,9 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
   const [photos, setPhotos] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState("");
+  const [uploading, setUploading] = useState(false);
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
@@ -73,45 +75,79 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
       return;
     }
 
-    const fileArray = Array.from(files);
-    let validFiles = 0;
+    setUploading(true);
+    const uploadedUrls: string[] = [];
 
-    fileArray.forEach((file) => {
-      if (file.size > 5 * 1024 * 1024) {
-        toast({
-          title: "File too large",
-          description: `${file.name} is too large. Photos must be less than 5MB`,
-          variant: "destructive",
-        });
-        return;
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error("You must be logged in to upload photos");
       }
 
-      if (!file.type.startsWith("image/")) {
-        toast({
-          title: "Invalid file type",
-          description: `${file.name} is not an image file`,
-          variant: "destructive",
-        });
-        return;
+      for (const file of Array.from(files)) {
+        // Validate file
+        if (file.size > 5 * 1024 * 1024) {
+          toast({
+            title: "File too large",
+            description: `${file.name} is too large. Photos must be less than 5MB`,
+            variant: "destructive",
+          });
+          continue;
+        }
+
+        if (!file.type.startsWith("image/")) {
+          toast({
+            title: "Invalid file type",
+            description: `${file.name} is not an image file`,
+            variant: "destructive",
+          });
+          continue;
+        }
+
+        // Upload to Supabase Storage
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('diary-photos')
+          .upload(fileName, file);
+
+        if (uploadError) {
+          console.error("Upload error:", uploadError);
+          toast({
+            title: "Upload failed",
+            description: `Failed to upload ${file.name}`,
+            variant: "destructive",
+          });
+          continue;
+        }
+
+        // Get public URL
+        const { data: { publicUrl } } = supabase.storage
+          .from('diary-photos')
+          .getPublicUrl(fileName);
+
+        uploadedUrls.push(publicUrl);
       }
 
-      validFiles++;
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPhotos((prev) => [...prev, reader.result as string]);
-      };
-      reader.readAsDataURL(file);
-    });
-
-    if (validFiles > 0) {
+      if (uploadedUrls.length > 0) {
+        setPhotos((prev) => [...prev, ...uploadedUrls]);
+        toast({
+          title: "Photos uploaded",
+          description: `${uploadedUrls.length} photo(s) uploaded successfully`,
+        });
+      }
+    } catch (error: any) {
+      console.error("Error uploading photos:", error);
       toast({
-        title: "Photos added",
-        description: `${validFiles} photo(s) added successfully`,
+        title: "Upload error",
+        description: error.message || "Failed to upload photos",
+        variant: "destructive",
       });
+    } finally {
+      setUploading(false);
+      e.target.value = '';
     }
-
-    // Reset the input
-    e.target.value = '';
   };
 
   const removePhoto = (index: number) => {
@@ -403,6 +439,7 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
                     type="button"
                     variant="outline"
                     className="w-full border-dashed border-[#8B7355]/40 hover:bg-[#8B7355]/10 py-8 transition-all bg-transparent"
+                    disabled={uploading}
                     asChild
                   >
                     <div>
@@ -410,7 +447,7 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
                         <Camera className="w-5 h-5 text-[#8B7355]" />
                         <div className="text-center">
                           <div className="text-xs text-[#654321]/70" style={{ fontFamily: 'Georgia, serif' }}>
-                            Attach photos (max 10, 5MB each)
+                            {uploading ? "Uploading photos..." : "Attach photos (max 10, 5MB each)"}
                           </div>
                           {photos.length > 0 && (
                             <div className="text-xs text-[#654321] font-medium mt-1">
