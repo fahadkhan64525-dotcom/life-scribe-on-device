@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { JournalHeader } from "@/components/JournalHeader";
 import { JournalEntry } from "@/components/JournalEntry";
 import { PrivacyBanner } from "@/components/PrivacyBanner";
 import { DiaryWritingModal } from "@/components/DiaryWritingModal";
 import { FloatingWriteButton } from "@/components/FloatingWriteButton";
 import { Button } from "@/components/ui/button";
-import { Plus, PenTool } from "lucide-react";
+import { Plus, PenTool, LogOut } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 // Mock data for demonstration
 const mockEntries = [
@@ -45,17 +47,66 @@ const mockEntries = [
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [entries, setEntries] = useState<typeof mockEntries>(() => {
-    const saved = localStorage.getItem("journalEntries");
-    return saved ? JSON.parse(saved) : mockEntries;
-  });
+  const [entries, setEntries] = useState<any[]>([]);
   const [isWritingModalOpen, setIsWritingModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
-  // Save entries to localStorage whenever they change
+  // Check auth and load entries
   useEffect(() => {
-    localStorage.setItem("journalEntries", JSON.stringify(entries));
-  }, [entries]);
+    checkAuth();
+    loadEntries();
+  }, []);
+
+  const checkAuth = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate("/login");
+    }
+  };
+
+  const loadEntries = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("diary_entries")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      const formattedEntries = data?.map((entry: any) => ({
+        id: entry.id,
+        date: new Date(entry.created_at).toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        }),
+        time: new Date(entry.created_at).toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+        }),
+        location: entry.location,
+        photos: entry.photos || [],
+        autoText: entry.content,
+        userText: entry.mood ? `Feeling ${entry.mood.toLowerCase()}` : undefined,
+        tags: entry.tags || [],
+        prompts: ["What else would you like to add?", "How did this make you feel?"],
+      })) || [];
+
+      setEntries(formattedEntries);
+    } catch (error: any) {
+      console.error("Error loading entries:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load diary entries",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredEntries = entries.filter(entry =>
     entry.autoText.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -69,7 +120,7 @@ const Index = () => {
     console.log("Adding context to entry:", entryId);
   };
 
-  const handleSaveDiaryEntry = (newEntry: {
+  const handleSaveDiaryEntry = async (newEntry: {
     title: string;
     content: string;
     location?: string;
@@ -77,35 +128,53 @@ const Index = () => {
     mood?: string;
     tags: string[];
   }) => {
-    const diaryEntry = {
-      id: Date.now().toString(),
-      date: new Date().toLocaleDateString("en-US", { 
-        weekday: "long", 
-        year: "numeric", 
-        month: "long", 
-        day: "numeric" 
-      }),
-      time: new Date().toLocaleTimeString("en-US", { 
-        hour: "numeric", 
-        minute: "2-digit" 
-      }),
-      location: newEntry.location,
-      photos: newEntry.photos.length > 0 ? newEntry.photos : undefined,
-      music: undefined,
-      calendarEvent: undefined,
-      autoText: newEntry.content,
-      userText: newEntry.mood ? `Feeling ${newEntry.mood.toLowerCase()}` : undefined,
-      prompts: ["What else would you like to add?", "How did this make you feel?"],
-      tags: [...newEntry.tags, "diary", "personal"],
-    };
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
 
-    setEntries([diaryEntry, ...entries]);
-    
-    toast({
-      title: "Entry saved!",
-      description: "Your diary entry has been added to your journal.",
-    });
+      const { error } = await supabase.from("diary_entries").insert({
+        user_id: user.id,
+        title: newEntry.title,
+        content: newEntry.content,
+        location: newEntry.location,
+        mood: newEntry.mood,
+        tags: newEntry.tags,
+        photos: newEntry.photos,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Entry saved!",
+        description: "Your diary entry has been saved to the cloud.",
+      });
+
+      loadEntries();
+    } catch (error: any) {
+      console.error("Error saving entry:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to save entry",
+        variant: "destructive",
+      });
+    }
   };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/login");
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-hero flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading your diary...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-hero custom-scrollbar">
@@ -117,6 +186,15 @@ const Index = () => {
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-title font-display font-medium text-foreground tracking-wide">Whispers of Time</h2>
           <div className="flex gap-3">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={handleLogout}
+              className="hover:bg-destructive/10 hover:text-destructive"
+              title="Logout"
+            >
+              <LogOut className="w-5 h-5" />
+            </Button>
             <Button 
               variant="outline" 
               onClick={() => setIsWritingModalOpen(true)}
