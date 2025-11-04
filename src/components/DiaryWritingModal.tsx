@@ -268,14 +268,38 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
           <div className="absolute top-8 right-8 w-16 h-16 rounded-full bg-[#D2691E] opacity-5"></div>
           
           <div className="relative pl-20 pr-8 py-8">
-            <DialogHeader className="relative mb-8">
-              <DialogTitle className="text-3xl font-serif text-[#654321] flex items-center gap-3 mb-2" style={{ fontFamily: 'Georgia, serif' }}>
-                <Sparkles className="w-6 h-6 text-[#8B7355] animate-pulse-slow" />
-                <span>My Diary</span>
-              </DialogTitle>
-              <p className="text-sm text-[#654321]/70 font-light italic" style={{ fontFamily: 'Georgia, serif' }}>
-                {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-              </p>
+            <DialogHeader className="relative mb-6">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <DialogTitle className="text-3xl font-serif text-[#654321] flex items-center gap-3 mb-2" style={{ fontFamily: 'Georgia, serif' }}>
+                    <Sparkles className="w-6 h-6 text-[#8B7355] animate-pulse-slow" />
+                    <span>My Diary</span>
+                  </DialogTitle>
+                  <p className="text-sm text-[#654321]/70 font-light italic" style={{ fontFamily: 'Georgia, serif' }}>
+                    {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button 
+                    variant="ghost" 
+                    onClick={onClose}
+                    className="text-[#654321]/70 hover:text-[#654321] hover:bg-[#8B7355]/10"
+                    style={{ fontFamily: 'Georgia, serif' }}
+                  >
+                    <X className="w-4 h-4 mr-2" />
+                    Close
+                  </Button>
+                  <Button 
+                    onClick={handleSave}
+                    disabled={!content.trim() || uploading}
+                    className="bg-[#8B7355] text-white hover:bg-[#654321] shadow-md disabled:opacity-50"
+                    style={{ fontFamily: 'Georgia, serif' }}
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Entry
+                  </Button>
+                </div>
+              </div>
             </DialogHeader>
 
             <div className="space-y-6 relative">
@@ -487,28 +511,6 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
 
             </div>
           </div>
-          </div>
-          
-          {/* Action Buttons - Fixed at bottom */}
-          <div className="sticky bottom-0 bg-[#FFF8DC] border-t-2 border-[#D2691E]/30 px-20 py-4 flex gap-3 justify-end">
-            <Button 
-              variant="ghost" 
-              onClick={onClose}
-              className="text-[#654321]/70 hover:text-[#654321] hover:bg-[#8B7355]/10"
-              style={{ fontFamily: 'Georgia, serif' }}
-            >
-              <X className="w-4 h-4 mr-2" />
-              Close
-            </Button>
-            <Button 
-              onClick={handleSave}
-              disabled={!content.trim() || uploading}
-              className="bg-[#8B7355] text-white hover:bg-[#654321] shadow-md disabled:opacity-50"
-              style={{ fontFamily: 'Georgia, serif' }}
-            >
-              <Save className="w-4 h-4 mr-2" />
-              Save Entry
-            </Button>
           </div>
         </div>
       </DialogContent>
