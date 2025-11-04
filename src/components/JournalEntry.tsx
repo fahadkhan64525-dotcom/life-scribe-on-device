@@ -26,6 +26,7 @@ interface JournalEntryProps {
 export function JournalEntry({ entry, onAddContext }: JournalEntryProps) {
   const [aiInsight, setAiInsight] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showPhotos, setShowPhotos] = useState(true);
   const { toast } = useToast();
 
   const generateInsight = async () => {
@@ -83,26 +84,44 @@ export function JournalEntry({ entry, onAddContext }: JournalEntryProps) {
           </div>
         </div>
         <div className="flex gap-2">
-          {entry.photos && (
-            <div className="p-2 bg-purple-500/10 rounded-xl">
+          {entry.photos && entry.photos.length > 0 && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowPhotos(!showPhotos)}
+              className="p-2 bg-purple-500/10 rounded-xl hover:bg-purple-500/20 transition-colors"
+              title={showPhotos ? "Hide photos" : "Show photos"}
+            >
               <Camera className="w-5 h-5 text-purple-600" />
-            </div>
+            </Button>
           )}
           {entry.music && (
-            <div className="p-2 bg-green-500/10 rounded-xl">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => toast({ title: "Music", description: entry.music })}
+              className="p-2 bg-green-500/10 rounded-xl hover:bg-green-500/20 transition-colors"
+              title="View music info"
+            >
               <Music className="w-5 h-5 text-green-600" />
-            </div>
+            </Button>
           )}
           {entry.calendarEvent && (
-            <div className="p-2 bg-blue-500/10 rounded-xl">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => toast({ title: "Calendar Event", description: entry.calendarEvent })}
+              className="p-2 bg-blue-500/10 rounded-xl hover:bg-blue-500/20 transition-colors"
+              title="View calendar event"
+            >
               <Calendar className="w-5 h-5 text-blue-600" />
-            </div>
+            </Button>
           )}
         </div>
       </div>
 
       {/* Photos */}
-      {entry.photos && entry.photos.length > 0 && (
+      {entry.photos && entry.photos.length > 0 && showPhotos && (
         <div className="mb-6">
           <div className="flex gap-3 overflow-x-auto pb-3 custom-scrollbar">
             {entry.photos.map((photo, index) => (

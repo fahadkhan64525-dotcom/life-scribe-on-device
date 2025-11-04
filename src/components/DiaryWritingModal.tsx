@@ -256,10 +256,11 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
         </div>
 
         {/* Paper pages */}
-        <div className="ml-12 bg-[#FFF8DC] h-full overflow-y-auto relative" style={{
+        <div className="ml-12 bg-[#FFF8DC] h-full flex flex-col relative" style={{
           backgroundImage: `repeating-linear-gradient(transparent, transparent 31px, #E8DCC4 31px, #E8DCC4 32px)`,
           backgroundSize: '100% 32px'
         }}>
+          <div className="flex-1 overflow-y-auto">
           {/* Red margin line */}
           <div className="absolute left-16 top-0 bottom-0 w-[2px] bg-red-300"></div>
           
@@ -484,28 +485,30 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
                 )}
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex gap-3 justify-end pt-6 border-t-2 border-[#D2691E]/30">
-                <Button 
-                  variant="ghost" 
-                  onClick={onClose}
-                  className="text-[#654321]/70 hover:text-[#654321] hover:bg-[#8B7355]/10"
-                  style={{ fontFamily: 'Georgia, serif' }}
-                >
-                  <X className="w-4 h-4 mr-2" />
-                  Close
-                </Button>
-                <Button 
-                  onClick={handleSave}
-                  disabled={!content.trim()}
-                  className="bg-[#8B7355] text-white hover:bg-[#654321] shadow-md disabled:opacity-50"
-                  style={{ fontFamily: 'Georgia, serif' }}
-                >
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Entry
-                </Button>
-              </div>
             </div>
+          </div>
+          </div>
+          
+          {/* Action Buttons - Fixed at bottom */}
+          <div className="sticky bottom-0 bg-[#FFF8DC] border-t-2 border-[#D2691E]/30 px-20 py-4 flex gap-3 justify-end">
+            <Button 
+              variant="ghost" 
+              onClick={onClose}
+              className="text-[#654321]/70 hover:text-[#654321] hover:bg-[#8B7355]/10"
+              style={{ fontFamily: 'Georgia, serif' }}
+            >
+              <X className="w-4 h-4 mr-2" />
+              Close
+            </Button>
+            <Button 
+              onClick={handleSave}
+              disabled={!content.trim() || uploading}
+              className="bg-[#8B7355] text-white hover:bg-[#654321] shadow-md disabled:opacity-50"
+              style={{ fontFamily: 'Georgia, serif' }}
+            >
+              <Save className="w-4 h-4 mr-2" />
+              Save Entry
+            </Button>
           </div>
         </div>
       </DialogContent>
