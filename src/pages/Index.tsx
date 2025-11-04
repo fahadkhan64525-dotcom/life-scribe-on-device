@@ -125,6 +125,7 @@ const Index = () => {
     content: string;
     location?: string;
     photos: string[];
+    music?: string;
     mood?: string;
     tags: string[];
   }) => {
@@ -137,6 +138,7 @@ const Index = () => {
         title: newEntry.title,
         content: newEntry.content,
         location: newEntry.location,
+        music: newEntry.music,
         mood: newEntry.mood,
         tags: newEntry.tags,
         photos: newEntry.photos,

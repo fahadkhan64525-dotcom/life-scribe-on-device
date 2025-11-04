@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Camera, MapPin, Save, Sparkles } from "lucide-react";
+import { X, Camera, MapPin, Save, Sparkles, Music } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,6 +18,7 @@ interface DiaryWritingModalProps {
     content: string;
     location?: string;
     photos: string[];
+    music?: string;
     mood?: string;
     tags: string[];
   }) => void;
@@ -43,6 +44,7 @@ const diaryEntrySchema = z.object({
     .min(1, "Content is required")
     .max(10000, "Content must be less than 10,000 characters"),
   location: z.string().max(200, "Location must be less than 200 characters").optional(),
+  music: z.string().max(500, "Music URL must be less than 500 characters").optional(),
   tags: z.array(z.string().max(50, "Tag must be less than 50 characters")).max(20, "Maximum 20 tags allowed"),
   mood: z.string().max(50, "Mood must be less than 50 characters").optional(),
   photos: z.array(z.string())
@@ -53,6 +55,7 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [location, setLocation] = useState("");
+  const [music, setMusic] = useState("");
   const [selectedMood, setSelectedMood] = useState("");
   const [photos, setPhotos] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
@@ -160,6 +163,7 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
       title: title.trim() || undefined,
       content: content.trim(),
       location: location.trim() || undefined,
+      music: music.trim() || undefined,
       photos,
       mood: selectedMood.trim() || undefined,
       tags,
@@ -182,6 +186,7 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
       title: entryData.title || `Entry from ${new Date().toLocaleDateString()}`,
       content: entryData.content,
       location: entryData.location,
+      music: entryData.music,
       photos: entryData.photos,
       mood: entryData.mood,
       tags: entryData.tags,
@@ -191,6 +196,7 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
     setTitle("");
     setContent("");
     setLocation("");
+    setMusic("");
     setSelectedMood("");
     setPhotos([]);
     setTags([]);
@@ -394,6 +400,23 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   maxLength={200}
+                  className="border-none border-b border-[#654321]/20 bg-transparent text-[#654321] placeholder:text-[#654321]/30 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none px-0"
+                  style={{ fontFamily: 'Courier New, monospace' }}
+                />
+              </div>
+
+              {/* Music */}
+              <div className="group">
+                <Label htmlFor="music" className="text-xs font-medium text-[#654321]/70 mb-2 block flex items-center gap-2 italic" style={{ fontFamily: 'Georgia, serif' }}>
+                  <Music className="w-3 h-3" />
+                  What am I listening to?
+                </Label>
+                <Input
+                  id="music"
+                  placeholder="Song name, artist, or music URL..."
+                  value={music}
+                  onChange={(e) => setMusic(e.target.value)}
+                  maxLength={500}
                   className="border-none border-b border-[#654321]/20 bg-transparent text-[#654321] placeholder:text-[#654321]/30 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none px-0"
                   style={{ fontFamily: 'Courier New, monospace' }}
                 />

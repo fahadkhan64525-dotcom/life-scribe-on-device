@@ -21,6 +21,7 @@ export type Database = {
           id: string
           location: string | null
           mood: string | null
+          music: string | null
           photos: string[] | null
           tags: string[] | null
           title: string
@@ -33,6 +34,7 @@ export type Database = {
           id?: string
           location?: string | null
           mood?: string | null
+          music?: string | null
           photos?: string[] | null
           tags?: string[] | null
           title: string
@@ -45,6 +47,7 @@ export type Database = {
           id?: string
           location?: string | null
           mood?: string | null
+          music?: string | null
           photos?: string[] | null
           tags?: string[] | null
           title?: string
