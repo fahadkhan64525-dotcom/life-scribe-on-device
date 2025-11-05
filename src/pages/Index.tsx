@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { JournalHeader } from "@/components/JournalHeader";
-import { JournalEntry } from "@/components/JournalEntry";
+import { DiaryBook } from "@/components/DiaryBook";
 import { PrivacyBanner } from "@/components/PrivacyBanner";
 import { DiaryWritingModal } from "@/components/DiaryWritingModal";
 import { FloatingWriteButton } from "@/components/FloatingWriteButton";
 import { Button } from "@/components/ui/button";
-import { Plus, PenTool, LogOut } from "lucide-react";
+import { Plus, PenTool, LogOut, BookOpen } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -216,35 +216,16 @@ const Index = () => {
           </div>
         </div>
 
-        <div className="space-y-8">
-          {filteredEntries.length > 0 ? (
-            filteredEntries.map((entry) => (
-              <JournalEntry
-                key={entry.id}
-                entry={entry}
-                onAddContext={handleAddContext}
-              />
-            ))
-          ) : (
-            <div className="text-center py-16">
-              <div className="w-24 h-24 bg-gradient-elegant rounded-full mx-auto mb-6 flex items-center justify-center shadow-elegant">
-                <PenTool className="w-12 h-12 text-primary-foreground animate-pulse-slow" />
-              </div>
-              <p className="text-journal-text-soft mb-6 text-lg">No entries found matching your search.</p>
-              <Button variant="elegant" onClick={() => setSearchQuery("")}>
-                Clear search
-              </Button>
+        {filteredEntries.length > 0 ? (
+          <DiaryBook entries={filteredEntries} onAddContext={handleAddContext} />
+        ) : (
+          <div className="text-center py-16">
+            <div className="w-24 h-24 bg-gradient-elegant rounded-full mx-auto mb-6 flex items-center justify-center shadow-elegant">
+              <BookOpen className="w-12 h-12 text-primary-foreground animate-pulse-slow" />
             </div>
-          )}
-        </div>
-
-        {filteredEntries.length > 0 && (
-          <div className="text-center mt-16 py-12 border-t border-journal-accent/20">
-            <p className="text-journal-text-soft mb-6 text-lg">
-              Your journal grows automatically as you live your life.
-            </p>
-            <Button variant="outline" className="glass hover:shadow-gentle hover-glow gradient-border">
-              Load Earlier Entries
+            <p className="text-journal-text-soft mb-6 text-lg">No entries found matching your search.</p>
+            <Button variant="elegant" onClick={() => setSearchQuery("")}>
+              Clear search
             </Button>
           </div>
         )}
