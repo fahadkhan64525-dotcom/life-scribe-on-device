@@ -49,6 +49,7 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [entries, setEntries] = useState<any[]>([]);
   const [isWritingModalOpen, setIsWritingModalOpen] = useState(false);
+  const [editingEntry, setEditingEntry] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -121,6 +122,7 @@ const Index = () => {
   };
 
   const handleSaveDiaryEntry = async (newEntry: {
+    id?: string;
     title: string;
     content: string;
     location?: string;
@@ -133,24 +135,50 @@ const Index = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { error } = await supabase.from("diary_entries").insert({
-        user_id: user.id,
-        title: newEntry.title,
-        content: newEntry.content,
-        location: newEntry.location,
-        music: newEntry.music,
-        mood: newEntry.mood,
-        tags: newEntry.tags,
-        photos: newEntry.photos,
-      });
+      if (newEntry.id) {
+        // Update existing entry
+        const { error } = await supabase
+          .from("diary_entries")
+          .update({
+            title: newEntry.title,
+            content: newEntry.content,
+            location: newEntry.location,
+            music: newEntry.music,
+            mood: newEntry.mood,
+            tags: newEntry.tags,
+            photos: newEntry.photos,
+          })
+          .eq("id", newEntry.id)
+          .eq("user_id", user.id);
 
-      if (error) throw error;
+        if (error) throw error;
 
-      toast({
-        title: "Entry saved!",
-        description: "Your diary entry has been saved to the cloud.",
-      });
+        toast({
+          title: "Entry updated!",
+          description: "Your diary entry has been updated.",
+        });
+      } else {
+        // Insert new entry
+        const { error } = await supabase.from("diary_entries").insert({
+          user_id: user.id,
+          title: newEntry.title,
+          content: newEntry.content,
+          location: newEntry.location,
+          music: newEntry.music,
+          mood: newEntry.mood,
+          tags: newEntry.tags,
+          photos: newEntry.photos,
+        });
 
+        if (error) throw error;
+
+        toast({
+          title: "Entry saved!",
+          description: "Your diary entry has been saved to the cloud.",
+        });
+      }
+
+      setEditingEntry(null);
       loadEntries();
     } catch (error: any) {
       console.error("Error saving entry:", error);
@@ -160,6 +188,20 @@ const Index = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const handleEditEntry = (entry: any) => {
+    setEditingEntry({
+      id: entry.id,
+      title: "",
+      content: entry.autoText,
+      location: entry.location,
+      photos: entry.photos || [],
+      music: entry.music,
+      mood: entry.userText?.replace("Feeling ", ""),
+      tags: entry.tags,
+    });
+    setIsWritingModalOpen(true);
   };
 
   const handleLogout = async () => {
@@ -217,7 +259,7 @@ const Index = () => {
         </div>
 
         {filteredEntries.length > 0 ? (
-          <DiaryBook entries={filteredEntries} onAddContext={handleAddContext} />
+          <DiaryBook entries={filteredEntries} onAddContext={handleAddContext} onEditEntry={handleEditEntry} />
         ) : (
           <div className="text-center py-16">
             <div className="w-24 h-24 bg-gradient-elegant rounded-full mx-auto mb-6 flex items-center justify-center shadow-elegant">
@@ -235,8 +277,12 @@ const Index = () => {
       
       <DiaryWritingModal
         isOpen={isWritingModalOpen}
-        onClose={() => setIsWritingModalOpen(false)}
+        onClose={() => {
+          setIsWritingModalOpen(false);
+          setEditingEntry(null);
+        }}
         onSave={handleSaveDiaryEntry}
+        editEntry={editingEntry}
       />
     </div>
   );

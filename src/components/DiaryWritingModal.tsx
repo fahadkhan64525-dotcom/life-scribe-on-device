@@ -14,6 +14,7 @@ interface DiaryWritingModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (entry: {
+    id?: string;
     title: string;
     content: string;
     location?: string;
@@ -22,6 +23,16 @@ interface DiaryWritingModalProps {
     mood?: string;
     tags: string[];
   }) => void;
+  editEntry?: {
+    id: string;
+    title?: string;
+    content: string;
+    location?: string;
+    photos?: string[];
+    music?: string;
+    mood?: string;
+    tags: string[];
+  };
 }
 
 const writingPrompts = [
@@ -50,15 +61,15 @@ const diaryEntrySchema = z.object({
   photos: z.array(z.string())
 });
 
-export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModalProps) {
+export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryWritingModalProps) {
   const { toast } = useToast();
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [location, setLocation] = useState("");
-  const [music, setMusic] = useState("");
-  const [selectedMood, setSelectedMood] = useState("");
-  const [photos, setPhotos] = useState<string[]>([]);
-  const [tags, setTags] = useState<string[]>([]);
+  const [title, setTitle] = useState(editEntry?.title || "");
+  const [content, setContent] = useState(editEntry?.content || "");
+  const [location, setLocation] = useState(editEntry?.location || "");
+  const [music, setMusic] = useState(editEntry?.music || "");
+  const [selectedMood, setSelectedMood] = useState(editEntry?.mood || "");
+  const [photos, setPhotos] = useState<string[]>(editEntry?.photos || []);
+  const [tags, setTags] = useState<string[]>(editEntry?.tags || []);
   const [newTag, setNewTag] = useState("");
   const [uploading, setUploading] = useState(false);
 
@@ -183,6 +194,7 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
     }
     
     onSave({
+      id: editEntry?.id,
       title: entryData.title || `Entry from ${new Date().toLocaleDateString()}`,
       content: entryData.content,
       location: entryData.location,
@@ -192,15 +204,17 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
       tags: entryData.tags,
     });
     
-    // Reset form
-    setTitle("");
-    setContent("");
-    setLocation("");
-    setMusic("");
-    setSelectedMood("");
-    setPhotos([]);
-    setTags([]);
-    setNewTag("");
+    // Reset form only if not editing
+    if (!editEntry) {
+      setTitle("");
+      setContent("");
+      setLocation("");
+      setMusic("");
+      setSelectedMood("");
+      setPhotos([]);
+      setTags([]);
+      setNewTag("");
+    }
     onClose();
   };
 
@@ -279,7 +293,7 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
                 <div>
                   <DialogTitle className="text-3xl font-serif text-[#654321] flex items-center gap-3 mb-2" style={{ fontFamily: 'Georgia, serif' }}>
                     <Sparkles className="w-6 h-6 text-[#8B7355] animate-pulse-slow" />
-                    <span>My Diary</span>
+                    <span>{editEntry ? "Edit Entry" : "My Diary"}</span>
                   </DialogTitle>
                   <p className="text-sm text-[#654321]/70 font-light italic" style={{ fontFamily: 'Georgia, serif' }}>
                     {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}

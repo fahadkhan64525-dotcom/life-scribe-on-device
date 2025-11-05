@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, MapPin, Clock, Camera, Music, Calendar, MessageCircle, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, MapPin, Clock, Camera, Music, Calendar, MessageCircle, Sparkles, Edit } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,9 +22,10 @@ interface DiaryEntry {
 interface DiaryBookProps {
   entries: DiaryEntry[];
   onAddContext: (entryId: string) => void;
+  onEditEntry: (entry: DiaryEntry) => void;
 }
 
-export function DiaryBook({ entries, onAddContext }: DiaryBookProps) {
+export function DiaryBook({ entries, onAddContext, onEditEntry }: DiaryBookProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const [aiInsight, setAiInsight] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -243,7 +244,7 @@ export function DiaryBook({ entries, onAddContext }: DiaryBookProps) {
             )}
           </div>
 
-          {/* Tags and Add Thoughts */}
+          {/* Tags and Actions */}
           <div className="flex items-center justify-between pt-4 border-t-2 border-amber-800/20 flex-wrap gap-4">
             <div className="flex gap-2 flex-wrap">
               {currentEntry.tags.map((tag) => (
@@ -256,15 +257,26 @@ export function DiaryBook({ entries, onAddContext }: DiaryBookProps) {
                 </Badge>
               ))}
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onAddContext(currentEntry.id)}
-              className="hover:bg-amber-100 dark:hover:bg-amber-900/20"
-            >
-              <MessageCircle className="w-4 h-4 mr-2" />
-              Add thoughts
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onEditEntry(currentEntry)}
+                className="hover:bg-amber-100 dark:hover:bg-amber-900/20"
+              >
+                <Edit className="w-4 h-4 mr-2" />
+                Edit
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onAddContext(currentEntry.id)}
+                className="hover:bg-amber-100 dark:hover:bg-amber-900/20"
+              >
+                <MessageCircle className="w-4 h-4 mr-2" />
+                Add thoughts
+              </Button>
+            </div>
           </div>
         </div>
 
