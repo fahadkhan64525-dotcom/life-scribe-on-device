@@ -325,6 +325,70 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
                 />
               </div>
 
+              {/* Photos */}
+              <div className="group">
+                <Label className="text-xs font-medium text-[#654321]/70 mb-3 block flex items-center gap-2 italic" style={{ fontFamily: 'Georgia, serif' }}>
+                  <Camera className="w-3 h-3" />
+                  Memories in pictures
+                </Label>
+                <input
+                  type="file"
+                  id="photo-upload"
+                  accept="image/*"
+                  multiple
+                  onChange={handlePhotoUpload}
+                  className="hidden"
+                />
+                <label htmlFor="photo-upload">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full border-dashed border-[#8B7355]/40 hover:bg-[#8B7355]/10 py-8 transition-all bg-transparent"
+                    disabled={uploading}
+                    asChild
+                  >
+                    <div>
+                      <div className="flex flex-col items-center gap-2">
+                        <Camera className="w-5 h-5 text-[#8B7355]" />
+                        <div className="text-center">
+                          <div className="text-xs text-[#654321]/70" style={{ fontFamily: 'Georgia, serif' }}>
+                            {uploading ? "Uploading photos..." : "Attach photos (max 10, 5MB each)"}
+                          </div>
+                          {photos.length > 0 && (
+                            <div className="text-xs text-[#654321] font-medium mt-1">
+                              {photos.length}/10 photos
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </Button>
+                </label>
+                
+                {photos.length > 0 && (
+                  <div className="mt-3 grid grid-cols-3 gap-2">
+                    {photos.map((photo, index) => (
+                      <div key={index} className="relative group/photo">
+                         <img
+                          src={photo}
+                          alt={`Memory ${index + 1}`}
+                          className="w-full h-20 object-cover rounded border-2 border-[#8B7355]/30"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute -top-2 -right-2 w-5 h-5 rounded-full opacity-0 group-hover/photo:opacity-100 transition-opacity text-xs"
+                          onClick={() => removePhoto(index)}
+                        >
+                          <X className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               {/* Writing Prompts */}
               <div className="p-4 bg-[#FFF8DC] border-l-4 border-[#D2691E] my-4">
                 <Label className="text-xs font-medium text-[#654321]/70 mb-3 block italic" style={{ fontFamily: 'Georgia, serif' }}>
@@ -468,69 +532,6 @@ export function DiaryWritingModal({ isOpen, onClose, onSave }: DiaryWritingModal
                 )}
               </div>
 
-              {/* Photos */}
-              <div className="group">
-                <Label className="text-xs font-medium text-[#654321]/70 mb-3 block flex items-center gap-2 italic" style={{ fontFamily: 'Georgia, serif' }}>
-                  <Camera className="w-3 h-3" />
-                  Memories in pictures
-                </Label>
-                <input
-                  type="file"
-                  id="photo-upload"
-                  accept="image/*"
-                  multiple
-                  onChange={handlePhotoUpload}
-                  className="hidden"
-                />
-                <label htmlFor="photo-upload">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full border-dashed border-[#8B7355]/40 hover:bg-[#8B7355]/10 py-8 transition-all bg-transparent"
-                    disabled={uploading}
-                    asChild
-                  >
-                    <div>
-                      <div className="flex flex-col items-center gap-2">
-                        <Camera className="w-5 h-5 text-[#8B7355]" />
-                        <div className="text-center">
-                          <div className="text-xs text-[#654321]/70" style={{ fontFamily: 'Georgia, serif' }}>
-                            {uploading ? "Uploading photos..." : "Attach photos (max 10, 5MB each)"}
-                          </div>
-                          {photos.length > 0 && (
-                            <div className="text-xs text-[#654321] font-medium mt-1">
-                              {photos.length}/10 photos
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </Button>
-                </label>
-                
-                {photos.length > 0 && (
-                  <div className="mt-3 grid grid-cols-3 gap-2">
-                    {photos.map((photo, index) => (
-                      <div key={index} className="relative group/photo">
-                         <img
-                          src={photo}
-                          alt={`Memory ${index + 1}`}
-                          className="w-full h-20 object-cover rounded border-2 border-[#8B7355]/30"
-                        />
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="icon"
-                          className="absolute -top-2 -right-2 w-5 h-5 rounded-full opacity-0 group-hover/photo:opacity-100 transition-opacity text-xs"
-                          onClick={() => removePhoto(index)}
-                        >
-                          <X className="w-3 h-3" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
 
             </div>
           </div>
