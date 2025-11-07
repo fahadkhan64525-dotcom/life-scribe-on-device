@@ -105,7 +105,7 @@ export function DiaryBook({ entries, onAddContext, onEditEntry }: DiaryBookProps
         </div>
 
         {/* Page Content */}
-        <div className="relative z-10 custom-scrollbar max-h-[650px] overflow-y-auto pr-4">
+        <div className="relative z-10 pr-4">
           {/* Header */}
           <div className="mb-8 pb-6 border-b-2 border-amber-800/20">
             <h2 className="font-serif text-3xl text-foreground mb-3">
