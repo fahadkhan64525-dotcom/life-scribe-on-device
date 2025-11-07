@@ -204,6 +204,35 @@ const Index = () => {
     setIsWritingModalOpen(true);
   };
 
+  const handleDeleteEntry = async (entryId: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const { error } = await supabase
+        .from("diary_entries")
+        .delete()
+        .eq("id", entryId)
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Entry deleted",
+        description: "Your diary entry has been removed.",
+      });
+
+      loadEntries();
+    } catch (error: any) {
+      console.error("Error deleting entry:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete entry",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate("/login");
@@ -259,7 +288,12 @@ const Index = () => {
         </div>
 
         {filteredEntries.length > 0 ? (
-          <DiaryBook entries={filteredEntries} onAddContext={handleAddContext} onEditEntry={handleEditEntry} />
+          <DiaryBook 
+            entries={filteredEntries} 
+            onAddContext={handleAddContext} 
+            onEditEntry={handleEditEntry}
+            onDeleteEntry={handleDeleteEntry}
+          />
         ) : (
           <div className="text-center py-16">
             <div className="w-24 h-24 bg-gradient-elegant rounded-full mx-auto mb-6 flex items-center justify-center shadow-elegant">

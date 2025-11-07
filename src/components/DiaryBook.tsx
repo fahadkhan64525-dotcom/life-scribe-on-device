@@ -1,9 +1,20 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, MapPin, Clock, Camera, Music, Calendar, MessageCircle, Sparkles, Edit } from "lucide-react";
+import { ChevronLeft, ChevronRight, MapPin, Clock, Camera, Music, Calendar, MessageCircle, Sparkles, Edit, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface DiaryEntry {
   id: string;
@@ -23,9 +34,10 @@ interface DiaryBookProps {
   entries: DiaryEntry[];
   onAddContext: (entryId: string) => void;
   onEditEntry: (entry: DiaryEntry) => void;
+  onDeleteEntry: (entryId: string) => void;
 }
 
-export function DiaryBook({ entries, onAddContext, onEditEntry }: DiaryBookProps) {
+export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }: DiaryBookProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const [aiInsight, setAiInsight] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -267,6 +279,35 @@ export function DiaryBook({ entries, onAddContext, onEditEntry }: DiaryBookProps
                 <Edit className="w-4 h-4 mr-2" />
                 Edit
               </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete this diary entry from your journal.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => onDeleteEntry(currentEntry.id)}
+                      className="bg-destructive hover:bg-destructive/90"
+                    >
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
               <Button
                 variant="ghost"
                 size="sm"
