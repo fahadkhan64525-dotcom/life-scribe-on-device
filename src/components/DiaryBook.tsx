@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, MapPin, Clock, Camera, Music, Calendar, MessageCircle, Sparkles, Edit, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -59,6 +59,32 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
       setAiInsight("");
     }
   };
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Prevent navigation when typing in input fields
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      switch (e.key) {
+        case "ArrowLeft":
+        case "PageUp":
+          e.preventDefault();
+          goToPreviousPage();
+          break;
+        case "ArrowRight":
+        case "PageDown":
+          e.preventDefault();
+          goToNextPage();
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [currentPage, entries.length]);
 
   const generateInsight = async () => {
     if (!currentEntry) return;
