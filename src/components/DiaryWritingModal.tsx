@@ -554,6 +554,7 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
 
             </div>
           </div>
+          </div>
           
           {/* Save Button - Fixed at Bottom */}
           <div className="bg-[#FFF8DC] border-t-2 border-[#8B7355]/30 px-8 py-4 flex justify-end">
@@ -566,7 +567,6 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
               <Save className="w-4 h-4 mr-2" />
               Save Entry
             </Button>
-          </div>
           </div>
         </div>
       </DialogContent>
