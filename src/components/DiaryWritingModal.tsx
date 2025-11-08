@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, Camera, MapPin, Save, Sparkles, Music } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -262,6 +262,23 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
   const insertPrompt = (prompt: string) => {
     setContent(prev => prev + (prev ? "\n\n" : "") + prompt + " ");
   };
+
+  // Keyboard shortcut for saving (Ctrl+Enter)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        if (content.trim() && !uploading) {
+          handleSave();
+        }
+      }
+    };
+
+    if (isOpen) {
+      window.addEventListener("keydown", handleKeyDown);
+      return () => window.removeEventListener("keydown", handleKeyDown);
+    }
+  }, [isOpen, content, uploading]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
