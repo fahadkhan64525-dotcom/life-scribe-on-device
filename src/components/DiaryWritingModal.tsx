@@ -299,26 +299,15 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
                     {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                   </p>
                 </div>
-                <div className="flex gap-2">
-                  <Button 
-                    variant="ghost" 
-                    onClick={onClose}
-                    className="text-[#654321]/70 hover:text-[#654321] hover:bg-[#8B7355]/10"
-                    style={{ fontFamily: 'Georgia, serif' }}
-                  >
-                    <X className="w-4 h-4 mr-2" />
-                    Close
-                  </Button>
-                  <Button 
-                    onClick={handleSave}
-                    disabled={!content.trim() || uploading}
-                    className="bg-[#8B7355] text-white hover:bg-[#654321] shadow-md disabled:opacity-50"
-                    style={{ fontFamily: 'Georgia, serif' }}
-                  >
-                    <Save className="w-4 h-4 mr-2" />
-                    Save Entry
-                  </Button>
-                </div>
+                <Button 
+                  variant="ghost" 
+                  onClick={onClose}
+                  className="text-[#654321]/70 hover:text-[#654321] hover:bg-[#8B7355]/10"
+                  style={{ fontFamily: 'Georgia, serif' }}
+                >
+                  <X className="w-4 h-4 mr-2" />
+                  Close
+                </Button>
               </div>
             </DialogHeader>
 
@@ -546,6 +535,18 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
                 )}
               </div>
 
+              {/* Save Button at Bottom */}
+              <div className="pt-6 pb-4 flex justify-end border-t border-[#654321]/10">
+                <Button 
+                  onClick={handleSave}
+                  disabled={!content.trim() || uploading}
+                  className="bg-[#8B7355] text-white hover:bg-[#654321] shadow-md disabled:opacity-50 px-8"
+                  style={{ fontFamily: 'Georgia, serif' }}
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  Save Entry
+                </Button>
+              </div>
 
             </div>
           </div>
