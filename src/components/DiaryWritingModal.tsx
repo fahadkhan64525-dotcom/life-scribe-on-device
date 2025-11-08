@@ -552,20 +552,20 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
                 )}
               </div>
 
-              {/* Save Button at Bottom */}
-              <div className="pt-6 pb-4 flex justify-end border-t border-[#654321]/10">
-                <Button 
-                  onClick={handleSave}
-                  disabled={!content.trim() || uploading}
-                  className="bg-[#8B7355] text-white hover:bg-[#654321] shadow-md disabled:opacity-50 px-8"
-                  style={{ fontFamily: 'Georgia, serif' }}
-                >
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Entry
-                </Button>
-              </div>
-
             </div>
+          </div>
+          
+          {/* Save Button - Fixed at Bottom */}
+          <div className="bg-[#FFF8DC] border-t-2 border-[#8B7355]/30 px-8 py-4 flex justify-end">
+            <Button 
+              onClick={handleSave}
+              disabled={!content.trim() || uploading}
+              className="bg-[#8B7355] text-white hover:bg-[#654321] shadow-md disabled:opacity-50 px-8"
+              style={{ fontFamily: 'Georgia, serif' }}
+            >
+              <Save className="w-4 h-4 mr-2" />
+              Save Entry
+            </Button>
           </div>
           </div>
         </div>
