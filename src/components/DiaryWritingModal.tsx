@@ -278,7 +278,7 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
       window.addEventListener("keydown", handleKeyDown);
       return () => window.removeEventListener("keydown", handleKeyDown);
     }
-  }, [isOpen, content, uploading]);
+  }, [isOpen, content, uploading, handleSave]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
