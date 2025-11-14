@@ -297,14 +297,15 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
           backgroundImage: `repeating-linear-gradient(transparent, transparent 31px, #E8DCC4 31px, #E8DCC4 32px)`,
           backgroundSize: '100% 32px'
         }}>
-          <div className="flex-1 overflow-y-auto">
           {/* Red margin line */}
-          <div className="absolute left-16 top-0 bottom-0 w-[2px] bg-red-300"></div>
+          <div className="absolute left-16 top-0 bottom-0 w-[2px] bg-red-300" />
           
           {/* Coffee stain decoration */}
-          <div className="absolute top-8 right-8 w-16 h-16 rounded-full bg-[#D2691E] opacity-5"></div>
+          <div className="absolute top-8 right-8 w-16 h-16 rounded-full bg-[#D2691E] opacity-5" />
           
-          <div className="relative pl-20 pr-8 py-8">
+          {/* Scrollable content area */}
+          <div className="flex-1 overflow-y-auto">
+            <div className="relative pl-20 pr-8 py-8">
             <DialogHeader className="relative mb-6">
               <div className="flex items-start justify-between mb-4">
                 <div>
