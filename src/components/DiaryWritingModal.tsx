@@ -552,10 +552,9 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
                   </div>
                 )}
               </div>
-
-            </div>
-          </div>
-          </div>
+            </div> {/* Close space-y-6 relative - form fields */}
+            </div> {/* Close relative pl-20 pr-8 py-8 - padding */}
+          </div> {/* Close flex-1 overflow-y-auto - scrollable area */}
           
           {/* Save Button - Fixed at Bottom */}
           <div className="bg-[#FFF8DC] border-t-2 border-[#8B7355]/30 px-8 py-4 flex justify-end">
