@@ -282,7 +282,7 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden bg-[#8B7355] shadow-2xl border-8 border-[#654321] animate-scale-in p-0">
+      <DialogContent className="max-w-4xl h-[90vh] overflow-hidden bg-[#8B7355] shadow-2xl border-8 border-[#654321] animate-scale-in p-0 flex">
         {/* Book binding on left */}
         <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-[#654321] to-[#8B7355] border-r-4 border-[#543210]">
           <div className="flex flex-col h-full justify-evenly px-1">
@@ -293,7 +293,7 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
         </div>
 
         {/* Paper pages */}
-        <div className="ml-12 bg-[#FFF8DC] h-full flex flex-col relative" style={{
+        <div className="ml-12 bg-[#FFF8DC] flex-1 flex flex-col relative" style={{
           backgroundImage: `repeating-linear-gradient(transparent, transparent 31px, #E8DCC4 31px, #E8DCC4 32px)`,
           backgroundSize: '100% 32px'
         }}>
