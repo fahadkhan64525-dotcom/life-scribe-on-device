@@ -317,15 +317,26 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
                     {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                   </p>
                 </div>
-                <Button 
-                  variant="ghost" 
-                  onClick={onClose}
-                  className="text-[#654321]/70 hover:text-[#654321] hover:bg-[#8B7355]/10"
-                  style={{ fontFamily: 'Georgia, serif' }}
-                >
-                  <X className="w-4 h-4 mr-2" />
-                  Close
-                </Button>
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={handleSave}
+                    disabled={!content.trim() || uploading}
+                    className="bg-[#8B7355] text-white hover:bg-[#654321] shadow-md disabled:opacity-50"
+                    style={{ fontFamily: 'Georgia, serif' }}
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Entry
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    onClick={onClose}
+                    className="text-[#654321]/70 hover:text-[#654321] hover:bg-[#8B7355]/10"
+                    style={{ fontFamily: 'Georgia, serif' }}
+                  >
+                    <X className="w-4 h-4 mr-2" />
+                    Close
+                  </Button>
+                </div>
               </div>
             </DialogHeader>
 
