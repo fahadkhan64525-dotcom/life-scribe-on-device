@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { X, Camera, MapPin, Save, Sparkles, Music } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { X, Camera, MapPin, Save, Sparkles, Music, Mic, MicOff } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -72,6 +72,78 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
   const [tags, setTags] = useState<string[]>(editEntry?.tags || []);
   const [newTag, setNewTag] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const recognitionRef = useRef<any>(null);
+
+  const toggleVoiceRecording = () => {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      toast({
+        title: "Not supported",
+        description: "Voice recording is not supported in your browser. Please try Chrome or Edge.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (isRecording) {
+      // Stop recording
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      setIsRecording(false);
+    } else {
+      // Start recording
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+
+      recognition.onstart = () => {
+        setIsRecording(true);
+        toast({
+          title: "Recording started",
+          description: "Speak clearly to convert your voice to text",
+        });
+      };
+
+      recognition.onresult = (event: any) => {
+        let interimTranscript = '';
+        let finalTranscript = '';
+
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript + ' ';
+          } else {
+            interimTranscript += transcript;
+          }
+        }
+
+        if (finalTranscript) {
+          setContent(prev => prev + (prev ? ' ' : '') + finalTranscript);
+        }
+      };
+
+      recognition.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
+        setIsRecording(false);
+        toast({
+          title: "Recording error",
+          description: "Failed to record audio. Please try again.",
+          variant: "destructive",
+        });
+      };
+
+      recognition.onend = () => {
+        setIsRecording(false);
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+    }
+  };
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -280,6 +352,14 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
     }
   }, [isOpen, content, uploading, handleSave]);
 
+  // Cleanup voice recognition when modal closes
+  useEffect(() => {
+    if (!isOpen && recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsRecording(false);
+    }
+  }, [isOpen]);
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl h-[90vh] overflow-hidden bg-[#8B7355] shadow-2xl border-8 border-[#654321] animate-scale-in p-0 flex">
@@ -444,6 +524,30 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
 
               {/* Main Content */}
               <div className="group">
+                <div className="flex items-center justify-between mb-2">
+                  <Label className="text-xs font-medium text-[#654321]/70 italic" style={{ fontFamily: 'Georgia, serif' }}>
+                    Pour your heart out...
+                  </Label>
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={toggleVoiceRecording}
+                    className={`${isRecording ? 'bg-red-500 hover:bg-red-600 animate-pulse' : 'bg-[#8B7355] hover:bg-[#654321]'} text-white transition-all`}
+                    style={{ fontFamily: 'Georgia, serif' }}
+                  >
+                    {isRecording ? (
+                      <>
+                        <MicOff className="w-4 h-4 mr-2" />
+                        Stop Recording
+                      </>
+                    ) : (
+                      <>
+                        <Mic className="w-4 h-4 mr-2" />
+                        Voice to Text
+                      </>
+                    )}
+                  </Button>
+                </div>
                 <div className="relative">
                   <Textarea
                     id="content"
