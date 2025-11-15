@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { X, Camera, MapPin, Save, Sparkles, Music, Mic, MicOff } from "lucide-react";
+import { X, Camera, MapPin, Save, Sparkles, Music, Mic, MicOff, Pause } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -73,7 +73,67 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
   const [newTag, setNewTag] = useState("");
   const [uploading, setUploading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const recognitionRef = useRef<any>(null);
+
+  const startRecording = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+
+    recognition.onstart = () => {
+      setIsRecording(true);
+      setIsPaused(false);
+      toast({
+        title: "Recording started",
+        description: "Speak clearly to convert your voice to text",
+      });
+    };
+
+    recognition.onresult = (event: any) => {
+      let interimTranscript = '';
+      let finalTranscript = '';
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript + ' ';
+        } else {
+          interimTranscript += transcript;
+        }
+      }
+
+      if (finalTranscript) {
+        setContent(prev => prev + (prev ? ' ' : '') + finalTranscript);
+      }
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error('Speech recognition error:', event.error);
+      setIsRecording(false);
+      setIsPaused(false);
+      toast({
+        title: "Recording error",
+        description: event.error === 'not-allowed' 
+          ? "Microphone access denied. Please enable microphone permissions in your browser."
+          : "Failed to record audio. Please try again.",
+        variant: "destructive",
+      });
+    };
+
+    recognition.onend = () => {
+      // Only set to false if not paused (paused state keeps recording session alive)
+      if (!isPaused) {
+        setIsRecording(false);
+      }
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+  };
 
   const toggleVoiceRecording = () => {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
@@ -85,64 +145,35 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
       return;
     }
 
-    if (isRecording) {
-      // Stop recording
+    if (!isRecording && !isPaused) {
+      // Start recording
+      startRecording();
+    } else if (isRecording && !isPaused) {
+      // Pause recording
       if (recognitionRef.current) {
         recognitionRef.current.stop();
       }
-      setIsRecording(false);
-    } else {
-      // Start recording
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      const recognition = new SpeechRecognition();
-      
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.lang = 'en-US';
-
-      recognition.onstart = () => {
-        setIsRecording(true);
-        toast({
-          title: "Recording started",
-          description: "Speak clearly to convert your voice to text",
-        });
-      };
-
-      recognition.onresult = (event: any) => {
-        let interimTranscript = '';
-        let finalTranscript = '';
-
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          const transcript = event.results[i][0].transcript;
-          if (event.results[i].isFinal) {
-            finalTranscript += transcript + ' ';
-          } else {
-            interimTranscript += transcript;
-          }
-        }
-
-        if (finalTranscript) {
-          setContent(prev => prev + (prev ? ' ' : '') + finalTranscript);
-        }
-      };
-
-      recognition.onerror = (event: any) => {
-        console.error('Speech recognition error:', event.error);
-        setIsRecording(false);
-        toast({
-          title: "Recording error",
-          description: "Failed to record audio. Please try again.",
-          variant: "destructive",
-        });
-      };
-
-      recognition.onend = () => {
-        setIsRecording(false);
-      };
-
-      recognitionRef.current = recognition;
-      recognition.start();
+      setIsPaused(true);
+      toast({
+        title: "Recording paused",
+        description: "Click Resume to continue",
+      });
+    } else if (isPaused) {
+      // Resume recording
+      startRecording();
     }
+  };
+
+  const stopRecording = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+    }
+    setIsRecording(false);
+    setIsPaused(false);
+    toast({
+      title: "Recording stopped",
+      description: "Your voice has been converted to text",
+    });
   };
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -357,6 +388,7 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
     if (!isOpen && recognitionRef.current) {
       recognitionRef.current.stop();
       setIsRecording(false);
+      setIsPaused(false);
     }
   }, [isOpen]);
 
@@ -528,25 +560,50 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
                   <Label className="text-xs font-medium text-[#654321]/70 italic" style={{ fontFamily: 'Georgia, serif' }}>
                     Pour your heart out...
                   </Label>
-                  <Button
-                    type="button"
-                    size="sm"
-                    onClick={toggleVoiceRecording}
-                    className={`${isRecording ? 'bg-red-500 hover:bg-red-600 animate-pulse' : 'bg-[#8B7355] hover:bg-[#654321]'} text-white transition-all`}
-                    style={{ fontFamily: 'Georgia, serif' }}
-                  >
-                    {isRecording ? (
-                      <>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={toggleVoiceRecording}
+                      className={`${
+                        isRecording && !isPaused
+                          ? 'bg-red-500 hover:bg-red-600 animate-pulse' 
+                          : isPaused
+                          ? 'bg-yellow-500 hover:bg-yellow-600'
+                          : 'bg-[#8B7355] hover:bg-[#654321]'
+                      } text-white transition-all`}
+                      style={{ fontFamily: 'Georgia, serif' }}
+                    >
+                      {isRecording && !isPaused ? (
+                        <>
+                          <Pause className="w-4 h-4 mr-2" />
+                          Pause
+                        </>
+                      ) : isPaused ? (
+                        <>
+                          <Mic className="w-4 h-4 mr-2" />
+                          Resume
+                        </>
+                      ) : (
+                        <>
+                          <Mic className="w-4 h-4 mr-2" />
+                          Start Recording
+                        </>
+                      )}
+                    </Button>
+                    {(isRecording || isPaused) && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={stopRecording}
+                        className="bg-gray-600 hover:bg-gray-700 text-white"
+                        style={{ fontFamily: 'Georgia, serif' }}
+                      >
                         <MicOff className="w-4 h-4 mr-2" />
-                        Stop Recording
-                      </>
-                    ) : (
-                      <>
-                        <Mic className="w-4 h-4 mr-2" />
-                        Voice to Text
-                      </>
+                        Stop
+                      </Button>
                     )}
-                  </Button>
+                  </div>
                 </div>
                 <div className="relative">
                   <Textarea
