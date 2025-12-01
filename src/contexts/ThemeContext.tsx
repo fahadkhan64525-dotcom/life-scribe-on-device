@@ -111,11 +111,18 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     const preset = presets[preferences.theme_preset] || presets.default;
+    
+    // Reset custom properties before applying preset
+    root.style.removeProperty("--primary");
+    root.style.removeProperty("--primary-foreground");
+    root.style.removeProperty("--accent");
+    
+    // Apply preset colors
     Object.entries(preset).forEach(([key, value]) => {
       root.style.setProperty(key, value as string);
     });
 
-    // Apply custom colors if set
+    // Apply custom colors if set (these override preset)
     if (preferences.custom_primary_color) {
       root.style.setProperty("--primary", preferences.custom_primary_color);
     }
