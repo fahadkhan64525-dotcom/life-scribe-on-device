@@ -56,6 +56,48 @@ export type Database = {
         }
         Relationships: []
       }
+      user_preferences: {
+        Row: {
+          created_at: string
+          custom_accent_color: string | null
+          custom_primary_color: string | null
+          id: string
+          logo_position: string
+          logo_size: string
+          logo_visible: boolean
+          theme_mode: string
+          theme_preset: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          custom_accent_color?: string | null
+          custom_primary_color?: string | null
+          id?: string
+          logo_position?: string
+          logo_size?: string
+          logo_visible?: boolean
+          theme_mode?: string
+          theme_preset?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          custom_accent_color?: string | null
+          custom_primary_color?: string | null
+          id?: string
+          logo_position?: string
+          logo_size?: string
+          logo_visible?: boolean
+          theme_mode?: string
+          theme_preset?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
