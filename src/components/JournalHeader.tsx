@@ -1,6 +1,7 @@
-import { Search, Calendar, Camera, Music, Sparkles } from "lucide-react";
+import { Search, Calendar, Camera, Music, Sparkles, Settings } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 interface JournalHeaderProps {
   searchQuery: string;
@@ -8,6 +9,8 @@ interface JournalHeaderProps {
 }
 
 export function JournalHeader({ searchQuery, onSearchChange }: JournalHeaderProps) {
+  const navigate = useNavigate();
+  
   return (
     <header className="relative bg-gradient-hero border-b border-journal-accent/20 px-6 py-12 overflow-hidden">
       {/* Background decorative elements */}
@@ -64,6 +67,15 @@ export function JournalHeader({ searchQuery, onSearchChange }: JournalHeaderProp
                 <span className="hidden sm:inline">{label}</span>
               </Button>
             ))}
+            <Button 
+              variant="outline" 
+              size="lg" 
+              onClick={() => navigate("/settings")}
+              className="glass border-journal-accent/30 hover:shadow-gentle transition-all duration-300 group hover:bg-orange-500/10 hover:text-orange-600"
+            >
+              <Settings className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
+              <span className="hidden sm:inline">Settings</span>
+            </Button>
           </div>
         </div>
       </div>
