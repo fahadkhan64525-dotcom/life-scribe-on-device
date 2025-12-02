@@ -78,6 +78,7 @@ const Index = () => {
 
       const formattedEntries = data?.map((entry: any) => ({
         id: entry.id,
+        title: entry.title,
         date: new Date(entry.created_at).toLocaleDateString("en-US", {
           weekday: "long",
           year: "numeric",
@@ -90,8 +91,10 @@ const Index = () => {
         }),
         location: entry.location,
         photos: entry.photos || [],
+        music: entry.music,
         autoText: entry.content,
         userText: entry.mood ? `Feeling ${entry.mood.toLowerCase()}` : undefined,
+        mood: entry.mood,
         tags: entry.tags || [],
         prompts: ["What else would you like to add?", "How did this make you feel?"],
       })) || [];
@@ -193,12 +196,12 @@ const Index = () => {
   const handleEditEntry = (entry: any) => {
     setEditingEntry({
       id: entry.id,
-      title: "",
+      title: entry.title || "",
       content: entry.autoText,
       location: entry.location,
       photos: entry.photos || [],
       music: entry.music,
-      mood: entry.userText?.replace("Feeling ", ""),
+      mood: entry.mood || "",
       tags: entry.tags,
     });
     setIsWritingModalOpen(true);
