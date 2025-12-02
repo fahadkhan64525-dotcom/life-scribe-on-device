@@ -63,18 +63,32 @@ const diaryEntrySchema = z.object({
 
 export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryWritingModalProps) {
   const { toast } = useToast();
-  const [title, setTitle] = useState(editEntry?.title || "");
-  const [content, setContent] = useState(editEntry?.content || "");
-  const [location, setLocation] = useState(editEntry?.location || "");
-  const [music, setMusic] = useState(editEntry?.music || "");
-  const [selectedMood, setSelectedMood] = useState(editEntry?.mood || "");
-  const [photos, setPhotos] = useState<string[]>(editEntry?.photos || []);
-  const [tags, setTags] = useState<string[]>(editEntry?.tags || []);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [location, setLocation] = useState("");
+  const [music, setMusic] = useState("");
+  const [selectedMood, setSelectedMood] = useState("");
+  const [photos, setPhotos] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState("");
   const [uploading, setUploading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const recognitionRef = useRef<any>(null);
+
+  // Update form state when editEntry changes or modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setTitle(editEntry?.title || "");
+      setContent(editEntry?.content || "");
+      setLocation(editEntry?.location || "");
+      setMusic(editEntry?.music || "");
+      setSelectedMood(editEntry?.mood || "");
+      setPhotos(editEntry?.photos || []);
+      setTags(editEntry?.tags || []);
+      setNewTag("");
+    }
+  }, [isOpen, editEntry]);
 
   const startRecording = () => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
