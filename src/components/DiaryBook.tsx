@@ -18,6 +18,7 @@ import {
 
 interface DiaryEntry {
   id: string;
+  title?: string;
   date: string;
   time: string;
   location?: string;
@@ -146,9 +147,14 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
         <div className="relative z-10 pr-4">
           {/* Header */}
           <div className="mb-8 pb-6 border-b-2 border-amber-800/20">
-            <h2 className="font-serif text-3xl text-foreground mb-3">
+            {currentEntry.title && (
+              <h2 className="font-serif text-2xl text-foreground mb-2 italic">
+                "{currentEntry.title}"
+              </h2>
+            )}
+            <h3 className="font-serif text-xl text-muted-foreground mb-3">
               {currentEntry.date}
-            </h2>
+            </h3>
             <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
