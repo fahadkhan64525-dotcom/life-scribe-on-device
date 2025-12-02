@@ -120,8 +120,10 @@ const Index = () => {
   );
 
   const handleAddContext = (entryId: string) => {
-    // In a real app, this would open a modal or navigate to an edit page
-    console.log("Adding context to entry:", entryId);
+    const entry = entries.find(e => e.id === entryId);
+    if (entry) {
+      handleEditEntry(entry);
+    }
   };
 
   const handleSaveDiaryEntry = async (newEntry: {
