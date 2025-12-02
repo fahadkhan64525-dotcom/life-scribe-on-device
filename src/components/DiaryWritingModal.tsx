@@ -437,7 +437,7 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
                 <div>
                   <DialogTitle className="text-3xl font-serif text-[#654321] flex items-center gap-3 mb-2" style={{ fontFamily: 'Georgia, serif' }}>
                     <Sparkles className="w-6 h-6 text-[#8B7355] animate-pulse-slow" />
-                    <span>{editEntry ? "Edit Entry" : "My Diary"}</span>
+                    <span>{editEntry ? "Edit Entry" : "Dear Diary"}</span>
                   </DialogTitle>
                   <p className="text-sm text-[#654321]/70 font-light italic" style={{ fontFamily: 'Georgia, serif' }}>
                     {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
