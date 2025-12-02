@@ -156,7 +156,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
           logo_visible: newPrefs.logo_visible,
           logo_size: newPrefs.logo_size,
           logo_position: newPrefs.logo_position,
-        });
+        }, { onConflict: 'user_id' });
 
       if (error) throw error;
 
