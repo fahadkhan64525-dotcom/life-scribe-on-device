@@ -181,11 +181,18 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => toast({ title: "Music", description: currentEntry.music })}
+                  onClick={() => {
+                    // Try to open music URL if it's a link
+                    if (currentEntry.music?.startsWith('http')) {
+                      window.open(currentEntry.music, '_blank');
+                    } else {
+                      toast({ title: "🎵 Now Playing", description: currentEntry.music });
+                    }
+                  }}
                   className="bg-green-100/50 dark:bg-green-900/20 hover:bg-green-200/50 dark:hover:bg-green-900/30"
                 >
                   <Music className="w-4 h-4 mr-2 text-green-600 dark:text-green-400" />
-                  Music
+                  {currentEntry.music?.length > 30 ? currentEntry.music.substring(0, 30) + '...' : currentEntry.music}
                 </Button>
               )}
               {currentEntry.calendarEvent && (
