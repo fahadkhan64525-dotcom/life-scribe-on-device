@@ -182,16 +182,26 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
             <div className="mb-6 p-4 bg-gradient-to-r from-rose-50/80 to-amber-50/80 dark:from-rose-950/20 dark:to-amber-950/20 rounded-lg border border-rose-200/50 dark:border-rose-800/30">
               <div className="flex items-start gap-3">
                 <Quote className="w-5 h-5 text-rose-500 dark:text-rose-400 mt-1 flex-shrink-0" />
-                <div className="flex-1">
+                <div className="flex-1 space-y-3">
+                  {/* Urdu */}
                   <p className="text-foreground leading-relaxed font-serif text-right" dir="rtl" style={{ fontFamily: "'Noto Nastaliq Urdu', serif" }}>
-                    {shayari.split('\n').map((line, i) => (
+                    {shayari.urdu.split('\n').map((line, i) => (
                       <span key={i}>
                         {line}
-                        {i < shayari.split('\n').length - 1 && <br />}
+                        {i < shayari.urdu.split('\n').length - 1 && <br />}
                       </span>
                     ))}
                   </p>
-                  <p className="text-xs text-muted-foreground mt-2 text-right">— جان ایلیا</p>
+                  {/* English */}
+                  <p className="text-muted-foreground leading-relaxed font-serif text-sm italic">
+                    {shayari.english.split('\n').map((line, i) => (
+                      <span key={i}>
+                        {line}
+                        {i < shayari.english.split('\n').length - 1 && <br />}
+                      </span>
+                    ))}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-2 text-right">— John Elia (جان ایلیا)</p>
                 </div>
               </div>
             </div>
