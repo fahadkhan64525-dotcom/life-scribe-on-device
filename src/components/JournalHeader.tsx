@@ -7,9 +7,12 @@ import { Logo } from "@/components/Logo";
 interface JournalHeaderProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
+  onFilterToday?: () => void;
+  onFilterPhotos?: () => void;
+  onFilterMusic?: () => void;
 }
 
-export function JournalHeader({ searchQuery, onSearchChange }: JournalHeaderProps) {
+export function JournalHeader({ searchQuery, onSearchChange, onFilterToday, onFilterPhotos, onFilterMusic }: JournalHeaderProps) {
   const navigate = useNavigate();
   
   return (
@@ -48,24 +51,33 @@ export function JournalHeader({ searchQuery, onSearchChange }: JournalHeaderProp
           </div>
           
           <div className="flex gap-3">
-            {[
-              { icon: Calendar, label: "Today", color: "hover:bg-blue-500/10 hover:text-blue-600" },
-              { icon: Camera, label: "Photos", color: "hover:bg-purple-500/10 hover:text-purple-600" },
-              { icon: Music, label: "Music", color: "hover:bg-green-500/10 hover:text-green-600" }
-            ].map(({ icon: Icon, label, color }) => (
-              <Button 
-                key={label}
-                variant="outline" 
-                size="lg" 
-                className={`
-                  glass border-journal-accent/30 hover:shadow-gentle transition-all duration-300 
-                  group ${color}
-                `}
-              >
-                <Icon className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
-                <span className="hidden sm:inline">{label}</span>
-              </Button>
-            ))}
+            <Button 
+              variant="outline" 
+              size="lg" 
+              onClick={onFilterToday}
+              className="glass border-journal-accent/30 hover:shadow-gentle transition-all duration-300 group hover:bg-blue-500/10 hover:text-blue-600"
+            >
+              <Calendar className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
+              <span className="hidden sm:inline">Today</span>
+            </Button>
+            <Button 
+              variant="outline" 
+              size="lg" 
+              onClick={onFilterPhotos}
+              className="glass border-journal-accent/30 hover:shadow-gentle transition-all duration-300 group hover:bg-purple-500/10 hover:text-purple-600"
+            >
+              <Camera className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
+              <span className="hidden sm:inline">Photos</span>
+            </Button>
+            <Button 
+              variant="outline" 
+              size="lg" 
+              onClick={onFilterMusic}
+              className="glass border-journal-accent/30 hover:shadow-gentle transition-all duration-300 group hover:bg-green-500/10 hover:text-green-600"
+            >
+              <Music className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
+              <span className="hidden sm:inline">Music</span>
+            </Button>
             <Button 
               variant="outline" 
               size="lg" 
