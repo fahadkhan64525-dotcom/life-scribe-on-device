@@ -31,20 +31,21 @@ export const Logo = ({ className, size }: LogoProps) => {
 
   return (
     <div className={cn(
-      "flex items-center justify-center",
+      "flex items-center justify-center animate-fade-in",
       positionClasses[preferences.logo_position],
       className
     )}>
-      <div className="relative group">
+      <div className="relative group cursor-pointer">
         <img 
           src={logoImage} 
           alt="Fahad Logo" 
           className={cn(
-            "object-contain transition-all duration-500 group-hover:scale-105",
+            "object-contain transition-all duration-500 group-hover:scale-110 group-hover:rotate-3",
             sizeClasses[logoSize]
           )}
         />
-        <div className="absolute -inset-2 bg-gradient-elegant opacity-20 blur-lg rounded-full group-hover:opacity-30 transition-opacity duration-500" />
+        <div className="absolute -inset-2 bg-gradient-elegant opacity-20 blur-lg rounded-full group-hover:opacity-40 group-hover:scale-110 transition-all duration-500" />
+        <div className="absolute -inset-4 bg-primary/10 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-opacity duration-300" />
       </div>
     </div>
   );
