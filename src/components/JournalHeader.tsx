@@ -1,4 +1,4 @@
-import { Search, Calendar, Camera, Music, Sparkles, Settings } from "lucide-react";
+import { Search, Calendar, Camera, Music, Settings, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -10,9 +10,11 @@ interface JournalHeaderProps {
   onFilterToday?: () => void;
   onFilterPhotos?: () => void;
   onFilterMusic?: () => void;
+  activeFilter?: 'all' | 'today' | 'photos' | 'music';
+  onClearFilters?: () => void;
 }
 
-export function JournalHeader({ searchQuery, onSearchChange, onFilterToday, onFilterPhotos, onFilterMusic }: JournalHeaderProps) {
+export function JournalHeader({ searchQuery, onSearchChange, onFilterToday, onFilterPhotos, onFilterMusic, activeFilter = 'all', onClearFilters }: JournalHeaderProps) {
   const navigate = useNavigate();
   
   return (
@@ -50,12 +52,27 @@ export function JournalHeader({ searchQuery, onSearchChange, onFilterToday, onFi
             </div>
           </div>
           
-          <div className="flex gap-3">
+          <div className="flex gap-3 flex-wrap justify-center">
+            {activeFilter !== 'all' && (
+              <Button 
+                variant="outline" 
+                size="lg" 
+                onClick={onClearFilters}
+                className="glass border-red-500/30 bg-red-500/10 text-red-600 hover:bg-red-500/20 hover:shadow-gentle transition-all duration-300 group animate-fade-in"
+              >
+                <X className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
+                <span className="hidden sm:inline">Clear</span>
+              </Button>
+            )}
             <Button 
               variant="outline" 
               size="lg" 
               onClick={onFilterToday}
-              className="glass border-journal-accent/30 hover:shadow-gentle transition-all duration-300 group hover:bg-blue-500/10 hover:text-blue-600"
+              className={`glass border-journal-accent/30 hover:shadow-gentle transition-all duration-300 group ${
+                activeFilter === 'today' 
+                  ? 'bg-blue-500/20 text-blue-600 border-blue-500/50' 
+                  : 'hover:bg-blue-500/10 hover:text-blue-600'
+              }`}
             >
               <Calendar className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
               <span className="hidden sm:inline">Today</span>
@@ -64,7 +81,11 @@ export function JournalHeader({ searchQuery, onSearchChange, onFilterToday, onFi
               variant="outline" 
               size="lg" 
               onClick={onFilterPhotos}
-              className="glass border-journal-accent/30 hover:shadow-gentle transition-all duration-300 group hover:bg-purple-500/10 hover:text-purple-600"
+              className={`glass border-journal-accent/30 hover:shadow-gentle transition-all duration-300 group ${
+                activeFilter === 'photos' 
+                  ? 'bg-purple-500/20 text-purple-600 border-purple-500/50' 
+                  : 'hover:bg-purple-500/10 hover:text-purple-600'
+              }`}
             >
               <Camera className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
               <span className="hidden sm:inline">Photos</span>
@@ -73,7 +94,11 @@ export function JournalHeader({ searchQuery, onSearchChange, onFilterToday, onFi
               variant="outline" 
               size="lg" 
               onClick={onFilterMusic}
-              className="glass border-journal-accent/30 hover:shadow-gentle transition-all duration-300 group hover:bg-green-500/10 hover:text-green-600"
+              className={`glass border-journal-accent/30 hover:shadow-gentle transition-all duration-300 group ${
+                activeFilter === 'music' 
+                  ? 'bg-green-500/20 text-green-600 border-green-500/50' 
+                  : 'hover:bg-green-500/10 hover:text-green-600'
+              }`}
             >
               <Music className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
               <span className="hidden sm:inline">Music</span>

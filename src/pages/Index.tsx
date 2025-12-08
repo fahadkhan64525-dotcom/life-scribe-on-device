@@ -307,6 +307,8 @@ const Index = () => {
         onFilterToday={handleFilterToday}
         onFilterPhotos={handleFilterPhotos}
         onFilterMusic={handleFilterMusic}
+        activeFilter={activeFilter}
+        onClearFilters={() => setActiveFilter('all')}
       />
       
       <main className="max-w-4xl mx-auto px-6 py-section relative">
