@@ -2,6 +2,7 @@ import { Search, Calendar, Camera, Music, Sparkles, Settings } from "lucide-reac
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { Logo } from "@/components/Logo";
 
 interface JournalHeaderProps {
   searchQuery: string;
@@ -21,9 +22,7 @@ export function JournalHeader({ searchQuery, onSearchChange }: JournalHeaderProp
       <div className="relative max-w-4xl mx-auto">
         <div className="mb-8 text-center">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="p-3 bg-gradient-elegant rounded-2xl shadow-elegant hover-glow">
-              <Sparkles className="w-8 h-8 text-primary-foreground animate-pulse-slow" />
-            </div>
+            <Logo />
           </div>
           <h1 className="text-hero font-display font-medium text-foreground mb-4 text-shimmer tracking-wide">
             Whispers of Time
