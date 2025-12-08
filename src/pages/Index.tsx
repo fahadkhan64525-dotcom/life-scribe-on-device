@@ -51,6 +51,7 @@ const Index = () => {
   const [isWritingModalOpen, setIsWritingModalOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState<'all' | 'today' | 'photos' | 'music'>('all');
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -112,12 +113,56 @@ const Index = () => {
     }
   };
 
-  const filteredEntries = entries.filter(entry =>
-    entry.autoText.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    entry.userText?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    entry.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
-    entry.location?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredEntries = entries.filter(entry => {
+    // Text search filter
+    const matchesSearch = 
+      entry.autoText.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      entry.userText?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      entry.tags.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      entry.location?.toLowerCase().includes(searchQuery.toLowerCase());
+
+    // Active filter
+    if (activeFilter === 'today') {
+      const today = new Date().toLocaleDateString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+      return matchesSearch && entry.date === today;
+    }
+    if (activeFilter === 'photos') {
+      return matchesSearch && entry.photos && entry.photos.length > 0;
+    }
+    if (activeFilter === 'music') {
+      return matchesSearch && entry.music;
+    }
+    return matchesSearch;
+  });
+
+  const handleFilterToday = () => {
+    setActiveFilter(activeFilter === 'today' ? 'all' : 'today');
+    toast({
+      title: activeFilter === 'today' ? "Showing all entries" : "Filtered to today",
+      description: activeFilter === 'today' ? "All entries are now visible" : "Showing only today's entries",
+    });
+  };
+
+  const handleFilterPhotos = () => {
+    setActiveFilter(activeFilter === 'photos' ? 'all' : 'photos');
+    toast({
+      title: activeFilter === 'photos' ? "Showing all entries" : "Filtered to photos",
+      description: activeFilter === 'photos' ? "All entries are now visible" : "Showing entries with photos",
+    });
+  };
+
+  const handleFilterMusic = () => {
+    setActiveFilter(activeFilter === 'music' ? 'all' : 'music');
+    toast({
+      title: activeFilter === 'music' ? "Showing all entries" : "Filtered to music",
+      description: activeFilter === 'music' ? "All entries are now visible" : "Showing entries with music",
+    });
+  };
 
   const handleAddContext = (entryId: string) => {
     const entry = entries.find(e => e.id === entryId);
@@ -256,7 +301,13 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-hero custom-scrollbar">
-      <JournalHeader searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+      <JournalHeader 
+        searchQuery={searchQuery} 
+        onSearchChange={setSearchQuery}
+        onFilterToday={handleFilterToday}
+        onFilterPhotos={handleFilterPhotos}
+        onFilterMusic={handleFilterMusic}
+      />
       
       <main className="max-w-4xl mx-auto px-6 py-section relative">
         <PrivacyBanner />
