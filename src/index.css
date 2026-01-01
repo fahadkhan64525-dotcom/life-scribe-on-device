@@ -163,6 +163,32 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
+
+  /* Theme background image support */
+  .theme-background {
+    position: relative;
+    min-height: 100vh;
+    background-color: hsl(var(--background));
+  }
+
+  .theme-background::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: var(--theme-background-image, none);
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .theme-background > * {
+    position: relative;
+    z-index: 1;
+  }
 }
 
 @layer components {

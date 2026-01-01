@@ -290,7 +290,7 @@ const Index = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-hero flex items-center justify-center">
+      <div className="min-h-screen theme-background flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-muted-foreground">Loading your diary...</p>
@@ -300,7 +300,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-hero custom-scrollbar">
+    <div className="min-h-screen theme-background custom-scrollbar">
       <JournalHeader 
         searchQuery={searchQuery} 
         onSearchChange={setSearchQuery}
