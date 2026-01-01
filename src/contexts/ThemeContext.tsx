@@ -1,10 +1,11 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { getPresetById, ThemePreset } from "@/data/themePresets";
 
-interface UserPreferences {
+export interface UserPreferences {
   theme_mode: "light" | "dark";
-  theme_preset: "default" | "ocean" | "sunset" | "forest" | "lavender";
+  theme_preset: string;
   custom_primary_color?: string;
   custom_accent_color?: string;
   logo_visible: boolean;
@@ -16,11 +17,12 @@ interface ThemeContextType {
   preferences: UserPreferences;
   updatePreferences: (prefs: Partial<UserPreferences>) => Promise<void>;
   isLoading: boolean;
+  currentPreset: ThemePreset | undefined;
 }
 
 const defaultPreferences: UserPreferences = {
   theme_mode: "light",
-  theme_preset: "default",
+  theme_preset: "cream",
   logo_visible: true,
   logo_size: "md",
   logo_position: "header",
@@ -75,52 +77,51 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const currentPreset = getPresetById(preferences.theme_preset);
+
   const applyTheme = () => {
     const root = document.documentElement;
     
-    // Apply dark/light mode
-    if (preferences.theme_mode === "dark") {
+    // Apply dark/light mode based on preset category or explicit mode
+    const preset = currentPreset;
+    if (preset) {
+      // Auto-set dark/light based on preset category
+      if (preset.category === "dark") {
+        root.classList.add("dark");
+      } else {
+        root.classList.remove("dark");
+      }
+    } else if (preferences.theme_mode === "dark") {
       root.classList.add("dark");
     } else {
       root.classList.remove("dark");
     }
 
-    // Apply theme preset colors
-    const presets = {
-      default: {},
-      ocean: {
-        "--primary": "200 80% 50%",
-        "--primary-foreground": "0 0% 100%",
-        "--accent": "190 70% 55%",
-      },
-      sunset: {
-        "--primary": "25 90% 60%",
-        "--primary-foreground": "0 0% 100%",
-        "--accent": "340 80% 65%",
-      },
-      forest: {
-        "--primary": "140 60% 45%",
-        "--primary-foreground": "0 0% 100%",
-        "--accent": "80 50% 50%",
-      },
-      lavender: {
-        "--primary": "270 70% 65%",
-        "--primary-foreground": "0 0% 100%",
-        "--accent": "280 60% 70%",
-      },
-    };
+    // Reset all custom properties
+    const propsToReset = [
+      "--primary", "--primary-foreground", "--accent",
+      "--background", "--foreground", "--card", "--card-foreground",
+      "--muted", "--muted-foreground", "--theme-background-image"
+    ];
+    propsToReset.forEach(prop => root.style.removeProperty(prop));
 
-    const preset = presets[preferences.theme_preset] || presets.default;
-    
-    // Reset custom properties before applying preset
-    root.style.removeProperty("--primary");
-    root.style.removeProperty("--primary-foreground");
-    root.style.removeProperty("--accent");
-    
     // Apply preset colors
-    Object.entries(preset).forEach(([key, value]) => {
-      root.style.setProperty(key, value as string);
-    });
+    if (preset) {
+      root.style.setProperty("--primary", preset.colors.primary);
+      root.style.setProperty("--primary-foreground", preset.colors.primaryForeground);
+      root.style.setProperty("--accent", preset.colors.accent);
+      root.style.setProperty("--background", preset.colors.background);
+      root.style.setProperty("--foreground", preset.colors.foreground);
+      root.style.setProperty("--card", preset.colors.card);
+      root.style.setProperty("--card-foreground", preset.colors.cardForeground);
+      root.style.setProperty("--muted", preset.colors.muted);
+      root.style.setProperty("--muted-foreground", preset.colors.mutedForeground);
+      
+      // Apply background image if preset has one
+      if (preset.image) {
+        root.style.setProperty("--theme-background-image", `url(${preset.image})`);
+      }
+    }
 
     // Apply custom colors if set (these override preset)
     if (preferences.custom_primary_color) {
@@ -176,7 +177,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <ThemeContext.Provider value={{ preferences, updatePreferences, isLoading }}>
+    <ThemeContext.Provider value={{ preferences, updatePreferences, isLoading, currentPreset }}>
       {children}
     </ThemeContext.Provider>
   );

@@ -6,14 +6,89 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Moon, Sun, Palette, Image } from "lucide-react";
+import { ArrowLeft, Image, Flame, Moon, Sun, Check } from "lucide-react";
 import { Logo } from "@/components/Logo";
+import { themePresets, getPresetsByCategory, ThemePreset } from "@/data/themePresets";
+
+const ThemeCard = ({ 
+  preset, 
+  isSelected, 
+  onSelect 
+}: { 
+  preset: ThemePreset; 
+  isSelected: boolean; 
+  onSelect: () => void;
+}) => {
+  return (
+    <button
+      onClick={onSelect}
+      className={`
+        relative overflow-hidden rounded-xl transition-all duration-300 group
+        ${isSelected ? "ring-2 ring-primary ring-offset-2 ring-offset-background scale-[1.02]" : "hover:scale-[1.02]"}
+      `}
+    >
+      {/* Preview Card */}
+      <div 
+        className="aspect-[3/4] w-full relative"
+        style={{
+          backgroundColor: `hsl(${preset.colors.background})`,
+        }}
+      >
+        {/* Background Image */}
+        {preset.image && (
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: `url(${preset.image})` }}
+          />
+        )}
+        
+        {/* Overlay Content Preview */}
+        <div className="absolute inset-0 p-3 flex flex-col">
+          {/* Spacer for image area */}
+          <div className="flex-1" />
+          
+          {/* Mock UI Elements */}
+          <div 
+            className="rounded-lg p-2 space-y-1.5 backdrop-blur-sm"
+            style={{
+              backgroundColor: `hsl(${preset.colors.card} / 0.85)`,
+            }}
+          >
+            <div 
+              className="h-2 w-3/4 rounded"
+              style={{ backgroundColor: `hsl(${preset.colors.muted})` }}
+            />
+            <div 
+              className="h-2 w-full rounded"
+              style={{ backgroundColor: `hsl(${preset.colors.muted})` }}
+            />
+            <div 
+              className="h-2 w-2/3 rounded"
+              style={{ backgroundColor: `hsl(${preset.colors.muted})` }}
+            />
+          </div>
+        </div>
+
+        {/* Selected Check */}
+        {isSelected && (
+          <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-1">
+            <Check className="h-3 w-3" />
+          </div>
+        )}
+      </div>
+
+      {/* Label */}
+      <p className="text-sm font-medium mt-2 text-foreground">{preset.label}</p>
+    </button>
+  );
+};
 
 const Settings = () => {
   const navigate = useNavigate();
   const { preferences, updatePreferences, isLoading } = useTheme();
   const [customPrimary, setCustomPrimary] = useState(preferences.custom_primary_color || "");
   const [customAccent, setCustomAccent] = useState(preferences.custom_accent_color || "");
+  const [themeCategory, setThemeCategory] = useState<"hot" | "dark" | "light">("hot");
 
   if (isLoading) {
     return (
@@ -23,8 +98,10 @@ const Settings = () => {
     );
   }
 
+  const categoryPresets = getPresetsByCategory(themeCategory);
+
   return (
-    <div className="min-h-screen bg-gradient-warm">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <Button
           variant="ghost"
@@ -44,7 +121,7 @@ const Settings = () => {
           <Tabs defaultValue="theme" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="theme">
-                <Palette className="mr-2 h-4 w-4" />
+                <Flame className="mr-2 h-4 w-4" />
                 Theme
               </TabsTrigger>
               <TabsTrigger value="logo">
@@ -54,55 +131,53 @@ const Settings = () => {
             </TabsList>
 
             <TabsContent value="theme" className="space-y-4">
-              {/* Dark/Light Mode */}
+              {/* Theme Category Tabs */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    {preferences.theme_mode === "dark" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
-                    Appearance Mode
-                  </CardTitle>
-                  <CardDescription>Choose between light and dark mode</CardDescription>
+                  <CardTitle>Themes</CardTitle>
+                  <CardDescription>Choose a beautiful theme for your journal</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="dark-mode">Dark Mode</Label>
-                    <Switch
-                      id="dark-mode"
-                      checked={preferences.theme_mode === "dark"}
-                      onCheckedChange={(checked) =>
-                        updatePreferences({ theme_mode: checked ? "dark" : "light" })
-                      }
-                    />
+                <CardContent className="space-y-4">
+                  {/* Category Selector */}
+                  <div className="flex gap-2 border-b pb-4">
+                    <Button
+                      variant={themeCategory === "hot" ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => setThemeCategory("hot")}
+                      className="gap-1.5"
+                    >
+                      <Flame className="h-4 w-4" />
+                      Hot
+                    </Button>
+                    <Button
+                      variant={themeCategory === "dark" ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => setThemeCategory("dark")}
+                      className="gap-1.5"
+                    >
+                      <Moon className="h-4 w-4" />
+                      Dark
+                    </Button>
+                    <Button
+                      variant={themeCategory === "light" ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => setThemeCategory("light")}
+                      className="gap-1.5"
+                    >
+                      <Sun className="h-4 w-4" />
+                      Light
+                    </Button>
                   </div>
-                </CardContent>
-              </Card>
 
-              {/* Theme Presets */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Theme Presets</CardTitle>
-                  <CardDescription>Choose from our curated color palettes</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                    {[
-                      { value: "default", label: "Default", colors: "bg-gradient-to-br from-journal-warm to-journal-accent" },
-                      { value: "ocean", label: "Ocean", colors: "bg-gradient-to-br from-blue-400 to-cyan-300" },
-                      { value: "sunset", label: "Sunset", colors: "bg-gradient-to-br from-orange-400 to-pink-400" },
-                      { value: "forest", label: "Forest", colors: "bg-gradient-to-br from-green-500 to-lime-400" },
-                      { value: "lavender", label: "Lavender", colors: "bg-gradient-to-br from-purple-400 to-violet-300" },
-                    ].map((preset) => (
-                      <button
-                        key={preset.value}
-                        onClick={() => updatePreferences({ theme_preset: preset.value as any })}
-                        className={`
-                          relative p-4 rounded-lg transition-all
-                          ${preferences.theme_preset === preset.value ? "ring-2 ring-primary scale-105" : "hover:scale-105"}
-                        `}
-                      >
-                        <div className={`${preset.colors} h-16 rounded-md mb-2`} />
-                        <p className="text-sm font-medium">{preset.label}</p>
-                      </button>
+                  {/* Theme Grid */}
+                  <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
+                    {categoryPresets.map((preset) => (
+                      <ThemeCard
+                        key={preset.id}
+                        preset={preset}
+                        isSelected={preferences.theme_preset === preset.id}
+                        onSelect={() => updatePreferences({ theme_preset: preset.id })}
+                      />
                     ))}
                   </div>
                 </CardContent>
