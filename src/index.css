@@ -164,11 +164,41 @@ All colors MUST be HSL.
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
+  /* Theme transition support */
+  :root {
+    --theme-transition-duration: 0.5s;
+    --theme-transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Smooth color transitions for theme switching */
+  body,
+  .theme-background,
+  .bg-background,
+  .bg-card,
+  .bg-muted,
+  .bg-primary,
+  .bg-secondary,
+  .bg-accent {
+    transition: 
+      background-color var(--theme-transition-duration) var(--theme-transition-timing),
+      color var(--theme-transition-duration) var(--theme-transition-timing),
+      border-color var(--theme-transition-duration) var(--theme-transition-timing);
+  }
+
+  .text-foreground,
+  .text-muted-foreground,
+  .text-primary,
+  .text-primary-foreground,
+  .text-card-foreground {
+    transition: color var(--theme-transition-duration) var(--theme-transition-timing);
+  }
+
   /* Theme background image support */
   .theme-background {
     position: relative;
     min-height: 100vh;
     background-color: hsl(var(--background));
+    transition: background-color var(--theme-transition-duration) var(--theme-transition-timing);
   }
 
   .theme-background::before {
@@ -183,11 +213,33 @@ All colors MUST be HSL.
     opacity: 0.35;
     pointer-events: none;
     z-index: 0;
+    transition: 
+      opacity 0.6s var(--theme-transition-timing),
+      background-image 0.3s var(--theme-transition-timing);
+  }
+
+  /* Fade animation for background image changes */
+  .theme-background.theme-transitioning::before {
+    opacity: 0;
   }
 
   .theme-background > * {
     position: relative;
     z-index: 1;
+  }
+
+  /* Card and UI element transitions */
+  [class*="card"],
+  [class*="Card"],
+  button,
+  input,
+  textarea,
+  select {
+    transition: 
+      background-color var(--theme-transition-duration) var(--theme-transition-timing),
+      border-color var(--theme-transition-duration) var(--theme-transition-timing),
+      color var(--theme-transition-duration) var(--theme-transition-timing),
+      box-shadow var(--theme-transition-duration) var(--theme-transition-timing);
   }
 }
 
