@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, MapPin, Clock, Camera, Music, Calendar, MessageCircle, Sparkles, Edit, Trash2, Quote } from "lucide-react";
+import { ChevronLeft, ChevronRight, MapPin, Clock, Camera, Music, Calendar, MessageCircle, Sparkles, Edit, Trash2, Quote, BookOpen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -44,6 +44,7 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
   const [aiInsight, setAiInsight] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [showPhotos, setShowPhotos] = useState(true);
+  const [isPageTurning, setIsPageTurning] = useState(false);
   const { toast } = useToast();
 
   const currentEntry = entries[currentPage];
@@ -56,23 +57,30 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
   }, [currentEntry, currentPage]);
 
   const goToNextPage = () => {
-    if (currentPage < entries.length - 1) {
-      setCurrentPage(currentPage + 1);
-      setAiInsight("");
+    if (currentPage < entries.length - 1 && !isPageTurning) {
+      setIsPageTurning(true);
+      setTimeout(() => {
+        setCurrentPage(currentPage + 1);
+        setAiInsight("");
+        setIsPageTurning(false);
+      }, 300);
     }
   };
 
   const goToPreviousPage = () => {
-    if (currentPage > 0) {
-      setCurrentPage(currentPage - 1);
-      setAiInsight("");
+    if (currentPage > 0 && !isPageTurning) {
+      setIsPageTurning(true);
+      setTimeout(() => {
+        setCurrentPage(currentPage - 1);
+        setAiInsight("");
+        setIsPageTurning(false);
+      }, 300);
     }
   };
 
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Prevent navigation when typing in input fields
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
         return;
       }
@@ -93,7 +101,7 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentPage, entries.length]);
+  }, [currentPage, entries.length, isPageTurning]);
 
   const generateInsight = async () => {
     if (!currentEntry) return;
@@ -131,60 +139,78 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
 
   if (!currentEntry) {
     return (
-      <div className="flex items-center justify-center min-h-[600px]">
-        <p className="text-muted-foreground text-lg">No entries to display</p>
+      <div className="flex flex-col items-center justify-center min-h-[600px] animate-fade-in">
+        <div className="w-32 h-32 rounded-full bg-gradient-elegant flex items-center justify-center mb-6 pulse-soft">
+          <BookOpen className="w-16 h-16 text-primary-foreground" />
+        </div>
+        <p className="text-xl text-muted-foreground font-serif mb-2">Your journal awaits</p>
+        <p className="text-sm text-muted-foreground/70">Start writing to fill these pages with memories</p>
       </div>
     );
   }
 
   return (
     <div className="relative max-w-4xl mx-auto">
-      {/* Book Container */}
-      <div className="relative bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 rounded-2xl shadow-2xl p-8 md:p-12 min-h-[700px] animate-fade-in">
-        {/* Book Binding Effect */}
-        <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-amber-800/30 to-transparent dark:from-amber-700/20 rounded-l-2xl"></div>
+      {/* Book Container with enhanced styling */}
+      <div 
+        className={`relative book-page vintage-paper rounded-2xl shadow-floating p-8 md:p-12 min-h-[700px] transition-all duration-300 ${
+          isPageTurning ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
+        }`}
+      >
+        {/* Decorative book spine */}
+        <div className="absolute left-0 top-0 bottom-0 w-10 bg-gradient-to-r from-primary/20 via-primary/10 to-transparent rounded-l-2xl">
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 w-1 h-3/4 bg-gradient-to-b from-primary/30 via-primary/50 to-primary/30 rounded-full" />
+        </div>
         
-        {/* Page Lines Effect */}
-        <div className="absolute inset-0 opacity-5 pointer-events-none">
-          {[...Array(20)].map((_, i) => (
-            <div key={i} className="h-[1px] bg-amber-800 my-8"></div>
+        {/* Page edge effect */}
+        <div className="absolute right-0 top-4 bottom-4 w-1 flex flex-col gap-[2px]">
+          {[...Array(30)].map((_, i) => (
+            <div key={i} className="flex-1 bg-muted/40 rounded-r-full" />
+          ))}
+        </div>
+
+        {/* Subtle page lines */}
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none overflow-hidden rounded-2xl">
+          {[...Array(25)].map((_, i) => (
+            <div key={i} className="h-[1px] bg-foreground my-7 mx-12" />
           ))}
         </div>
 
         {/* Page Content */}
-        <div className="relative z-10 pr-4">
-          {/* Header */}
-          <div className="mb-8 pb-6 border-b-2 border-amber-800/20">
+        <div className="relative z-10 pl-6 pr-4 stagger-fade-in">
+          {/* Header with elegant styling */}
+          <div className="mb-8 pb-6 border-b border-primary/20">
             {currentEntry.title && (
-              <h2 className="font-serif text-2xl text-foreground mb-2 italic">
-                "{currentEntry.title}"
+              <h2 className="font-display text-2xl md:text-3xl text-foreground mb-3 ink-text fancy-underline inline-block">
+                {currentEntry.title}
               </h2>
             )}
-            <h3 className="font-serif text-xl text-muted-foreground mb-3">
+            <h3 className="font-serif text-lg text-muted-foreground mb-4 italic">
               {currentEntry.date}
             </h3>
             <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4" />
+              <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-full">
+                <Clock className="w-4 h-4 text-primary" />
                 <span>{currentEntry.time}</span>
               </div>
               {currentEntry.location && (
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
+                <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-full">
+                  <MapPin className="w-4 h-4 text-primary" />
                   <span>{currentEntry.location}</span>
                 </div>
               )}
             </div>
           </div>
 
-          {/* John Elia Shayari */}
+          {/* John Elia Shayari with enhanced styling */}
           {shayari && (
-            <div className="mb-6 p-4 bg-gradient-to-r from-rose-50/80 to-amber-50/80 dark:from-rose-950/20 dark:to-amber-950/20 rounded-lg border border-rose-200/50 dark:border-rose-800/30">
-              <div className="flex items-start gap-3">
-                <Quote className="w-5 h-5 text-rose-500 dark:text-rose-400 mt-1 flex-shrink-0" />
-                <div className="flex-1 space-y-3">
-                  {/* Urdu */}
-                  <p className="text-foreground leading-relaxed font-serif text-right" dir="rtl" style={{ fontFamily: "'Noto Nastaliq Urdu', serif" }}>
+            <div className="mb-8 p-5 bg-gradient-to-r from-accent/30 to-primary/10 rounded-xl border border-primary/20 elegant-card">
+              <div className="flex items-start gap-4">
+                <div className="p-2 bg-primary/20 rounded-full">
+                  <Quote className="w-5 h-5 text-primary" />
+                </div>
+                <div className="flex-1 space-y-4">
+                  <p className="text-foreground leading-relaxed font-serif text-lg text-right ink-text" dir="rtl" style={{ fontFamily: "'Noto Nastaliq Urdu', serif" }}>
                     {shayari.urdu.split('\n').map((line, i) => (
                       <span key={i}>
                         {line}
@@ -192,8 +218,7 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
                       </span>
                     ))}
                   </p>
-                  {/* English */}
-                  <p className="text-muted-foreground leading-relaxed font-serif text-sm italic">
+                  <p className="text-muted-foreground leading-relaxed font-serif text-sm italic border-t border-primary/10 pt-3">
                     {shayari.english.split('\n').map((line, i) => (
                       <span key={i}>
                         {line}
@@ -201,23 +226,23 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
                       </span>
                     ))}
                   </p>
-                  <p className="text-xs text-muted-foreground mt-2 text-right">— John Elia (جان ایلیا)</p>
+                  <p className="text-xs text-muted-foreground/70 text-right font-medium">— John Elia (جان ایلیا)</p>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Media Icons */}
+          {/* Media Icons with improved styling */}
           {(currentEntry.photos?.length || currentEntry.music || currentEntry.calendarEvent) && (
-            <div className="flex gap-3 mb-6">
+            <div className="flex gap-3 mb-6 flex-wrap">
               {currentEntry.photos && currentEntry.photos.length > 0 && (
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowPhotos(!showPhotos)}
-                  className="bg-purple-100/50 dark:bg-purple-900/20 hover:bg-purple-200/50 dark:hover:bg-purple-900/30"
+                  className="bg-accent/50 hover:bg-accent/70 border border-primary/20 transition-all duration-300 hover:scale-105"
                 >
-                  <Camera className="w-4 h-4 mr-2 text-purple-600 dark:text-purple-400" />
+                  <Camera className="w-4 h-4 mr-2 text-primary" />
                   {currentEntry.photos.length} Photos
                 </Button>
               )}
@@ -226,17 +251,16 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
                   variant="ghost"
                   size="sm"
                   onClick={() => {
-                    // Try to open music URL if it's a link
                     if (currentEntry.music?.startsWith('http')) {
                       window.open(currentEntry.music, '_blank');
                     } else {
                       toast({ title: "🎵 Now Playing", description: currentEntry.music });
                     }
                   }}
-                  className="bg-green-100/50 dark:bg-green-900/20 hover:bg-green-200/50 dark:hover:bg-green-900/30"
+                  className="bg-accent/50 hover:bg-accent/70 border border-primary/20 transition-all duration-300 hover:scale-105"
                 >
-                  <Music className="w-4 h-4 mr-2 text-green-600 dark:text-green-400" />
-                  {currentEntry.music?.length > 30 ? currentEntry.music.substring(0, 30) + '...' : currentEntry.music}
+                  <Music className="w-4 h-4 mr-2 text-primary" />
+                  {currentEntry.music?.length > 25 ? currentEntry.music.substring(0, 25) + '...' : currentEntry.music}
                 </Button>
               )}
               {currentEntry.calendarEvent && (
@@ -244,40 +268,42 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
                   variant="ghost"
                   size="sm"
                   onClick={() => toast({ title: "Calendar Event", description: currentEntry.calendarEvent })}
-                  className="bg-blue-100/50 dark:bg-blue-900/20 hover:bg-blue-200/50 dark:hover:bg-blue-900/30"
+                  className="bg-accent/50 hover:bg-accent/70 border border-primary/20 transition-all duration-300 hover:scale-105"
                 >
-                  <Calendar className="w-4 h-4 mr-2 text-blue-600 dark:text-blue-400" />
+                  <Calendar className="w-4 h-4 mr-2 text-primary" />
                   Event
                 </Button>
               )}
             </div>
           )}
 
-          {/* Photos */}
+          {/* Photos with improved grid */}
           {currentEntry.photos && currentEntry.photos.length > 0 && showPhotos && (
-            <div className="mb-6 grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div className="mb-8 grid grid-cols-2 md:grid-cols-3 gap-4">
               {currentEntry.photos.map((photo, index) => (
-                <img
-                  key={index}
-                  src={photo}
-                  alt={`Memory from ${currentEntry.date}`}
-                  className="w-full h-32 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow"
-                />
+                <div key={index} className="group relative overflow-hidden rounded-xl elegant-card">
+                  <img
+                    src={photo}
+                    alt={`Memory from ${currentEntry.date}`}
+                    className="w-full h-36 object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </div>
               ))}
             </div>
           )}
 
-          {/* Auto-generated content */}
-          <div className="mb-6">
-            <p className="text-foreground leading-relaxed text-lg font-serif">
+          {/* Main content with enhanced typography */}
+          <div className="mb-8">
+            <p className="text-foreground leading-relaxed text-lg font-serif ink-text first-letter:text-4xl first-letter:font-display first-letter:text-primary first-letter:float-left first-letter:mr-3 first-letter:mt-1">
               {currentEntry.autoText}
             </p>
           </div>
 
-          {/* User-added context */}
+          {/* User-added context with improved styling */}
           {currentEntry.userText && (
-            <div className="mb-6 p-4 bg-amber-100/50 dark:bg-amber-900/10 rounded-lg border-l-4 border-amber-600">
-              <p className="text-foreground italic leading-relaxed font-serif">
+            <div className="mb-8 p-5 bg-gradient-to-r from-muted/80 to-muted/40 rounded-xl border-l-4 border-primary">
+              <p className="text-foreground italic leading-relaxed font-serif text-lg ink-text">
                 "{currentEntry.userText}"
               </p>
             </div>
@@ -285,9 +311,10 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
 
           {/* Smart prompts */}
           {currentEntry.prompts && currentEntry.prompts.length > 0 && (
-            <div className="mb-6">
-              <p className="text-sm text-muted-foreground mb-3 font-medium">
-                Reflect on this moment:
+            <div className="mb-8">
+              <p className="text-sm text-muted-foreground mb-4 font-medium flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-primary" />
+                Reflect on this moment
               </p>
               <div className="flex flex-wrap gap-2">
                 {currentEntry.prompts.map((prompt, index) => (
@@ -295,7 +322,7 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
                     key={index}
                     variant="outline"
                     size="sm"
-                    className="text-xs border-amber-300 dark:border-amber-700 hover:bg-amber-100 dark:hover:bg-amber-900/20"
+                    className="text-xs border-primary/30 hover:bg-primary/10 hover:border-primary/50 transition-all duration-300"
                   >
                     {prompt}
                   </Button>
@@ -304,26 +331,26 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
             </div>
           )}
 
-          {/* AI Insight Section */}
-          <div className="mb-6 pt-4 border-t-2 border-amber-800/20">
+          {/* AI Insight Section with enhanced styling */}
+          <div className="mb-8 pt-6 border-t border-primary/20">
             {!aiInsight ? (
               <Button
                 onClick={generateInsight}
                 disabled={isGenerating}
                 variant="outline"
-                className="w-full border-amber-300 dark:border-amber-700 hover:bg-amber-100 dark:hover:bg-amber-900/20"
+                className="w-full border-primary/30 hover:bg-primary/10 hover:border-primary/50 group transition-all duration-300"
               >
-                <Sparkles className="w-4 h-4 mr-2" />
-                {isGenerating ? "Generating Insight..." : "Generate AI Insight ✨"}
+                <Sparkles className={`w-4 h-4 mr-2 text-primary ${isGenerating ? 'animate-spin' : 'group-hover:rotate-12 transition-transform'}`} />
+                {isGenerating ? "Generating Insight..." : "Generate AI Insight"}
               </Button>
             ) : (
-              <div className="p-4 bg-amber-100/50 dark:bg-amber-900/10 rounded-lg animate-fade-in">
-                <div className="flex items-start gap-2">
-                  <Sparkles className="w-5 h-5 text-amber-600 mt-1" />
+              <div className="p-5 bg-gradient-to-r from-primary/10 to-accent/10 rounded-xl animate-fade-in border border-primary/20">
+                <div className="flex items-start gap-4">
+                  <div className="p-2 bg-primary/20 rounded-full">
+                    <Sparkles className="w-5 h-5 text-primary" />
+                  </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-amber-800 dark:text-amber-400 mb-1">
-                      AI Reflection
-                    </p>
+                    <p className="text-sm font-medium text-primary mb-2">AI Reflection</p>
                     <p className="text-sm text-muted-foreground leading-relaxed font-serif">
                       {aiInsight}
                     </p>
@@ -333,14 +360,14 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
             )}
           </div>
 
-          {/* Tags and Actions */}
-          <div className="flex items-center justify-between pt-4 border-t-2 border-amber-800/20 flex-wrap gap-4">
+          {/* Tags and Actions with improved layout */}
+          <div className="flex items-center justify-between pt-6 border-t border-primary/20 flex-wrap gap-4">
             <div className="flex gap-2 flex-wrap">
               {currentEntry.tags.map((tag) => (
                 <Badge
                   key={tag}
                   variant="secondary"
-                  className="text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300"
+                  className="text-xs bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-colors"
                 >
                   #{tag}
                 </Badge>
@@ -351,7 +378,7 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
                 variant="ghost"
                 size="sm"
                 onClick={() => onEditEntry(currentEntry)}
-                className="hover:bg-amber-100 dark:hover:bg-amber-900/20"
+                className="hover:bg-primary/10 hover:text-primary transition-colors"
               >
                 <Edit className="w-4 h-4 mr-2" />
                 Edit
@@ -361,7 +388,7 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400"
+                    className="hover:bg-destructive/10 hover:text-destructive transition-colors"
                   >
                     <Trash2 className="w-4 h-4 mr-2" />
                     Delete
@@ -389,7 +416,7 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
                 variant="ghost"
                 size="sm"
                 onClick={() => onAddContext(currentEntry.id)}
-                className="hover:bg-amber-100 dark:hover:bg-amber-900/20"
+                className="hover:bg-primary/10 hover:text-primary transition-colors"
               >
                 <MessageCircle className="w-4 h-4 mr-2" />
                 Add thoughts
@@ -398,38 +425,61 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
           </div>
         </div>
 
-        {/* Page Number */}
-        <div className="absolute bottom-4 right-8 text-sm text-muted-foreground font-serif">
-          Page {currentPage + 1} of {entries.length}
+        {/* Page Number with decorative styling */}
+        <div className="absolute bottom-6 right-10 flex items-center gap-3">
+          <div className="w-12 h-[1px] bg-gradient-to-r from-transparent to-primary/30" />
+          <span className="text-sm text-muted-foreground font-serif italic">
+            Page {currentPage + 1} of {entries.length}
+          </span>
         </div>
       </div>
 
-      {/* Navigation Controls */}
-      <div className="flex items-center justify-between mt-6 px-4">
+      {/* Navigation Controls with enhanced styling */}
+      <div className="flex items-center justify-between mt-8 px-4">
         <Button
           onClick={goToPreviousPage}
-          disabled={currentPage === 0}
+          disabled={currentPage === 0 || isPageTurning}
           variant="outline"
           size="lg"
-          className="border-amber-300 dark:border-amber-700 hover:bg-amber-100 dark:hover:bg-amber-900/20"
+          className="border-primary/30 hover:bg-primary/10 hover:border-primary/50 disabled:opacity-40 transition-all duration-300 group"
         >
-          <ChevronLeft className="w-5 h-5 mr-2" />
+          <ChevronLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
           Previous
         </Button>
         
-        <div className="text-sm text-muted-foreground">
-          {currentPage + 1} / {entries.length}
+        <div className="flex items-center gap-2">
+          {entries.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => {
+                if (!isPageTurning && index !== currentPage) {
+                  setIsPageTurning(true);
+                  setTimeout(() => {
+                    setCurrentPage(index);
+                    setAiInsight("");
+                    setIsPageTurning(false);
+                  }, 300);
+                }
+              }}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                index === currentPage
+                  ? 'bg-primary w-6'
+                  : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
+              }`}
+              aria-label={`Go to page ${index + 1}`}
+            />
+          ))}
         </div>
 
         <Button
           onClick={goToNextPage}
-          disabled={currentPage === entries.length - 1}
+          disabled={currentPage === entries.length - 1 || isPageTurning}
           variant="outline"
           size="lg"
-          className="border-amber-300 dark:border-amber-700 hover:bg-amber-100 dark:hover:bg-amber-900/20"
+          className="border-primary/30 hover:bg-primary/10 hover:border-primary/50 disabled:opacity-40 transition-all duration-300 group"
         >
           Next
-          <ChevronRight className="w-5 h-5 ml-2" />
+          <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
         </Button>
       </div>
     </div>

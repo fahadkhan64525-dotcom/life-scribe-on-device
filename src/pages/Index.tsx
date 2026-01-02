@@ -291,9 +291,15 @@ const Index = () => {
   if (loading) {
     return (
       <div className="min-h-screen theme-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading your diary...</p>
+        <div className="text-center animate-fade-in">
+          <div className="relative w-20 h-20 mx-auto mb-6">
+            <div className="absolute inset-0 rounded-full bg-gradient-elegant opacity-20 animate-ping" />
+            <div className="absolute inset-2 rounded-full bg-gradient-elegant opacity-40 animate-pulse" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <BookOpen className="w-10 h-10 text-primary animate-pulse" />
+            </div>
+          </div>
+          <p className="text-lg text-muted-foreground font-serif">Opening your journal...</p>
         </div>
       </div>
     );
@@ -314,14 +320,19 @@ const Index = () => {
       <main className="max-w-4xl mx-auto px-6 py-section relative">
         <PrivacyBanner />
         
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-title font-display font-medium text-foreground tracking-wide">Whispers of Time</h2>
+        <div className="flex items-center justify-between mb-10">
+          <div>
+            <h2 className="text-title font-display font-medium text-foreground tracking-wide mb-1">Your Stories</h2>
+            <p className="text-sm text-muted-foreground">
+              {entries.length} {entries.length === 1 ? 'memory' : 'memories'} captured
+            </p>
+          </div>
           <div className="flex gap-3">
             <Button 
               variant="ghost" 
               size="icon"
               onClick={handleLogout}
-              className="hover:bg-destructive/10 hover:text-destructive"
+              className="hover:bg-destructive/10 hover:text-destructive transition-all duration-300"
               title="Logout"
             >
               <LogOut className="w-5 h-5" />
@@ -329,18 +340,18 @@ const Index = () => {
             <Button 
               variant="outline" 
               onClick={() => setIsWritingModalOpen(true)}
-              className="glass border-journal-accent/30 hover:shadow-gentle hover-glow"
+              className="glass border-primary/30 hover:shadow-gentle hover-glow group transition-all duration-300"
             >
-              <PenTool className="w-5 h-5 mr-2 text-purple-500" />
+              <PenTool className="w-5 h-5 mr-2 text-primary group-hover:rotate-12 transition-transform" />
               <span className="hidden sm:inline">Write</span>
             </Button>
             <Button 
-              variant="elegant"
-              className="shadow-soft"
+              variant="default"
+              className="shadow-soft bg-gradient-elegant hover:shadow-elegant transition-all duration-300 group"
               onClick={() => setIsWritingModalOpen(true)}
             >
-              <Plus className="w-5 h-5 mr-2 text-emerald-300" />
-              <span className="hidden sm:inline">Add Entry</span>
+              <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
+              <span className="hidden sm:inline">New Entry</span>
             </Button>
           </div>
         </div>
@@ -353,13 +364,23 @@ const Index = () => {
             onDeleteEntry={handleDeleteEntry}
           />
         ) : (
-          <div className="text-center py-16">
-            <div className="w-24 h-24 bg-gradient-elegant rounded-full mx-auto mb-6 flex items-center justify-center shadow-elegant">
-              <BookOpen className="w-12 h-12 text-primary-foreground animate-pulse-slow" />
+          <div className="text-center py-20 animate-fade-in">
+            <div className="relative w-28 h-28 mx-auto mb-8">
+              <div className="absolute inset-0 rounded-full bg-gradient-elegant opacity-20" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <BookOpen className="w-14 h-14 text-primary pulse-soft" />
+              </div>
             </div>
-            <p className="text-journal-text-soft mb-6 text-lg">No entries found matching your search.</p>
-            <Button variant="elegant" onClick={() => setSearchQuery("")}>
-              Clear search
+            <h3 className="text-xl font-display text-foreground mb-3">No entries found</h3>
+            <p className="text-muted-foreground mb-8 max-w-sm mx-auto">
+              {searchQuery ? "Try adjusting your search terms" : "Start your journaling journey today"}
+            </p>
+            <Button 
+              variant="default" 
+              onClick={() => searchQuery ? setSearchQuery("") : setIsWritingModalOpen(true)}
+              className="bg-gradient-elegant hover:shadow-elegant transition-all duration-300"
+            >
+              {searchQuery ? "Clear search" : "Write your first entry"}
             </Button>
           </div>
         )}
