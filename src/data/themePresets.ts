@@ -281,6 +281,23 @@ export const themePresets: ThemePreset[] = [
     },
   },
   {
+    id: "normal",
+    label: "Normal",
+    category: "light",
+    description: "Classic neutral theme for everyday use",
+    colors: {
+      primary: "215 25% 32%",
+      primaryForeground: "0 0% 100%",
+      accent: "215 20% 48%",
+      background: "220 14% 96%",
+      foreground: "215 25% 12%",
+      card: "0 0% 100%",
+      cardForeground: "215 25% 12%",
+      muted: "220 12% 91%",
+      mutedForeground: "215 15% 48%",
+    },
+  },
+  {
     id: "minimal",
     label: "Minimal",
     category: "light",
