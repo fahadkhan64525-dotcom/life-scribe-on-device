@@ -39,6 +39,21 @@ export const johnEliaShayari: Record<string, Shayari[]> = {
       english: "The peak of happiness is when sorrow is forgotten\nThis state is strange, it has no name",
       poet: "Parveen Shakir"
     },
+    {
+      urdu: "مسکراہٹ ہے لبوں پر آج کل\nشاید کوئی خوشی مل گئی ہے",
+      english: "There's a smile on my lips these days\nPerhaps I've found some happiness",
+      poet: "John Elia"
+    },
+    {
+      urdu: "خوشیاں بانٹو تو بڑھتی ہیں\nیہ دولت عجیب ہے",
+      english: "Share happiness and it grows\nThis wealth is strange",
+      poet: "Ahmed Faraz"
+    },
+    {
+      urdu: "دل میں اک چراغ جل رہا ہے\nخوشی کا موسم آ رہا ہے",
+      english: "A lamp burns in my heart\nThe season of happiness is coming",
+      poet: "Faiz Ahmed Faiz"
+    },
   ],
   sad: [
     {
@@ -85,6 +100,21 @@ export const johnEliaShayari: Record<string, Shayari[]> = {
       urdu: "تمہیں بھولنا چاہا تو یہ حال ہوا\nتمہاری یاد کا ہر زخم کمال ہوا",
       english: "When I tried to forget you, this happened\nEvery wound of your memory became perfection",
       poet: "Parveen Shakir"
+    },
+    {
+      urdu: "دل کے آئینے میں ہے تصویرِ یار\nجب ذرا گردن جھکائی دیکھ لی",
+      english: "In the mirror of the heart is the beloved's image\nWhen I bowed my head, I saw it",
+      poet: "Mirza Ghalib"
+    },
+    {
+      urdu: "رات بھر دردِ دل کا حال رہا\nایک آنسو بھی چھلک نہ پایا",
+      english: "All night the heart's pain continued\nNot even a single tear could fall",
+      poet: "John Elia"
+    },
+    {
+      urdu: "غم میں ہنسنا سیکھا ہے میں نے\nآنسو چھپانے کا ہنر آ گیا",
+      english: "I've learned to smile in sorrow\nI've mastered the art of hiding tears",
+      poet: "Ahmed Faraz"
     },
   ],
   anxious: [
@@ -139,6 +169,16 @@ export const johnEliaShayari: Record<string, Shayari[]> = {
       urdu: "جو کچھ ملا خدا سے، سب کچھ نوازش ہے\nشکوہ کیا کریں، یہ تو محبت کی شروعات ہے",
       english: "Whatever I received from God, all is a blessing\nWhy complain, this is just the beginning of love",
       poet: "Parveen Shakir"
+    },
+    {
+      urdu: "الحمدللہ ہر حال میں\nیہی سکون کا راز ہے",
+      english: "Alhamdulillah in every state\nThis is the secret of peace",
+      poet: "John Elia"
+    },
+    {
+      urdu: "شکرگزار ہوں ان لوگوں کا جو ملے\nہر ایک نے کچھ نہ کچھ سکھایا",
+      english: "I'm grateful for the people I met\nEach one taught me something",
+      poet: "Ahmed Faraz"
     },
   ],
   angry: [
@@ -198,6 +238,16 @@ export const johnEliaShayari: Record<string, Shayari[]> = {
       urdu: "چاند کی چاندنی، ستاروں کی روشنی\nیہ رات بھی کتنی پرسکون ہے",
       english: "The moonlight, the starlight\nHow peaceful this night is",
       poet: "Parveen Shakir"
+    },
+    {
+      urdu: "نہ کوئی شور ہے، نہ کوئی غوغا\nبس سکون ہے اور میں ہوں",
+      english: "No noise, no commotion\nJust peace and me",
+      poet: "John Elia"
+    },
+    {
+      urdu: "ذہن کی خاموشی میں خدا ملتا ہے\nیہ سکون کسی دولت سے کم نہیں",
+      english: "In the silence of the mind, one finds God\nThis peace is no less than any wealth",
+      poet: "Mirza Ghalib"
     },
   ],
   excited: [
@@ -262,6 +312,16 @@ export const johnEliaShayari: Record<string, Shayari[]> = {
       urdu: "تنہا ہوں میں مگر تنہا نہیں\nتیری یادیں ہیں میرے ساتھ یہاں",
       english: "I am alone but not lonely\nYour memories are here with me",
       poet: "Ahmed Faraz"
+    },
+    {
+      urdu: "بھیڑ میں بھی تنہا ہوں میں\nکوئی سمجھے نہ میری خاموشی",
+      english: "I am alone even in a crowd\nNo one understands my silence",
+      poet: "John Elia"
+    },
+    {
+      urdu: "چار دیواری میں قید ہوں\nمگر دل آزاد ہے",
+      english: "I am imprisoned within four walls\nBut my heart is free",
+      poet: "Faiz Ahmed Faiz"
     },
   ],
   hopeful: [
@@ -363,6 +423,21 @@ export const johnEliaShayari: Record<string, Shayari[]> = {
       urdu: "تجھے چاہنا میری عادت ہے\nتیری یاد میری عبادت ہے",
       english: "Loving you is my habit\nYour memory is my worship",
       poet: "Ahmed Faraz"
+    },
+    {
+      urdu: "محبت میں کوئی زبان نہیں ہوتی\nدل کی بات دل سمجھ لیتا ہے",
+      english: "Love has no language\nThe heart understands what the heart says",
+      poet: "John Elia"
+    },
+    {
+      urdu: "تیرے بغیر یہ جہاں ادھورا ہے\nتو ہے تو ہر شے میں نورا ہے",
+      english: "Without you this world is incomplete\nWith you, there is light in everything",
+      poet: "Mirza Ghalib"
+    },
+    {
+      urdu: "عشق کی راہ میں منزل کوئی نہیں\nچلتے رہنا ہی منزل ہے",
+      english: "In the path of love there is no destination\nKeeping walking is the destination",
+      poet: "Faiz Ahmed Faiz"
     },
   ],
   nostalgic: [
