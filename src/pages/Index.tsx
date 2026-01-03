@@ -10,6 +10,42 @@ import { Plus, PenTool, LogOut, BookOpen } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
+// Helper function to get mood-specific reflection prompts
+const getMoodPrompts = (mood?: string): string[] => {
+  const moodLower = mood?.toLowerCase() || "";
+  
+  switch (moodLower) {
+    case "happy":
+      return ["What made you smile today?", "Who shared this joy with you?", "How can you recreate this feeling?"];
+    case "sad":
+      return ["What would comfort you right now?", "Is there someone you'd like to talk to?", "What small thing might help?"];
+    case "anxious":
+      return ["What's one thing within your control?", "Have you taken deep breaths?", "What usually calms you?"];
+    case "grateful":
+      return ["What are three things you're thankful for?", "Who made a difference today?", "What simple pleasures did you enjoy?"];
+    case "angry":
+      return ["What triggered this feeling?", "What would help release this tension?", "Is there another perspective?"];
+    case "peaceful":
+      return ["What brought you this calm?", "How can you preserve this moment?", "What sounds surround you?"];
+    case "excited":
+      return ["What are you looking forward to?", "Who will you share this with?", "What's the next step?"];
+    case "lonely":
+      return ["What connection would you like?", "Have you reached out to anyone?", "What activity might help?"];
+    case "hopeful":
+      return ["What possibilities excite you?", "What steps can you take?", "Who inspires your hope?"];
+    case "reflective":
+      return ["What lesson did today teach you?", "How have you grown recently?", "What patterns do you notice?"];
+    case "love":
+      return ["Who is on your mind?", "How did you show love today?", "What memory makes you smile?"];
+    case "nostalgic":
+      return ["What memory came up?", "What do you miss most?", "How has that time shaped you?"];
+    case "confused":
+      return ["What would clarity look like?", "Who could offer guidance?", "What do you need to know?"];
+    default:
+      return ["What else would you like to remember?", "How did this moment feel?", "What made today unique?"];
+  }
+};
+
 // Mock data for demonstration
 const mockEntries = [
   {
@@ -77,28 +113,33 @@ const Index = () => {
 
       if (error) throw error;
 
-      const formattedEntries = data?.map((entry: any) => ({
-        id: entry.id,
-        title: entry.title,
-        date: new Date(entry.created_at).toLocaleDateString("en-US", {
-          weekday: "long",
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        }),
-        time: new Date(entry.created_at).toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-        }),
-        location: entry.location,
-        photos: entry.photos || [],
-        music: entry.music,
-        autoText: entry.content,
-        userText: entry.mood ? `Feeling ${entry.mood.toLowerCase()}` : undefined,
-        mood: entry.mood,
-        tags: entry.tags || [],
-        prompts: ["What else would you like to add?", "How did this make you feel?"],
-      })) || [];
+      const formattedEntries = data?.map((entry: any) => {
+        // Generate mood-specific prompts
+        const moodPrompts = getMoodPrompts(entry.mood);
+        
+        return {
+          id: entry.id,
+          title: entry.title,
+          date: new Date(entry.created_at).toLocaleDateString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          }),
+          time: new Date(entry.created_at).toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+          }),
+          location: entry.location,
+          photos: entry.photos || [],
+          music: entry.music,
+          autoText: entry.content,
+          userText: entry.mood ? `Feeling ${entry.mood.toLowerCase()}` : undefined,
+          mood: entry.mood,
+          tags: entry.tags || [],
+          prompts: moodPrompts,
+        };
+      }) || [];
 
       setEntries(formattedEntries);
     } catch (error: any) {

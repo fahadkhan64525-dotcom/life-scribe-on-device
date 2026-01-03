@@ -51,8 +51,8 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
 
   // Get mood-based shayari
   const shayari = useMemo(() => {
-    if (!currentEntry) return "";
-    const mood = currentEntry.prompts?.[0] || "default";
+    if (!currentEntry) return null;
+    const mood = (currentEntry as any).mood || "default";
     return getShayariForMood(mood);
   }, [currentEntry, currentPage]);
 
