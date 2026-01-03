@@ -281,6 +281,23 @@ export const themePresets: ThemePreset[] = [
     },
   },
   {
+    id: "original",
+    label: "Original",
+    category: "light",
+    description: "The classic diary theme you know and love",
+    colors: {
+      primary: "222 47% 51%",
+      primaryForeground: "0 0% 100%",
+      accent: "210 40% 58%",
+      background: "0 0% 100%",
+      foreground: "222 47% 11%",
+      card: "0 0% 100%",
+      cardForeground: "222 47% 11%",
+      muted: "210 40% 96%",
+      mutedForeground: "215 16% 47%",
+    },
+  },
+  {
     id: "normal",
     label: "Normal",
     category: "light",
