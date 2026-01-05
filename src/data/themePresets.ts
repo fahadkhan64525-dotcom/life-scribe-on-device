@@ -7,6 +7,12 @@ import magicBook from "@/assets/themes/magic-book.jpg";
 import nightMountain from "@/assets/themes/night-mountain.jpg";
 import pinkClouds from "@/assets/themes/pink-clouds.jpg";
 import lakeMountains from "@/assets/themes/lake-mountains.jpg";
+import cherryBlossom from "@/assets/themes/cherry-blossom.jpg";
+import northernLights from "@/assets/themes/northern-lights.jpg";
+import rainyWindow from "@/assets/themes/rainy-window.jpg";
+import autumnForest from "@/assets/themes/autumn-forest.jpg";
+import starryDesert from "@/assets/themes/starry-desert.jpg";
+import beachSunset from "@/assets/themes/beach-sunset.jpg";
 
 export interface ThemePreset {
   id: string;
@@ -137,6 +143,60 @@ export const themePresets: ThemePreset[] = [
       mutedForeground: "42 20% 62%",
     },
   },
+  {
+    id: "cherry-blossom",
+    label: "Cherry Blossom",
+    category: "hot",
+    image: cherryBlossom,
+    description: "Serene Japanese spring with falling sakura petals",
+    colors: {
+      primary: "340 75% 60%",
+      primaryForeground: "0 0% 100%",
+      accent: "25 80% 55%",
+      background: "340 35% 95%",
+      foreground: "340 35% 18%",
+      card: "345 30% 98%",
+      cardForeground: "340 35% 18%",
+      muted: "340 25% 92%",
+      mutedForeground: "340 25% 45%",
+    },
+  },
+  {
+    id: "beach-sunset",
+    label: "Beach Sunset",
+    category: "hot",
+    image: beachSunset,
+    description: "Tropical paradise with palm trees at dusk",
+    colors: {
+      primary: "15 85% 55%",
+      primaryForeground: "0 0% 100%",
+      accent: "340 75% 58%",
+      background: "15 35% 12%",
+      foreground: "20 25% 95%",
+      card: "15 30% 16%",
+      cardForeground: "20 25% 95%",
+      muted: "15 25% 20%",
+      mutedForeground: "20 20% 65%",
+    },
+  },
+  {
+    id: "autumn-forest",
+    label: "Autumn Forest",
+    category: "hot",
+    image: autumnForest,
+    description: "Golden fall leaves with magical sunlight",
+    colors: {
+      primary: "28 85% 52%",
+      primaryForeground: "0 0% 100%",
+      accent: "45 80% 48%",
+      background: "30 30% 96%",
+      foreground: "28 35% 16%",
+      card: "32 28% 98%",
+      cardForeground: "28 35% 16%",
+      muted: "30 25% 92%",
+      mutedForeground: "28 25% 42%",
+    },
+  },
 
   // DARK Themes (Elegant and sophisticated)
   {
@@ -155,6 +215,60 @@ export const themePresets: ThemePreset[] = [
       cardForeground: "210 25% 96%",
       muted: "215 45% 16%",
       mutedForeground: "210 20% 62%",
+    },
+  },
+  {
+    id: "northern-lights",
+    label: "Northern Lights",
+    category: "dark",
+    image: northernLights,
+    description: "Magical aurora borealis dancing over mountains",
+    colors: {
+      primary: "160 75% 50%",
+      primaryForeground: "0 0% 100%",
+      accent: "280 70% 60%",
+      background: "220 50% 8%",
+      foreground: "180 25% 96%",
+      card: "220 45% 12%",
+      cardForeground: "180 25% 96%",
+      muted: "220 40% 16%",
+      mutedForeground: "180 20% 62%",
+    },
+  },
+  {
+    id: "starry-desert",
+    label: "Starry Desert",
+    category: "dark",
+    image: starryDesert,
+    description: "Milky way galaxy over peaceful sand dunes",
+    colors: {
+      primary: "270 65% 58%",
+      primaryForeground: "0 0% 100%",
+      accent: "320 60% 55%",
+      background: "260 45% 8%",
+      foreground: "270 20% 96%",
+      card: "260 40% 12%",
+      cardForeground: "270 20% 96%",
+      muted: "260 35% 16%",
+      mutedForeground: "270 15% 60%",
+    },
+  },
+  {
+    id: "rainy-window",
+    label: "Rainy Window",
+    category: "dark",
+    image: rainyWindow,
+    description: "Cozy raindrops on glass with warm bokeh lights",
+    colors: {
+      primary: "35 70% 55%",
+      primaryForeground: "0 0% 100%",
+      accent: "195 50% 45%",
+      background: "200 35% 10%",
+      foreground: "40 20% 94%",
+      card: "200 30% 14%",
+      cardForeground: "40 20% 94%",
+      muted: "200 25% 18%",
+      mutedForeground: "40 15% 60%",
     },
   },
   {
