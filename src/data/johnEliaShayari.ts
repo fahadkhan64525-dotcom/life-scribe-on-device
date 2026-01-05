@@ -10,70 +10,45 @@ interface Shayari {
 export const johnEliaShayari: Record<string, Shayari[]> = {
   happy: [
     {
-      urdu: "خوشی کا یہ عالم ہے کہ دل میں سما نہیں سکتی\nیہ خوشی بھی عجب ہے کہ کہیں جا نہیں سکتی",
-      english: "Such is the state of joy that it cannot fit in my heart\nThis happiness is strange, it cannot go anywhere",
+      urdu: "ہنسی آئی تو آنکھوں میں چمک سی آ گئی\nتری یاد آئی تو دنیا بدل سی گئی",
+      english: "When laughter came, a sparkle lit my eyes\nWhen your memory came, the whole world transformed",
       poet: "John Elia"
     },
     {
-      urdu: "آج کچھ ایسا ہوا ہے کہ دل خوش ہے بہت\nشاید کوئی خواب سچا ہو گیا ہے",
-      english: "Something happened today that made my heart so happy\nPerhaps a dream has come true",
-      poet: "John Elia"
-    },
-    {
-      urdu: "زندگی میں کبھی کبھی ایسے لمحے آتے ہیں\nجب خوشیاں خود ہمیں ڈھونڈتی چلی آتی ہیں",
-      english: "Sometimes in life, such moments come\nWhen happiness itself comes searching for us",
-      poet: "John Elia"
-    },
-    {
-      urdu: "ہر خوشی میں تیرا چہرہ یاد آتا ہے\nتو نہیں تو یہ خوشی بھی ادھوری ہے",
-      english: "Your face comes to mind in every happiness\nWithout you, even this joy is incomplete",
+      urdu: "وہ مسکرائے تو گلستاں کھل گیا\nہر خزاں میں بھی بہاروں کا سماں ہو گیا",
+      english: "When they smiled, the garden bloomed\nEven in autumn, spring's splendor appeared",
       poet: "Ahmed Faraz"
     },
     {
-      urdu: "آج پھر دل نے کہا ہے کہ خوش رہو\nزندگی گزرتی ہے تو گزرنے دو",
-      english: "Today my heart said again, be happy\nIf life passes, let it pass",
+      urdu: "خوشی اتنی ہے کہ سینے میں سمائے نہیں\nیہ دل ہے کہ اب کسی غم کو پہچانے نہیں",
+      english: "Such joy that my heart cannot contain it\nThis heart no longer recognizes any sorrow",
+      poet: "Mirza Ghalib"
+    },
+    {
+      urdu: "زندگی کی بہاریں لوٹ آئیں ایسے\nجیسے صحرا میں کہیں چشمہ نکل آیا ہو",
+      english: "Life's springs returned in such a way\nAs if a fountain emerged in the desert",
       poet: "Faiz Ahmed Faiz"
     },
     {
-      urdu: "خوشی کی انتہا ہے یہ کہ غم بھی یاد نہیں\nیہ کیفیت عجب ہے، کوئی نام نہیں",
-      english: "The peak of happiness is when sorrow is forgotten\nThis state is strange, it has no name",
+      urdu: "تیرے ملنے سے پہلے تیرے ملنے کے بعد\nسب کچھ بدلا بدلا سا لگتا ہے مجھے",
+      english: "Before meeting you and after meeting you\nEverything feels beautifully changed to me",
       poet: "Parveen Shakir"
     },
     {
-      urdu: "مسکراہٹ ہے لبوں پر آج کل\nشاید کوئی خوشی مل گئی ہے",
-      english: "There's a smile on my lips these days\nPerhaps I've found some happiness",
+      urdu: "کتنی پیاری ہے یہ دنیا آج\nہر طرف نور ہی نور ہے",
+      english: "How lovely the world is today\nThere is light everywhere",
       poet: "John Elia"
     },
     {
-      urdu: "خوشیاں بانٹو تو بڑھتی ہیں\nیہ دولت عجیب ہے",
-      english: "Share happiness and it grows\nThis wealth is strange",
+      urdu: "جب سے دل کو سکون ملا ہے\nہر لمحہ جشن سا لگتا ہے",
+      english: "Since the heart found peace\nEvery moment feels like a celebration",
       poet: "Ahmed Faraz"
-    },
-    {
-      urdu: "دل میں اک چراغ جل رہا ہے\nخوشی کا موسم آ رہا ہے",
-      english: "A lamp burns in my heart\nThe season of happiness is coming",
-      poet: "Faiz Ahmed Faiz"
     },
   ],
   sad: [
     {
-      urdu: "بہت مشکل ہے دل سے بھولنا\nجو دل میں رہتا ہے وہ کہاں جاتا ہے",
-      english: "It is very difficult to forget from the heart\nWhat lives in the heart, where can it go?",
-      poet: "John Elia"
-    },
-    {
-      urdu: "غم کو اپنا بنا لیا میں نے\nاب خوشی آئے تو کہاں رکھوں",
-      english: "I have made sorrow my own\nNow if happiness comes, where do I keep it?",
-      poet: "John Elia"
-    },
-    {
-      urdu: "دل ٹوٹا تو کیا ہوا، ہم ٹوٹے نہیں\nزندگی کی راہ میں ہم رکے نہیں",
-      english: "So what if the heart broke, we did not break\nOn life's path, we did not stop",
-      poet: "John Elia"
-    },
-    {
-      urdu: "کتنا مشکل ہے زندگی میں اکیلے چلنا\nہر قدم پر کوئی یاد آ جاتی ہے",
-      english: "How difficult it is to walk alone in life\nAt every step, some memory returns",
+      urdu: "اشک آنکھوں میں کب نہیں آتے\nلہو آتا ہے جب نہیں آتے",
+      english: "When do tears not come to the eyes\nBlood comes when they don't",
       poet: "John Elia"
     },
     {
@@ -97,24 +72,29 @@ export const johnEliaShayari: Record<string, Shayari[]> = {
       poet: "Ahmed Faraz"
     },
     {
-      urdu: "تمہیں بھولنا چاہا تو یہ حال ہوا\nتمہاری یاد کا ہر زخم کمال ہوا",
-      english: "When I tried to forget you, this happened\nEvery wound of your memory became perfection",
-      poet: "Parveen Shakir"
-    },
-    {
-      urdu: "دل کے آئینے میں ہے تصویرِ یار\nجب ذرا گردن جھکائی دیکھ لی",
-      english: "In the mirror of the heart is the beloved's image\nWhen I bowed my head, I saw it",
+      urdu: "وہ فراق اور وہ وصال کہاں\nوہ شب و روز و ماہ و سال کہاں",
+      english: "Where is that separation and that union\nWhere are those nights, days, months and years",
       poet: "Mirza Ghalib"
     },
     {
-      urdu: "رات بھر دردِ دل کا حال رہا\nایک آنسو بھی چھلک نہ پایا",
-      english: "All night the heart's pain continued\nNot even a single tear could fall",
+      urdu: "میں نے دیکھے ہیں اُس کی آنکھوں میں آنسو\nاُن کا روپ بدل گیا، میرا قصور نہیں",
+      english: "I have seen tears in their eyes\nTheir form changed, it's not my fault",
       poet: "John Elia"
     },
     {
-      urdu: "غم میں ہنسنا سیکھا ہے میں نے\nآنسو چھپانے کا ہنر آ گیا",
-      english: "I've learned to smile in sorrow\nI've mastered the art of hiding tears",
-      poet: "Ahmed Faraz"
+      urdu: "کوئی دن گر زندگانی اور ہے\nاپنے جی میں ہم نے ٹھانی اور ہے",
+      english: "If life has a few more days\nWe have resolved something else in our heart",
+      poet: "Mirza Ghalib"
+    },
+    {
+      urdu: "غمِ ہستی کا اسد کس سے ہو جز مرگ علاج\nشمع ہر رنگ میں جلتی ہے سحر ہونے تک",
+      english: "What cure is there for life's sorrow except death\nThe candle burns in every color until dawn",
+      poet: "Mirza Ghalib"
+    },
+    {
+      urdu: "نہ گل نکلے نہ بو آئی بہار آئی نہ آئی\nقفس میں ہی گذر جاتی ہے عمر نالاں کی",
+      english: "No flower bloomed, no fragrance came, spring came or not\nLife passes in this cage, lamenting",
+      poet: "Faiz Ahmed Faiz"
     },
   ],
   anxious: [
@@ -146,39 +126,39 @@ export const johnEliaShayari: Record<string, Shayari[]> = {
   ],
   grateful: [
     {
-      urdu: "شکر ہے کہ زندگی نے دیا اتنا کچھ\nہم نے مانگا کم تھا، ملا بہت کچھ",
-      english: "Grateful that life gave so much\nWe asked for little, received so much more",
+      urdu: "تیری رحمت کے دریا بے حساب\nہم گنہگار تیرے در پہ کھڑے",
+      english: "The rivers of Your mercy are countless\nWe sinners stand at Your door",
+      poet: "Allama Iqbal"
+    },
+    {
+      urdu: "ہر نفس میں تیرا شکر ادا کروں\nاتنی توفیق کہاں میرے خدا",
+      english: "To thank You with every breath\nWhere do I have such ability, my Lord",
       poet: "John Elia"
     },
     {
-      urdu: "جو ملا اس کا شکر ہے\nجو نہیں ملا اس کی فکر نہیں",
-      english: "Grateful for what I received\nNo worry for what I didn't",
-      poet: "John Elia"
+      urdu: "تو نے بخشا جو درد تو ہم نے سہا\nتو نے دی جو خوشی تو ہم نے جیا",
+      english: "The pain You gave, we endured\nThe joy You gave, we lived",
+      poet: "Ahmed Faraz"
     },
     {
-      urdu: "زندگی کی ہر نعمت پر شکر ہے\nیہی سوچ میری طاقت ہے",
-      english: "Grateful for every blessing in life\nThis thought is my strength",
-      poet: "John Elia"
+      urdu: "شکر ہے تیرا کہ آنکھیں دیں مجھے\nورنہ یہ حسن کہاں نظر آتا",
+      english: "Thanks to You for giving me eyes\nOtherwise, where would I see this beauty",
+      poet: "Mirza Ghalib"
     },
     {
-      urdu: "شکر ہے جو تو ملا، شکر ہے جو درد ملا\nہر تجربہ زندگی کا ایک تحفہ ہے",
-      english: "Grateful that I found you, grateful for the pain too\nEvery experience is a gift from life",
+      urdu: "قطرے کو بخشا سمندر بننے کا ہنر\nتیرے کرم کا یہ اندازہ کیا کریں",
+      english: "You gave the drop the art of becoming an ocean\nHow do we measure such grace",
       poet: "Faiz Ahmed Faiz"
     },
     {
-      urdu: "جو کچھ ملا خدا سے، سب کچھ نوازش ہے\nشکوہ کیا کریں، یہ تو محبت کی شروعات ہے",
-      english: "Whatever I received from God, all is a blessing\nWhy complain, this is just the beginning of love",
+      urdu: "زندگی گزرتی ہے تو گزرنے دو\nہر سانس میں شکر ہے، یہ کافی ہے",
+      english: "If life passes, let it pass\nThere's gratitude in every breath, that's enough",
       poet: "Parveen Shakir"
     },
     {
-      urdu: "الحمدللہ ہر حال میں\nیہی سکون کا راز ہے",
-      english: "Alhamdulillah in every state\nThis is the secret of peace",
+      urdu: "جو ملا رب سے سب عطا ہے\nجو نہ ملا شاید امتحان ہے",
+      english: "What we received from the Lord is a gift\nWhat we didn't is perhaps a test",
       poet: "John Elia"
-    },
-    {
-      urdu: "شکرگزار ہوں ان لوگوں کا جو ملے\nہر ایک نے کچھ نہ کچھ سکھایا",
-      english: "I'm grateful for the people I met\nEach one taught me something",
-      poet: "Ahmed Faraz"
     },
   ],
   angry: [
@@ -210,19 +190,24 @@ export const johnEliaShayari: Record<string, Shayari[]> = {
   ],
   peaceful: [
     {
-      urdu: "سکون ملا جب دل کو سمجھایا\nکہ جو ہونا ہے وہ ہو کر رہے گا",
-      english: "I found peace when I made my heart understand\nThat what is meant to happen, will happen",
+      urdu: "چاندنی رات کی خاموشی میں\nدل کو اپنی ہی دھڑکن سنائی دیتی ہے",
+      english: "In the silence of a moonlit night\nThe heart can hear its own heartbeat",
       poet: "John Elia"
     },
     {
-      urdu: "آج دل میں کوئی شکوہ نہیں\nیہ سکون بھی کتنا خوبصورت ہے",
-      english: "Today there's no complaint in my heart\nHow beautiful this peace is",
-      poet: "John Elia"
+      urdu: "پرندوں کی طرح آزاد ہوں میں\nنہ کوئی بندھن، نہ کوئی فکر",
+      english: "I am free like the birds\nNo bonds, no worries",
+      poet: "Faiz Ahmed Faiz"
     },
     {
-      urdu: "خاموشی میں بھی ایک سکون ہے\nجو بات کہنے سے نہیں ملتا",
-      english: "There's peace in silence too\nThat cannot be found in speaking",
-      poet: "John Elia"
+      urdu: "ٹھہرے ہوئے پانی سا یہ دل\nکوئی لہر نہیں، کوئی طوفان نہیں",
+      english: "This heart like still water\nNo waves, no storms",
+      poet: "Ahmed Faraz"
+    },
+    {
+      urdu: "صبح کی ٹھنڈی ہوا میں\nزندگی کا سکون چھپا ہے",
+      english: "In the cool morning breeze\nLife's peace is hidden",
+      poet: "Parveen Shakir"
     },
     {
       urdu: "آرام و راحت سب کو نصیب ہو\nہم کو بس تیری یاد کافی ہے",
@@ -230,24 +215,19 @@ export const johnEliaShayari: Record<string, Shayari[]> = {
       poet: "Mirza Ghalib"
     },
     {
-      urdu: "سکون کی تلاش میں بھٹکتے رہے\nپھر جانا کہ سکون تو دل میں تھا",
-      english: "We wandered searching for peace\nThen realized peace was in the heart all along",
-      poet: "Faiz Ahmed Faiz"
-    },
-    {
-      urdu: "چاند کی چاندنی، ستاروں کی روشنی\nیہ رات بھی کتنی پرسکون ہے",
-      english: "The moonlight, the starlight\nHow peaceful this night is",
-      poet: "Parveen Shakir"
-    },
-    {
-      urdu: "نہ کوئی شور ہے، نہ کوئی غوغا\nبس سکون ہے اور میں ہوں",
-      english: "No noise, no commotion\nJust peace and me",
+      urdu: "نیند آتی ہے سکون سے آج\nکوئی فکر نہیں، کوئی خیال نہیں",
+      english: "Sleep comes peacefully today\nNo worries, no thoughts",
       poet: "John Elia"
     },
     {
-      urdu: "ذہن کی خاموشی میں خدا ملتا ہے\nیہ سکون کسی دولت سے کم نہیں",
-      english: "In the silence of the mind, one finds God\nThis peace is no less than any wealth",
-      poet: "Mirza Ghalib"
+      urdu: "دریا کے کنارے بیٹھے ہیں ہم\nپانی بہتا ہے، وقت ٹھہرا ہے",
+      english: "We sit by the river\nWater flows, time stands still",
+      poet: "Ahmed Faraz"
+    },
+    {
+      urdu: "یہ سکون ہے یا خواب ہے\nجو بھی ہے، بس رہنے دو",
+      english: "Is this peace or a dream\nWhatever it is, let it stay",
+      poet: "Faiz Ahmed Faiz"
     },
   ],
   excited: [
@@ -279,49 +259,44 @@ export const johnEliaShayari: Record<string, Shayari[]> = {
   ],
   lonely: [
     {
-      urdu: "تنہائی میں بھی ایک سکون ہے\nجو کسی کے ساتھ نہیں ملتا",
-      english: "There's peace in solitude too\nThat cannot be found with anyone",
-      poet: "John Elia"
-    },
-    {
-      urdu: "اکیلے ہیں تو کیا غم ہے\nیہ تنہائی بھی ایک دوست ہے",
-      english: "So what if I'm alone, what's the sorrow\nThis loneliness is also a friend",
-      poet: "John Elia"
-    },
-    {
-      urdu: "کوئی نہیں تو کوئی بات نہیں\nخود کا ساتھ بھی کافی ہے",
-      english: "If there's no one, it's alright\nOne's own company is enough",
-      poet: "John Elia"
-    },
-    {
       urdu: "ہم کو معلوم ہے جنت کی حقیقت لیکن\nدل کو خوش رکھنے کو غالب یہ خیال اچھا ہے",
       english: "We know the reality of paradise, but\nTo keep the heart happy, Ghalib, this thought is good",
       poet: "Mirza Ghalib"
     },
     {
-      urdu: "تنہائی اب راس آنے لگی ہے\nخود سے ملاقات ہونے لگی ہے",
-      english: "Loneliness now suits me well\nI've started meeting myself",
-      poet: "Faiz Ahmed Faiz"
-    },
-    {
-      urdu: "اکیلی شام کا کیا کروں\nیادیں آتی ہیں، چلی جاتی ہیں",
-      english: "What do I do with this lonely evening\nMemories come and go",
-      poet: "Parveen Shakir"
-    },
-    {
-      urdu: "تنہا ہوں میں مگر تنہا نہیں\nتیری یادیں ہیں میرے ساتھ یہاں",
-      english: "I am alone but not lonely\nYour memories are here with me",
-      poet: "Ahmed Faraz"
-    },
-    {
-      urdu: "بھیڑ میں بھی تنہا ہوں میں\nکوئی سمجھے نہ میری خاموشی",
-      english: "I am alone even in a crowd\nNo one understands my silence",
+      urdu: "کوئی نہیں ہے کوئی یہاں\nمیں ہوں مگر میں کہاں ہوں",
+      english: "There is no one here\nI exist, but where am I",
       poet: "John Elia"
     },
     {
-      urdu: "چار دیواری میں قید ہوں\nمگر دل آزاد ہے",
-      english: "I am imprisoned within four walls\nBut my heart is free",
+      urdu: "تنہائی نے سکھایا ہے مجھے\nاپنا ہمدم خود بننا",
+      english: "Loneliness has taught me\nTo become my own companion",
+      poet: "Ahmed Faraz"
+    },
+    {
+      urdu: "چاند بھی تنہا ہے آسمان میں\nتارے دور سے دیکھتے ہیں بس",
+      english: "The moon is also lonely in the sky\nStars only watch from afar",
+      poet: "Parveen Shakir"
+    },
+    {
+      urdu: "شور میں سب سے جدا ہوں\nخاموشی میرا گھر ہے",
+      english: "I am separate from all in the noise\nSilence is my home",
+      poet: "John Elia"
+    },
+    {
+      urdu: "لوگ کہتے ہیں کہ تنہائی بری ہے\nمیں کہتا ہوں یہ سچی ہے",
+      english: "People say loneliness is bad\nI say it is honest",
       poet: "Faiz Ahmed Faiz"
+    },
+    {
+      urdu: "وہ ملے تو گھڑیاں بن جائیں صدیاں\nاب کے وہ بچھڑے تو ملتے نہیں",
+      english: "When we met, hours became centuries\nNow that we parted, we don't meet again",
+      poet: "Ahmed Faraz"
+    },
+    {
+      urdu: "بے نام سی تنہائی میں\nخود کو پہچاننے لگا ہوں",
+      english: "In this nameless solitude\nI've started recognizing myself",
+      poet: "John Elia"
     },
   ],
   hopeful: [
@@ -395,49 +370,49 @@ export const johnEliaShayari: Record<string, Shayari[]> = {
   ],
   love: [
     {
-      urdu: "عشق میں ہم نے کیا کیا نہیں کھویا\nپھر بھی یہ دل ہے کہ مانتا نہیں",
-      english: "What all we didn't lose in love\nYet this heart refuses to accept",
-      poet: "John Elia"
-    },
-    {
-      urdu: "محبت کیا ہے، جان دینا ہے\nجو جان دے وہی جان پاتا ہے",
-      english: "What is love, it is giving your life\nOnly one who gives their life truly lives",
+      urdu: "محبت کرنے والے کم نہ ہوں گے\nتری محفل میں لیکن ہم نہ ہوں گے",
+      english: "Those who love will not be few\nBut in your gathering, I will not be there",
       poet: "Mirza Ghalib"
     },
     {
-      urdu: "تیرے عشق میں جو ملا غم ہے\nپھر بھی یہ غم میری دولت ہے",
-      english: "What I found in loving you is sorrow\nYet this sorrow is my treasure",
-      poet: "Faiz Ahmed Faiz"
+      urdu: "ہم تو محبت کا بت ہیں، ہم کو سجدہ کریں سب\nہم بھی سجدے میں گرے ہیں جس کی صورت دیکھ کر",
+      english: "I am an idol of love, everyone bows to me\nI too fell prostrate seeing someone's face",
+      poet: "Mirza Ghalib"
     },
     {
-      urdu: "محبت کرنے والوں کو ہر غم گوارا ہے\nیہ درد بھی تو اس محبت کا نشانہ ہے",
-      english: "Those who love accept every sorrow\nThis pain too is a sign of that love",
+      urdu: "تجھ سے نظر ملی تو یہ آنکھیں نہ کام آئیں\nاب میری آنکھوں میں تو ہی رہتا ہے",
+      english: "When my eyes met yours, they stopped working\nNow only you live in my eyes",
       poet: "Ahmed Faraz"
     },
     {
-      urdu: "پیار میں ہار کر بھی جیت جاتے ہیں\nیہی تو عشق کا راز ہے",
-      english: "In love, even in losing we win\nThis is the secret of love",
+      urdu: "اک فقیرانہ آیا، صدا کر چلا\nمیں نے پوچھا محبت؟ وہ مسکرا چلا",
+      english: "A beggar came and called out\nI asked, 'Love?' He smiled and walked away",
+      poet: "John Elia"
+    },
+    {
+      urdu: "تیری آنکھوں کے سوا دنیا میں رکھا کیا ہے\nسارا جہاں ہے تو کیا، تو نہیں تو کیا ہے",
+      english: "What else is there in this world but your eyes\nWhat is the whole world, if you're not there, what is there",
+      poet: "Faiz Ahmed Faiz"
+    },
+    {
+      urdu: "دل کی بات لبوں تک آتے آتے رک گئی\nاور وہ سمجھ گئے، یہی تو محبت ہے",
+      english: "The heart's words stopped before reaching my lips\nAnd they understood - this is love",
       poet: "Parveen Shakir"
     },
     {
-      urdu: "تجھے چاہنا میری عادت ہے\nتیری یاد میری عبادت ہے",
-      english: "Loving you is my habit\nYour memory is my worship",
-      poet: "Ahmed Faraz"
-    },
-    {
-      urdu: "محبت میں کوئی زبان نہیں ہوتی\nدل کی بات دل سمجھ لیتا ہے",
-      english: "Love has no language\nThe heart understands what the heart says",
+      urdu: "عشق ہے تو سمجھ میں آئے گا\nعشق نہیں تو کچھ بھی سمجھایا نہیں جا سکتا",
+      english: "If it's love, you will understand\nIf it's not, nothing can be explained",
       poet: "John Elia"
     },
     {
-      urdu: "تیرے بغیر یہ جہاں ادھورا ہے\nتو ہے تو ہر شے میں نورا ہے",
-      english: "Without you this world is incomplete\nWith you, there is light in everything",
+      urdu: "رنگ لایا ہے خون دل آخر\nچمن ہی چمن گلزار ہو گیا",
+      english: "The heart's blood has finally borne fruit\nGarden after garden has bloomed",
       poet: "Mirza Ghalib"
     },
     {
-      urdu: "عشق کی راہ میں منزل کوئی نہیں\nچلتے رہنا ہی منزل ہے",
-      english: "In the path of love there is no destination\nKeeping walking is the destination",
-      poet: "Faiz Ahmed Faiz"
+      urdu: "کبھی ہم میں تم میں چرچا تھا\nکبھی ہم سے تم سے ملنا تھا",
+      english: "Once there was talk between us\nOnce we used to meet",
+      poet: "Ahmed Faraz"
     },
   ],
   nostalgic: [
@@ -491,9 +466,9 @@ export const johnEliaShayari: Record<string, Shayari[]> = {
   ],
   default: [
     {
-      urdu: "زندگی کا سفر ہے یہ کیسا سفر\nکوئی سمجھا نہیں، کوئی جانا نہیں",
-      english: "What kind of journey is this journey of life\nNo one understood, no one knew",
-      poet: "John Elia"
+      urdu: "ہر اک بات پہ کہتے ہو تم کہ تو کیا ہے\nتمہیں کہوں میں کہ تم کیا ہو، تو کیا ہے",
+      english: "At everything you ask, 'What are you?'\nShall I tell you what you are, what is there",
+      poet: "Mirza Ghalib"
     },
     {
       urdu: "کچھ تو لوگ کہیں گے، لوگوں کا کام ہے کہنا\nچھوڑو بیکار کی باتوں میں کہیں بیت نہ جائے رینا",
@@ -501,19 +476,29 @@ export const johnEliaShayari: Record<string, Shayari[]> = {
       poet: "Faiz Ahmed Faiz"
     },
     {
-      urdu: "ہر شخص اپنی زندگی کا شاعر ہے\nبس لفظ ڈھونڈنے کی دیر ہے",
-      english: "Every person is the poet of their own life\nJust need to find the words",
+      urdu: "ہزار داغ ہیں اور ہر داغ پہ روتا ہوں\nجو تو نے چھیڑا میرے دل کا راز تو کیا ہوتا",
+      english: "I have a thousand wounds and I weep at each\nWhat would have happened if you had revealed my heart's secret",
+      poet: "Mirza Ghalib"
+    },
+    {
+      urdu: "یہ زندگی کسی منزل کی تلاش میں ہے\nاور منزل بھی ہے کہ بس ملتی نہیں",
+      english: "This life is in search of a destination\nAnd the destination simply cannot be found",
       poet: "Ahmed Faraz"
     },
     {
-      urdu: "آج بھی چوراہے پر لوگ ملے ہیں\nآج بھی کوئی رستہ نہیں ملا",
-      english: "Even today people met at crossroads\nEven today no path was found",
+      urdu: "بے خودی لے گئی کہاں ہم کو\nدیر سے انتظار ہے اپنا",
+      english: "Where has this rapture taken us\nWe have been waiting for ourselves for long",
+      poet: "Mirza Ghalib"
+    },
+    {
+      urdu: "ہر لمحہ ایک نیا سفر ہے\nاور ہر سفر میں اپنی کہانی",
+      english: "Every moment is a new journey\nAnd every journey has its own story",
       poet: "Parveen Shakir"
     },
     {
-      urdu: "غالب چھٹی شراب پر اب بھی گرم ہے\nایسی جو شے ہے جو کتابوں میں گرم ہے",
-      english: "Ghalib still warms to the sixth wine\nSuch is the thing that warms in books",
-      poet: "Mirza Ghalib"
+      urdu: "وہ لوگ بہت خوش نصیب تھے\nجنہوں نے محبت کی، جی بھر کے",
+      english: "Those people were very fortunate\nWho loved, with all their heart",
+      poet: "John Elia"
     },
   ],
 };
