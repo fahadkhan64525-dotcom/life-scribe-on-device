@@ -22,7 +22,7 @@ interface ThemeContextType {
 
 const defaultPreferences: UserPreferences = {
   theme_mode: "light",
-  theme_preset: "cream",
+  theme_preset: "default",
   logo_visible: true,
   logo_size: "md",
   logo_position: "header",
@@ -82,16 +82,9 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const applyTheme = () => {
     const root = document.documentElement;
     
-    // Apply dark/light mode based on preset category or explicit mode
+    // Apply light mode (default theme is light)
     const preset = currentPreset;
-    if (preset) {
-      // Auto-set dark/light based on preset category
-      if (preset.category === "dark") {
-        root.classList.add("dark");
-      } else {
-        root.classList.remove("dark");
-      }
-    } else if (preferences.theme_mode === "dark") {
+    if (preferences.theme_mode === "dark") {
       root.classList.add("dark");
     } else {
       root.classList.remove("dark");
