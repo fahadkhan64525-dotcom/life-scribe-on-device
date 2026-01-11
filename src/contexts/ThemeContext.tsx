@@ -8,6 +8,7 @@ export interface UserPreferences {
   theme_preset: string;
   custom_primary_color?: string;
   custom_accent_color?: string;
+  custom_logo?: string;
   logo_visible: boolean;
   logo_size: "sm" | "md" | "lg" | "xl";
   logo_position: "header" | "sidebar" | "corner";

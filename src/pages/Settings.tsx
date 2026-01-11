@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft, Image } from "lucide-react";
+import { ArrowLeft, Image, Palette, Trash2 } from "lucide-react";
 import { Logo } from "@/components/Logo";
+import { LogoCreator } from "@/components/LogoCreator";
+import { toast } from "sonner";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -18,6 +20,15 @@ const Settings = () => {
       </div>
     );
   }
+
+  const handleSaveLogo = (logoDataUrl: string) => {
+    updatePreferences({ custom_logo: logoDataUrl });
+  };
+
+  const handleRemoveCustomLogo = () => {
+    updatePreferences({ custom_logo: undefined });
+    toast.success("Custom logo removed!");
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -38,6 +49,42 @@ const Settings = () => {
           </div>
 
           <div className="space-y-4">
+            {/* Logo Creator */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Palette className="h-5 w-5" />
+                  Create Your Logo
+                </CardTitle>
+                <CardDescription>Design a personalized logo for your journal</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex flex-wrap gap-3">
+                  <LogoCreator 
+                    onSave={handleSaveLogo}
+                    trigger={
+                      <Button variant="default" className="gap-2">
+                        <Palette className="h-4 w-4" />
+                        Create New Logo
+                      </Button>
+                    }
+                  />
+                  {preferences.custom_logo && (
+                    <Button variant="outline" onClick={handleRemoveCustomLogo} className="gap-2">
+                      <Trash2 className="h-4 w-4" />
+                      Remove Custom Logo
+                    </Button>
+                  )}
+                </div>
+                {preferences.custom_logo && (
+                  <p className="text-sm text-muted-foreground">
+                    ✓ Using your custom logo
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Logo Settings */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">

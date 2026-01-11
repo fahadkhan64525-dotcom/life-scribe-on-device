@@ -16,6 +16,7 @@ export const Logo = ({ className, size }: LogoProps) => {
   if (!preferences.logo_visible) {
     return null;
   }
+
   const sizeClasses = {
     sm: "w-24 h-24",
     md: "w-32 h-32",
@@ -29,6 +30,9 @@ export const Logo = ({ className, size }: LogoProps) => {
     corner: "fixed bottom-4 right-4 z-50",
   };
 
+  // Use custom logo if available, otherwise use default
+  const currentLogo = preferences.custom_logo || logoImage;
+
   return (
     <div className={cn(
       "flex items-center justify-center animate-fade-in",
@@ -37,10 +41,10 @@ export const Logo = ({ className, size }: LogoProps) => {
     )}>
       <div className="relative group cursor-pointer">
         <img 
-          src={logoImage} 
-          alt="Fahad Logo" 
+          src={currentLogo} 
+          alt="Personal Logo" 
           className={cn(
-            "object-contain transition-all duration-500 group-hover:scale-110 group-hover:rotate-3",
+            "object-contain transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 rounded-lg",
             sizeClasses[logoSize]
           )}
         />
