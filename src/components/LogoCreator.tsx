@@ -303,6 +303,36 @@ export const LogoCreator = ({ onSave, trigger }: LogoCreatorProps) => {
         </DialogHeader>
 
         <div className="space-y-4">
+          {/* AI Prompt */}
+          <div className="space-y-2">
+            <Label className="text-xs flex items-center gap-1">
+              <Sparkles className="h-3 w-3" />
+              Generate with AI
+            </Label>
+            <div className="flex gap-2">
+              <Input
+                placeholder="Describe your logo... e.g. 'a moon with stars'"
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleAiGenerate()}
+                disabled={isGenerating}
+                className="text-sm"
+              />
+              <Button
+                size="sm"
+                onClick={handleAiGenerate}
+                disabled={isGenerating || !aiPrompt.trim()}
+                className="shrink-0"
+              >
+                {isGenerating ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Sparkles className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+          </div>
+
           {/* Tools */}
           <div className="flex flex-wrap gap-2">
             <Button
