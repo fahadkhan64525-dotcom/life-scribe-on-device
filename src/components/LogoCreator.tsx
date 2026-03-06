@@ -242,6 +242,48 @@ export const LogoCreator = ({ onSave, trigger }: LogoCreatorProps) => {
     }
   };
 
+  const handleAiGenerate = async () => {
+    if (!fabricCanvas || !aiPrompt.trim()) {
+      toast.error("Please enter a prompt first!");
+      return;
+    }
+    setIsGenerating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-logo", {
+        body: { prompt: aiPrompt.trim() },
+      });
+
+      if (error) throw error;
+
+      if (data?.image) {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => {
+          const fabricImg = new FabricImage(img, {
+            left: 0,
+            top: 0,
+            scaleX: 300 / img.width,
+            scaleY: 300 / img.height,
+          });
+          fabricCanvas.clear();
+          fabricCanvas.backgroundColor = "#ffffff";
+          fabricCanvas.add(fabricImg);
+          fabricCanvas.renderAll();
+          toast.success("Logo generated!");
+        };
+        img.onerror = () => toast.error("Failed to load generated image");
+        img.src = data.image;
+      } else {
+        toast.error(data?.error || "Could not generate logo. Try a different prompt.");
+      }
+    } catch (err: any) {
+      console.error("AI generation error:", err);
+      toast.error("Failed to generate logo. Please try again.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
