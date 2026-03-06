@@ -33,6 +33,8 @@ export const LogoCreator = ({ onSave, trigger }: LogoCreatorProps) => {
   const [open, setOpen] = useState(false);
   const [undoStack, setUndoStack] = useState<string[]>([]);
   const [redoStack, setRedoStack] = useState<string[]>([]);
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
   const isUndoRedoAction = useRef(false);
 
   const saveState = useCallback((canvas: FabricCanvas) => {
