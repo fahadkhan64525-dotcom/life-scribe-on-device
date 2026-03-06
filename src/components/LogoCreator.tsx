@@ -1,14 +1,17 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Canvas as FabricCanvas, Circle, Rect, IText, Triangle, PencilBrush } from "fabric";
+import { Canvas as FabricCanvas, Circle, Rect, IText, Triangle, PencilBrush, FabricImage } from "fabric";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { 
   Pencil, Square, Circle as CircleIcon, Type, Triangle as TriangleIcon, 
-  Trash2, Download, Palette, RotateCcw, Save, Eraser, Undo2, Redo2, MousePointer
+  Trash2, Download, Palette, RotateCcw, Save, Eraser, Undo2, Redo2, MousePointer,
+  Sparkles, Loader2
 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface LogoCreatorProps {
   onSave?: (logoDataUrl: string) => void;
@@ -30,6 +33,8 @@ export const LogoCreator = ({ onSave, trigger }: LogoCreatorProps) => {
   const [open, setOpen] = useState(false);
   const [undoStack, setUndoStack] = useState<string[]>([]);
   const [redoStack, setRedoStack] = useState<string[]>([]);
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
   const isUndoRedoAction = useRef(false);
 
   const saveState = useCallback((canvas: FabricCanvas) => {
@@ -237,6 +242,48 @@ export const LogoCreator = ({ onSave, trigger }: LogoCreatorProps) => {
     }
   };
 
+  const handleAiGenerate = async () => {
+    if (!fabricCanvas || !aiPrompt.trim()) {
+      toast.error("Please enter a prompt first!");
+      return;
+    }
+    setIsGenerating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-logo", {
+        body: { prompt: aiPrompt.trim() },
+      });
+
+      if (error) throw error;
+
+      if (data?.image) {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => {
+          const fabricImg = new FabricImage(img, {
+            left: 0,
+            top: 0,
+            scaleX: 300 / img.width,
+            scaleY: 300 / img.height,
+          });
+          fabricCanvas.clear();
+          fabricCanvas.backgroundColor = "#ffffff";
+          fabricCanvas.add(fabricImg);
+          fabricCanvas.renderAll();
+          toast.success("Logo generated!");
+        };
+        img.onerror = () => toast.error("Failed to load generated image");
+        img.src = data.image;
+      } else {
+        toast.error(data?.error || "Could not generate logo. Try a different prompt.");
+      }
+    } catch (err: any) {
+      console.error("AI generation error:", err);
+      toast.error("Failed to generate logo. Please try again.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -256,6 +303,36 @@ export const LogoCreator = ({ onSave, trigger }: LogoCreatorProps) => {
         </DialogHeader>
 
         <div className="space-y-4">
+          {/* AI Prompt */}
+          <div className="space-y-2">
+            <Label className="text-xs flex items-center gap-1">
+              <Sparkles className="h-3 w-3" />
+              Generate with AI
+            </Label>
+            <div className="flex gap-2">
+              <Input
+                placeholder="Describe your logo... e.g. 'a moon with stars'"
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleAiGenerate()}
+                disabled={isGenerating}
+                className="text-sm"
+              />
+              <Button
+                size="sm"
+                onClick={handleAiGenerate}
+                disabled={isGenerating || !aiPrompt.trim()}
+                className="shrink-0"
+              >
+                {isGenerating ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Sparkles className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+          </div>
+
           {/* Tools */}
           <div className="flex flex-wrap gap-2">
             <Button
