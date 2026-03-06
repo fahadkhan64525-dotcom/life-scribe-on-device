@@ -1,11 +1,12 @@
-import { useEffect, useRef, useState } from "react";
-import { Canvas as FabricCanvas, Circle, Rect, IText, Triangle } from "fabric";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { Canvas as FabricCanvas, Circle, Rect, IText, Triangle, PencilBrush } from "fabric";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 import { 
   Pencil, Square, Circle as CircleIcon, Type, Triangle as TriangleIcon, 
-  Trash2, Download, Palette, RotateCcw, Save
+  Trash2, Download, Palette, RotateCcw, Save, Eraser, Undo2, Redo2, MousePointer
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -24,13 +25,23 @@ export const LogoCreator = ({ onSave, trigger }: LogoCreatorProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
   const [activeColor, setActiveColor] = useState("#000000");
-  const [activeTool, setActiveTool] = useState<"select" | "draw" | "rectangle" | "circle" | "triangle" | "text">("select");
+  const [activeTool, setActiveTool] = useState<"select" | "draw" | "eraser" | "rectangle" | "circle" | "triangle" | "text">("select");
+  const [brushSize, setBrushSize] = useState(3);
   const [open, setOpen] = useState(false);
+  const [undoStack, setUndoStack] = useState<string[]>([]);
+  const [redoStack, setRedoStack] = useState<string[]>([]);
+  const isUndoRedoAction = useRef(false);
+
+  const saveState = useCallback((canvas: FabricCanvas) => {
+    if (isUndoRedoAction.current) return;
+    const json = JSON.stringify(canvas.toJSON());
+    setUndoStack(prev => [...prev, json]);
+    setRedoStack([]);
+  }, []);
 
   useEffect(() => {
     if (!open || !canvasRef.current) return;
 
-    // Small delay to ensure the dialog is mounted
     const timer = setTimeout(() => {
       if (!canvasRef.current) return;
       
@@ -40,8 +51,19 @@ export const LogoCreator = ({ onSave, trigger }: LogoCreatorProps) => {
         backgroundColor: "#ffffff",
       });
 
+      canvas.freeDrawingBrush = new PencilBrush(canvas);
       canvas.freeDrawingBrush.color = activeColor;
-      canvas.freeDrawingBrush.width = 3;
+      canvas.freeDrawingBrush.width = brushSize;
+
+      // Save initial state
+      const initialJson = JSON.stringify(canvas.toJSON());
+      setUndoStack([initialJson]);
+      setRedoStack([]);
+
+      // Listen for object modifications
+      canvas.on("object:added", () => saveState(canvas));
+      canvas.on("object:modified", () => saveState(canvas));
+      canvas.on("object:removed", () => saveState(canvas));
 
       setFabricCanvas(canvas);
 
@@ -62,13 +84,51 @@ export const LogoCreator = ({ onSave, trigger }: LogoCreatorProps) => {
   useEffect(() => {
     if (!fabricCanvas) return;
 
-    fabricCanvas.isDrawingMode = activeTool === "draw";
+    const isDrawMode = activeTool === "draw" || activeTool === "eraser";
+    fabricCanvas.isDrawingMode = isDrawMode;
     
-    if (activeTool === "draw" && fabricCanvas.freeDrawingBrush) {
-      fabricCanvas.freeDrawingBrush.color = activeColor;
-      fabricCanvas.freeDrawingBrush.width = 3;
+    if (isDrawMode && fabricCanvas.freeDrawingBrush) {
+      if (activeTool === "eraser") {
+        fabricCanvas.freeDrawingBrush.color = "#ffffff";
+      } else {
+        fabricCanvas.freeDrawingBrush.color = activeColor;
+      }
+      fabricCanvas.freeDrawingBrush.width = brushSize;
     }
-  }, [activeTool, activeColor, fabricCanvas]);
+  }, [activeTool, activeColor, fabricCanvas, brushSize]);
+
+  const handleUndo = () => {
+    if (!fabricCanvas || undoStack.length <= 1) return;
+    isUndoRedoAction.current = true;
+    
+    const newUndoStack = [...undoStack];
+    const current = newUndoStack.pop()!;
+    const previous = newUndoStack[newUndoStack.length - 1];
+    
+    setRedoStack(prev => [...prev, current]);
+    setUndoStack(newUndoStack);
+    
+    fabricCanvas.loadFromJSON(JSON.parse(previous)).then(() => {
+      fabricCanvas.renderAll();
+      isUndoRedoAction.current = false;
+    });
+  };
+
+  const handleRedo = () => {
+    if (!fabricCanvas || redoStack.length === 0) return;
+    isUndoRedoAction.current = true;
+    
+    const newRedoStack = [...redoStack];
+    const next = newRedoStack.pop()!;
+    
+    setUndoStack(prev => [...prev, next]);
+    setRedoStack(newRedoStack);
+    
+    fabricCanvas.loadFromJSON(JSON.parse(next)).then(() => {
+      fabricCanvas.renderAll();
+      isUndoRedoAction.current = false;
+    });
+  };
 
   const handleToolClick = (tool: typeof activeTool) => {
     setActiveTool(tool);
@@ -120,7 +180,9 @@ export const LogoCreator = ({ onSave, trigger }: LogoCreatorProps) => {
     }
     
     fabricCanvas.renderAll();
-    setActiveTool("select");
+    if (["rectangle", "circle", "triangle", "text"].includes(tool)) {
+      setActiveTool("select");
+    }
   };
 
   const handleClear = () => {
@@ -202,7 +264,7 @@ export const LogoCreator = ({ onSave, trigger }: LogoCreatorProps) => {
               onClick={() => setActiveTool("select")}
               title="Select"
             >
-              <RotateCcw className="h-4 w-4" />
+              <MousePointer className="h-4 w-4" />
             </Button>
             <Button
               size="sm"
@@ -211,6 +273,14 @@ export const LogoCreator = ({ onSave, trigger }: LogoCreatorProps) => {
               title="Draw"
             >
               <Pencil className="h-4 w-4" />
+            </Button>
+            <Button
+              size="sm"
+              variant={activeTool === "eraser" ? "default" : "outline"}
+              onClick={() => setActiveTool("eraser")}
+              title="Eraser"
+            >
+              <Eraser className="h-4 w-4" />
             </Button>
             <Button
               size="sm"
@@ -252,7 +322,41 @@ export const LogoCreator = ({ onSave, trigger }: LogoCreatorProps) => {
             >
               <Trash2 className="h-4 w-4" />
             </Button>
+            <div className="border-l border-border mx-1" />
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleUndo}
+              disabled={undoStack.length <= 1}
+              title="Undo"
+            >
+              <Undo2 className="h-4 w-4" />
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleRedo}
+              disabled={redoStack.length === 0}
+              title="Redo"
+            >
+              <Redo2 className="h-4 w-4" />
+            </Button>
           </div>
+
+          {/* Brush Size Slider */}
+          {(activeTool === "draw" || activeTool === "eraser") && (
+            <div className="space-y-2">
+              <Label className="text-xs">Brush Size: {brushSize}px</Label>
+              <Slider
+                value={[brushSize]}
+                onValueChange={(val) => setBrushSize(val[0])}
+                min={1}
+                max={30}
+                step={1}
+                className="w-full"
+              />
+            </div>
+          )}
 
           {/* Color Palette */}
           <div className="space-y-2">
@@ -263,7 +367,7 @@ export const LogoCreator = ({ onSave, trigger }: LogoCreatorProps) => {
                   key={color}
                   onClick={() => handleColorChange(color)}
                   className={`w-7 h-7 rounded-full border-2 transition-transform hover:scale-110 ${
-                    activeColor === color ? "ring-2 ring-primary ring-offset-2" : "border-gray-200"
+                    activeColor === color ? "ring-2 ring-primary ring-offset-2" : "border-muted"
                   }`}
                   style={{ backgroundColor: color }}
                   title={color}
