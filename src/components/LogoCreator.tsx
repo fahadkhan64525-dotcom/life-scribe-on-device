@@ -1,14 +1,17 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Canvas as FabricCanvas, Circle, Rect, IText, Triangle, PencilBrush } from "fabric";
+import { Canvas as FabricCanvas, Circle, Rect, IText, Triangle, PencilBrush, FabricImage } from "fabric";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { 
   Pencil, Square, Circle as CircleIcon, Type, Triangle as TriangleIcon, 
-  Trash2, Download, Palette, RotateCcw, Save, Eraser, Undo2, Redo2, MousePointer
+  Trash2, Download, Palette, RotateCcw, Save, Eraser, Undo2, Redo2, MousePointer,
+  Sparkles, Loader2
 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface LogoCreatorProps {
   onSave?: (logoDataUrl: string) => void;
