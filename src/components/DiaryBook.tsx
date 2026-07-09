@@ -295,7 +295,7 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
 
           {/* Main content with enhanced typography */}
           <div className="mb-8">
-            <p className="text-foreground leading-relaxed text-lg font-serif ink-text first-letter:text-4xl first-letter:font-display first-letter:text-primary first-letter:float-left first-letter:mr-3 first-letter:mt-1">
+            <p className="text-foreground leading-relaxed text-base sm:text-lg font-serif ink-text first-letter:text-3xl sm:first-letter:text-4xl first-letter:font-display first-letter:text-primary first-letter:float-left first-letter:mr-2 sm:first-letter:mr-3 first-letter:mt-1">
               {currentEntry.autoText}
             </p>
           </div>
