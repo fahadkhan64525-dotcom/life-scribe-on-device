@@ -38,7 +38,7 @@ export function JournalHeader({ searchQuery, onSearchChange, onFilterToday, onFi
           </p>
         </div>
         
-        <div className="flex flex-col sm:flex-row gap-6 items-center">
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-center">
           <div className="relative flex-1 max-w-md group">
             <div className="absolute inset-0 bg-gradient-sage rounded-lg opacity-20 blur-sm group-focus-within:opacity-30 transition-opacity duration-300"></div>
             <div className="relative">
