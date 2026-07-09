@@ -153,7 +153,7 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
     <div className="relative max-w-4xl mx-auto">
       {/* Book Container with enhanced styling */}
       <div 
-        className={`relative book-page vintage-paper rounded-2xl shadow-floating p-8 md:p-12 min-h-[700px] transition-all duration-300 ${
+        className={`relative book-page vintage-paper rounded-2xl shadow-floating p-4 sm:p-8 md:p-12 min-h-[500px] sm:min-h-[700px] transition-all duration-300 ${
           isPageTurning ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
         }`}
       >
