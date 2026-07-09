@@ -373,25 +373,25 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
                 </Badge>
               ))}
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-1 sm:gap-2 flex-wrap">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => onEditEntry(currentEntry)}
-                className="hover:bg-primary/10 hover:text-primary transition-colors"
+                className="hover:bg-primary/10 hover:text-primary transition-colors px-2 sm:px-3"
               >
-                <Edit className="w-4 h-4 mr-2" />
-                Edit
+                <Edit className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Edit</span>
               </Button>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="hover:bg-destructive/10 hover:text-destructive transition-colors"
+                    className="hover:bg-destructive/10 hover:text-destructive transition-colors px-2 sm:px-3"
                   >
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Delete
+                    <Trash2 className="w-4 h-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Delete</span>
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
@@ -416,10 +416,10 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
                 variant="ghost"
                 size="sm"
                 onClick={() => onAddContext(currentEntry.id)}
-                className="hover:bg-primary/10 hover:text-primary transition-colors"
+                className="hover:bg-primary/10 hover:text-primary transition-colors px-2 sm:px-3"
               >
-                <MessageCircle className="w-4 h-4 mr-2" />
-                Add thoughts
+                <MessageCircle className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Add thoughts</span>
               </Button>
             </div>
           </div>
