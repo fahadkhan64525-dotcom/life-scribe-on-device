@@ -435,19 +435,19 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
       </div>
 
       {/* Navigation Controls with enhanced styling */}
-      <div className="flex items-center justify-between mt-8 px-4">
+      <div className="flex items-center justify-between mt-6 sm:mt-8 px-2 sm:px-4 gap-2">
         <Button
           onClick={goToPreviousPage}
           disabled={currentPage === 0 || isPageTurning}
           variant="outline"
-          size="lg"
-          className="border-primary/30 hover:bg-primary/10 hover:border-primary/50 disabled:opacity-40 transition-all duration-300 group"
+          size="default"
+          className="border-primary/30 hover:bg-primary/10 hover:border-primary/50 disabled:opacity-40 transition-all duration-300 group sm:h-11 sm:px-8"
         >
-          <ChevronLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
-          Previous
+          <ChevronLeft className="w-5 h-5 sm:mr-2 group-hover:-translate-x-1 transition-transform" />
+          <span className="hidden sm:inline">Previous</span>
         </Button>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-center max-w-[40%]">
           {entries.map((_, index) => (
             <button
               key={index}
@@ -475,11 +475,11 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
           onClick={goToNextPage}
           disabled={currentPage === entries.length - 1 || isPageTurning}
           variant="outline"
-          size="lg"
-          className="border-primary/30 hover:bg-primary/10 hover:border-primary/50 disabled:opacity-40 transition-all duration-300 group"
+          size="default"
+          className="border-primary/30 hover:bg-primary/10 hover:border-primary/50 disabled:opacity-40 transition-all duration-300 group sm:h-11 sm:px-8"
         >
-          Next
-          <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+          <span className="hidden sm:inline">Next</span>
+          <ChevronRight className="w-5 h-5 sm:ml-2 group-hover:translate-x-1 transition-transform" />
         </Button>
       </div>
     </div>
