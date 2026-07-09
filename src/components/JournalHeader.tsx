@@ -18,27 +18,27 @@ export function JournalHeader({ searchQuery, onSearchChange, onFilterToday, onFi
   const navigate = useNavigate();
   
   return (
-    <header className="relative bg-gradient-hero border-b border-journal-accent/20 px-6 py-12 overflow-hidden">
+    <header className="relative bg-gradient-hero border-b border-journal-accent/20 px-4 sm:px-6 py-6 sm:py-12 overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute inset-0 paper-texture opacity-30"></div>
       <div className="absolute top-0 left-1/4 w-32 h-32 bg-gradient-sage rounded-full opacity-10 blur-3xl animate-float"></div>
       <div className="absolute bottom-0 right-1/4 w-40 h-40 bg-gradient-warm rounded-full opacity-10 blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
       
       <div className="relative max-w-4xl mx-auto">
-        <div className="mb-8 text-center">
-          <div className="flex items-center justify-center gap-3 mb-4">
+        <div className="mb-6 sm:mb-8 text-center">
+          <div className="flex items-center justify-center gap-3 mb-3 sm:mb-4">
             <Logo />
           </div>
-          <h1 className="text-hero font-display font-medium text-foreground mb-4 text-shimmer tracking-wide">
+          <h1 className="text-3xl sm:text-hero font-display font-medium text-foreground mb-3 sm:mb-4 text-shimmer tracking-wide">
             Whispers of Time
           </h1>
-          <p className="text-xl text-journal-text-soft max-w-2xl mx-auto leading-relaxed font-light">
+          <p className="text-sm sm:text-xl text-journal-text-soft max-w-2xl mx-auto leading-relaxed font-light px-2">
             Where your thoughts become timeless memories, 
             <span className="text-primary font-medium"> beautifully preserved forever</span>
           </p>
         </div>
         
-        <div className="flex flex-col sm:flex-row gap-6 items-center">
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-center">
           <div className="relative flex-1 max-w-md group">
             <div className="absolute inset-0 bg-gradient-sage rounded-lg opacity-20 blur-sm group-focus-within:opacity-30 transition-opacity duration-300"></div>
             <div className="relative">
@@ -60,7 +60,7 @@ export function JournalHeader({ searchQuery, onSearchChange, onFilterToday, onFi
                 onClick={onClearFilters}
                 className="glass border-red-500/30 bg-red-500/10 text-red-600 hover:bg-red-500/20 hover:shadow-gentle transition-all duration-300 group animate-fade-in"
               >
-                <X className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
+                <X className="w-5 h-5 sm:mr-2 group-hover:scale-110 transition-transform duration-200" />
                 <span className="hidden sm:inline">Clear</span>
               </Button>
             )}
@@ -74,7 +74,7 @@ export function JournalHeader({ searchQuery, onSearchChange, onFilterToday, onFi
                   : 'hover:bg-blue-500/10 hover:text-blue-600'
               }`}
             >
-              <Calendar className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
+              <Calendar className="w-5 h-5 sm:mr-2 group-hover:scale-110 transition-transform duration-200" />
               <span className="hidden sm:inline">Today</span>
             </Button>
             <Button 
@@ -87,7 +87,7 @@ export function JournalHeader({ searchQuery, onSearchChange, onFilterToday, onFi
                   : 'hover:bg-purple-500/10 hover:text-purple-600'
               }`}
             >
-              <Camera className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
+              <Camera className="w-5 h-5 sm:mr-2 group-hover:scale-110 transition-transform duration-200" />
               <span className="hidden sm:inline">Photos</span>
             </Button>
             <Button 
@@ -100,7 +100,7 @@ export function JournalHeader({ searchQuery, onSearchChange, onFilterToday, onFi
                   : 'hover:bg-green-500/10 hover:text-green-600'
               }`}
             >
-              <Music className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
+              <Music className="w-5 h-5 sm:mr-2 group-hover:scale-110 transition-transform duration-200" />
               <span className="hidden sm:inline">Music</span>
             </Button>
             <Button 
@@ -109,7 +109,7 @@ export function JournalHeader({ searchQuery, onSearchChange, onFilterToday, onFi
               onClick={() => navigate("/settings")}
               className="glass border-journal-accent/30 hover:shadow-gentle transition-all duration-300 group hover:bg-orange-500/10 hover:text-orange-600"
             >
-              <Settings className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
+              <Settings className="w-5 h-5 sm:mr-2 group-hover:scale-110 transition-transform duration-200" />
               <span className="hidden sm:inline">Settings</span>
             </Button>
           </div>

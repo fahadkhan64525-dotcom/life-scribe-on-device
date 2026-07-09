@@ -153,7 +153,7 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
     <div className="relative max-w-4xl mx-auto">
       {/* Book Container with enhanced styling */}
       <div 
-        className={`relative book-page vintage-paper rounded-2xl shadow-floating p-8 md:p-12 min-h-[700px] transition-all duration-300 ${
+        className={`relative book-page vintage-paper rounded-2xl shadow-floating p-4 sm:p-8 md:p-12 min-h-[500px] sm:min-h-[700px] transition-all duration-300 ${
           isPageTurning ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
         }`}
       >
@@ -177,7 +177,7 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
         </div>
 
         {/* Page Content */}
-        <div className="relative z-10 pl-6 pr-4 stagger-fade-in">
+        <div className="relative z-10 pl-3 sm:pl-6 pr-2 sm:pr-4 stagger-fade-in">
           {/* Header with elegant styling */}
           <div className="mb-8 pb-6 border-b border-primary/20">
             {currentEntry.title && (
@@ -279,7 +279,7 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
 
           {/* Photos with improved grid */}
           {currentEntry.photos && currentEntry.photos.length > 0 && showPhotos && (
-            <div className="mb-8 grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="mb-8 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
               {currentEntry.photos.map((photo, index) => (
                 <div key={index} className="group relative overflow-hidden rounded-xl elegant-card">
                   <img
@@ -295,7 +295,7 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
 
           {/* Main content with enhanced typography */}
           <div className="mb-8">
-            <p className="text-foreground leading-relaxed text-lg font-serif ink-text first-letter:text-4xl first-letter:font-display first-letter:text-primary first-letter:float-left first-letter:mr-3 first-letter:mt-1">
+            <p className="text-foreground leading-relaxed text-base sm:text-lg font-serif ink-text first-letter:text-3xl sm:first-letter:text-4xl first-letter:font-display first-letter:text-primary first-letter:float-left first-letter:mr-2 sm:first-letter:mr-3 first-letter:mt-1">
               {currentEntry.autoText}
             </p>
           </div>
@@ -373,25 +373,25 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
                 </Badge>
               ))}
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-1 sm:gap-2 flex-wrap">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => onEditEntry(currentEntry)}
-                className="hover:bg-primary/10 hover:text-primary transition-colors"
+                className="hover:bg-primary/10 hover:text-primary transition-colors px-2 sm:px-3"
               >
-                <Edit className="w-4 h-4 mr-2" />
-                Edit
+                <Edit className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Edit</span>
               </Button>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="hover:bg-destructive/10 hover:text-destructive transition-colors"
+                    className="hover:bg-destructive/10 hover:text-destructive transition-colors px-2 sm:px-3"
                   >
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Delete
+                    <Trash2 className="w-4 h-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Delete</span>
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
@@ -416,38 +416,38 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
                 variant="ghost"
                 size="sm"
                 onClick={() => onAddContext(currentEntry.id)}
-                className="hover:bg-primary/10 hover:text-primary transition-colors"
+                className="hover:bg-primary/10 hover:text-primary transition-colors px-2 sm:px-3"
               >
-                <MessageCircle className="w-4 h-4 mr-2" />
-                Add thoughts
+                <MessageCircle className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Add thoughts</span>
               </Button>
             </div>
           </div>
         </div>
 
         {/* Page Number with decorative styling */}
-        <div className="absolute bottom-6 right-10 flex items-center gap-3">
-          <div className="w-12 h-[1px] bg-gradient-to-r from-transparent to-primary/30" />
-          <span className="text-sm text-muted-foreground font-serif italic">
+        <div className="absolute bottom-3 right-4 sm:bottom-6 sm:right-10 flex items-center gap-2 sm:gap-3">
+          <div className="hidden sm:block w-12 h-[1px] bg-gradient-to-r from-transparent to-primary/30" />
+          <span className="text-xs sm:text-sm text-muted-foreground font-serif italic">
             Page {currentPage + 1} of {entries.length}
           </span>
         </div>
       </div>
 
       {/* Navigation Controls with enhanced styling */}
-      <div className="flex items-center justify-between mt-8 px-4">
+      <div className="flex items-center justify-between mt-6 sm:mt-8 px-2 sm:px-4 gap-2">
         <Button
           onClick={goToPreviousPage}
           disabled={currentPage === 0 || isPageTurning}
           variant="outline"
-          size="lg"
-          className="border-primary/30 hover:bg-primary/10 hover:border-primary/50 disabled:opacity-40 transition-all duration-300 group"
+          size="default"
+          className="border-primary/30 hover:bg-primary/10 hover:border-primary/50 disabled:opacity-40 transition-all duration-300 group sm:h-11 sm:px-8"
         >
-          <ChevronLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
-          Previous
+          <ChevronLeft className="w-5 h-5 sm:mr-2 group-hover:-translate-x-1 transition-transform" />
+          <span className="hidden sm:inline">Previous</span>
         </Button>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-center max-w-[40%]">
           {entries.map((_, index) => (
             <button
               key={index}
@@ -475,11 +475,11 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
           onClick={goToNextPage}
           disabled={currentPage === entries.length - 1 || isPageTurning}
           variant="outline"
-          size="lg"
-          className="border-primary/30 hover:bg-primary/10 hover:border-primary/50 disabled:opacity-40 transition-all duration-300 group"
+          size="default"
+          className="border-primary/30 hover:bg-primary/10 hover:border-primary/50 disabled:opacity-40 transition-all duration-300 group sm:h-11 sm:px-8"
         >
-          Next
-          <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+          <span className="hidden sm:inline">Next</span>
+          <ChevronRight className="w-5 h-5 sm:ml-2 group-hover:translate-x-1 transition-transform" />
         </Button>
       </div>
     </div>
