@@ -18,7 +18,7 @@ export function JournalHeader({ searchQuery, onSearchChange, onFilterToday, onFi
   const navigate = useNavigate();
   
   return (
-    <header className="relative bg-gradient-hero border-b border-journal-accent/20 px-6 py-12 overflow-hidden">
+    <header className="relative bg-gradient-hero border-b border-journal-accent/20 px-4 sm:px-6 py-6 sm:py-12 overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute inset-0 paper-texture opacity-30"></div>
       <div className="absolute top-0 left-1/4 w-32 h-32 bg-gradient-sage rounded-full opacity-10 blur-3xl animate-float"></div>
