@@ -177,7 +177,7 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
         </div>
 
         {/* Page Content */}
-        <div className="relative z-10 pl-6 pr-4 stagger-fade-in">
+        <div className="relative z-10 pl-3 sm:pl-6 pr-2 sm:pr-4 stagger-fade-in">
           {/* Header with elegant styling */}
           <div className="mb-8 pb-6 border-b border-primary/20">
             {currentEntry.title && (
