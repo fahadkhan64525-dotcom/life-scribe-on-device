@@ -25,14 +25,14 @@ export function JournalHeader({ searchQuery, onSearchChange, onFilterToday, onFi
       <div className="absolute bottom-0 right-1/4 w-40 h-40 bg-gradient-warm rounded-full opacity-10 blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
       
       <div className="relative max-w-4xl mx-auto">
-        <div className="mb-8 text-center">
-          <div className="flex items-center justify-center gap-3 mb-4">
+        <div className="mb-6 sm:mb-8 text-center">
+          <div className="flex items-center justify-center gap-3 mb-3 sm:mb-4">
             <Logo />
           </div>
-          <h1 className="text-hero font-display font-medium text-foreground mb-4 text-shimmer tracking-wide">
+          <h1 className="text-3xl sm:text-hero font-display font-medium text-foreground mb-3 sm:mb-4 text-shimmer tracking-wide">
             Whispers of Time
           </h1>
-          <p className="text-xl text-journal-text-soft max-w-2xl mx-auto leading-relaxed font-light">
+          <p className="text-sm sm:text-xl text-journal-text-soft max-w-2xl mx-auto leading-relaxed font-light px-2">
             Where your thoughts become timeless memories, 
             <span className="text-primary font-medium"> beautifully preserved forever</span>
           </p>
