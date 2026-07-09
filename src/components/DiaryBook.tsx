@@ -279,7 +279,7 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
 
           {/* Photos with improved grid */}
           {currentEntry.photos && currentEntry.photos.length > 0 && showPhotos && (
-            <div className="mb-8 grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="mb-8 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
               {currentEntry.photos.map((photo, index) => (
                 <div key={index} className="group relative overflow-hidden rounded-xl elegant-card">
                   <img
