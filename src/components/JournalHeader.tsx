@@ -60,7 +60,7 @@ export function JournalHeader({ searchQuery, onSearchChange, onFilterToday, onFi
                 onClick={onClearFilters}
                 className="glass border-red-500/30 bg-red-500/10 text-red-600 hover:bg-red-500/20 hover:shadow-gentle transition-all duration-300 group animate-fade-in"
               >
-                <X className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
+                <X className="w-5 h-5 sm:mr-2 group-hover:scale-110 transition-transform duration-200" />
                 <span className="hidden sm:inline">Clear</span>
               </Button>
             )}
@@ -74,7 +74,7 @@ export function JournalHeader({ searchQuery, onSearchChange, onFilterToday, onFi
                   : 'hover:bg-blue-500/10 hover:text-blue-600'
               }`}
             >
-              <Calendar className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
+              <Calendar className="w-5 h-5 sm:mr-2 group-hover:scale-110 transition-transform duration-200" />
               <span className="hidden sm:inline">Today</span>
             </Button>
             <Button 
@@ -87,7 +87,7 @@ export function JournalHeader({ searchQuery, onSearchChange, onFilterToday, onFi
                   : 'hover:bg-purple-500/10 hover:text-purple-600'
               }`}
             >
-              <Camera className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
+              <Camera className="w-5 h-5 sm:mr-2 group-hover:scale-110 transition-transform duration-200" />
               <span className="hidden sm:inline">Photos</span>
             </Button>
             <Button 
@@ -100,7 +100,7 @@ export function JournalHeader({ searchQuery, onSearchChange, onFilterToday, onFi
                   : 'hover:bg-green-500/10 hover:text-green-600'
               }`}
             >
-              <Music className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
+              <Music className="w-5 h-5 sm:mr-2 group-hover:scale-110 transition-transform duration-200" />
               <span className="hidden sm:inline">Music</span>
             </Button>
             <Button 
@@ -109,7 +109,7 @@ export function JournalHeader({ searchQuery, onSearchChange, onFilterToday, onFi
               onClick={() => navigate("/settings")}
               className="glass border-journal-accent/30 hover:shadow-gentle transition-all duration-300 group hover:bg-orange-500/10 hover:text-orange-600"
             >
-              <Settings className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
+              <Settings className="w-5 h-5 sm:mr-2 group-hover:scale-110 transition-transform duration-200" />
               <span className="hidden sm:inline">Settings</span>
             </Button>
           </div>
