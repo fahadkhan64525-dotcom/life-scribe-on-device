@@ -426,9 +426,9 @@ export function DiaryBook({ entries, onAddContext, onEditEntry, onDeleteEntry }:
         </div>
 
         {/* Page Number with decorative styling */}
-        <div className="absolute bottom-6 right-10 flex items-center gap-3">
-          <div className="w-12 h-[1px] bg-gradient-to-r from-transparent to-primary/30" />
-          <span className="text-sm text-muted-foreground font-serif italic">
+        <div className="absolute bottom-3 right-4 sm:bottom-6 sm:right-10 flex items-center gap-2 sm:gap-3">
+          <div className="hidden sm:block w-12 h-[1px] bg-gradient-to-r from-transparent to-primary/30" />
+          <span className="text-xs sm:text-sm text-muted-foreground font-serif italic">
             Page {currentPage + 1} of {entries.length}
           </span>
         </div>
