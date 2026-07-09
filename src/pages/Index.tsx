@@ -358,17 +358,17 @@ const Index = () => {
         onClearFilters={() => setActiveFilter('all')}
       />
       
-      <main className="max-w-4xl mx-auto px-6 py-section relative">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-section relative">
         <PrivacyBanner />
         
-        <div className="flex items-center justify-between mb-10">
-          <div>
-            <h2 className="text-title font-display font-medium text-foreground tracking-wide mb-1">Your Stories</h2>
-            <p className="text-sm text-muted-foreground">
+        <div className="flex items-center justify-between mb-6 sm:mb-10 gap-3 flex-wrap">
+          <div className="min-w-0">
+            <h2 className="text-2xl sm:text-title font-display font-medium text-foreground tracking-wide mb-1">Your Stories</h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">
               {entries.length} {entries.length === 1 ? 'memory' : 'memories'} captured
             </p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-2 sm:gap-3 flex-shrink-0">
             <Button 
               variant="ghost" 
               size="icon"
@@ -380,18 +380,27 @@ const Index = () => {
             </Button>
             <Button 
               variant="outline" 
+              size="icon"
               onClick={() => setIsWritingModalOpen(true)}
-              className="glass border-primary/30 hover:shadow-gentle hover-glow group transition-all duration-300"
+              className="sm:hidden glass border-primary/30"
+              title="Write"
+            >
+              <PenTool className="w-5 h-5 text-primary" />
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => setIsWritingModalOpen(true)}
+              className="hidden sm:inline-flex glass border-primary/30 hover:shadow-gentle hover-glow group transition-all duration-300"
             >
               <PenTool className="w-5 h-5 mr-2 text-primary group-hover:rotate-12 transition-transform" />
-              <span className="hidden sm:inline">Write</span>
+              <span>Write</span>
             </Button>
             <Button 
               variant="default"
               className="shadow-soft bg-gradient-elegant hover:shadow-elegant transition-all duration-300 group"
               onClick={() => setIsWritingModalOpen(true)}
             >
-              <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
+              <Plus className="w-5 h-5 sm:mr-2 group-hover:rotate-90 transition-transform duration-300" />
               <span className="hidden sm:inline">New Entry</span>
             </Button>
           </div>
