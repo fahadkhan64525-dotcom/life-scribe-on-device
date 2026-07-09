@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { BookOpen, Loader2 } from "lucide-react";
+import { LoginScene3D } from "@/components/LoginScene3D";
 
 export default function Login() {
   const [isLogin, setIsLogin] = useState(true);
@@ -81,8 +82,9 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-hero flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-hero flex items-center justify-center p-4 relative overflow-hidden">
+      <LoginScene3D />
+      <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-4">
             <BookOpen className="w-8 h-8 text-primary" />
