@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { X, Camera, MapPin, Save, Sparkles, Music, Mic, MicOff, Pause } from "lucide-react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { X, Camera, MapPin, Save, Sparkles, Music, Mic, MicOff, Pause, Maximize2, Minimize2, Check } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -48,18 +48,17 @@ const writingPrompts = [
 
 const moodOptions = ["😊 Happy", "😌 Peaceful", "🤔 Thoughtful", "😴 Tired", "😎 Confident", "💭 Reflective", "🌟 Inspired", "😅 Grateful"];
 
-// Input validation schema
 const diaryEntrySchema = z.object({
-  title: z.string().max(200, "Title must be less than 200 characters").optional(),
-  content: z.string()
-    .min(1, "Content is required")
-    .max(10000, "Content must be less than 10,000 characters"),
-  location: z.string().max(200, "Location must be less than 200 characters").optional(),
-  music: z.string().max(500, "Music URL must be less than 500 characters").optional(),
-  tags: z.array(z.string().max(50, "Tag must be less than 50 characters")).max(20, "Maximum 20 tags allowed"),
-  mood: z.string().max(50, "Mood must be less than 50 characters").optional(),
-  photos: z.array(z.string())
+  title: z.string().max(200).optional(),
+  content: z.string().min(1, "Content is required").max(10000),
+  location: z.string().max(200).optional(),
+  music: z.string().max(500).optional(),
+  tags: z.array(z.string().max(50)).max(20),
+  mood: z.string().max(50).optional(),
+  photos: z.array(z.string()),
 });
+
+const DRAFT_KEY = "diary-draft-v1";
 
 export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryWritingModalProps) {
   const { toast } = useToast();
@@ -74,219 +73,181 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
   const [uploading, setUploading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [focusMode, setFocusMode] = useState(false);
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
   const recognitionRef = useRef<any>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const autosaveTimer = useRef<number | null>(null);
+  const savedTimer = useRef<number | null>(null);
+  const hydrated = useRef(false);
 
-  // Update form state when editEntry changes or modal opens
+  // Load / reset when opening
   useEffect(() => {
-    if (isOpen) {
-      setTitle(editEntry?.title || "");
-      setContent(editEntry?.content || "");
-      setLocation(editEntry?.location || "");
-      setMusic(editEntry?.music || "");
-      setSelectedMood(editEntry?.mood || "");
-      setPhotos(editEntry?.photos || []);
-      setTags(editEntry?.tags || []);
-      setNewTag("");
+    if (!isOpen) {
+      hydrated.current = false;
+      return;
     }
+    if (editEntry) {
+      setTitle(editEntry.title || "");
+      setContent(editEntry.content || "");
+      setLocation(editEntry.location || "");
+      setMusic(editEntry.music || "");
+      setSelectedMood(editEntry.mood || "");
+      setPhotos(editEntry.photos || []);
+      setTags(editEntry.tags || []);
+    } else {
+      // Attempt to restore local draft
+      try {
+        const raw = localStorage.getItem(DRAFT_KEY);
+        if (raw) {
+          const d = JSON.parse(raw);
+          setTitle(d.title || "");
+          setContent(d.content || "");
+          setLocation(d.location || "");
+          setMusic(d.music || "");
+          setSelectedMood(d.mood || "");
+          setPhotos(d.photos || []);
+          setTags(d.tags || []);
+          if (d.content) {
+            toast({ title: "Draft restored", description: "Continuing where you left off." });
+          }
+        } else {
+          setTitle(""); setContent(""); setLocation(""); setMusic("");
+          setSelectedMood(""); setPhotos([]); setTags([]);
+        }
+      } catch {
+        // ignore
+      }
+    }
+    setNewTag("");
+    hydrated.current = true;
   }, [isOpen, editEntry]);
+
+  // Autosave draft (only for new entries) — debounced
+  useEffect(() => {
+    if (!isOpen || !hydrated.current || editEntry) return;
+    if (autosaveTimer.current) window.clearTimeout(autosaveTimer.current);
+    setSaveState("saving");
+    autosaveTimer.current = window.setTimeout(() => {
+      try {
+        const hasAnything = title || content || location || music || selectedMood || photos.length || tags.length;
+        if (hasAnything) {
+          localStorage.setItem(DRAFT_KEY, JSON.stringify({
+            title, content, location, music, mood: selectedMood, photos, tags,
+          }));
+        } else {
+          localStorage.removeItem(DRAFT_KEY);
+        }
+        setSaveState("saved");
+        if (savedTimer.current) window.clearTimeout(savedTimer.current);
+        savedTimer.current = window.setTimeout(() => setSaveState("idle"), 1500);
+      } catch {
+        setSaveState("idle");
+      }
+    }, 800);
+    return () => {
+      if (autosaveTimer.current) window.clearTimeout(autosaveTimer.current);
+    };
+  }, [title, content, location, music, selectedMood, photos, tags, isOpen, editEntry]);
 
   const startRecording = () => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
-    
     recognition.continuous = true;
     recognition.interimResults = true;
-    recognition.lang = 'en-US';
+    recognition.lang = "en-US";
 
     recognition.onstart = () => {
       setIsRecording(true);
       setIsPaused(false);
-      toast({
-        title: "Recording started",
-        description: "Speak clearly to convert your voice to text",
-      });
+      toast({ title: "Recording started", description: "Speak clearly to convert your voice to text" });
     };
-
     recognition.onresult = (event: any) => {
-      let interimTranscript = '';
-      let finalTranscript = '';
-
+      let finalTranscript = "";
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const transcript = event.results[i][0].transcript;
-        if (event.results[i].isFinal) {
-          finalTranscript += transcript + ' ';
-        } else {
-          interimTranscript += transcript;
-        }
+        if (event.results[i].isFinal) finalTranscript += transcript + " ";
       }
-
-      if (finalTranscript) {
-        setContent(prev => prev + (prev ? ' ' : '') + finalTranscript);
-      }
+      if (finalTranscript) setContent((prev) => prev + (prev ? " " : "") + finalTranscript);
     };
-
     recognition.onerror = (event: any) => {
-      console.error('Speech recognition error:', event.error);
       setIsRecording(false);
       setIsPaused(false);
       toast({
         title: "Recording error",
-        description: event.error === 'not-allowed' 
-          ? "Microphone access denied. Please enable microphone permissions in your browser."
+        description: event.error === "not-allowed"
+          ? "Microphone access denied. Please enable microphone permissions."
           : "Failed to record audio. Please try again.",
         variant: "destructive",
       });
     };
-
-    recognition.onend = () => {
-      // Only set to false if not paused (paused state keeps recording session alive)
-      if (!isPaused) {
-        setIsRecording(false);
-      }
-    };
-
+    recognition.onend = () => { if (!isPaused) setIsRecording(false); };
     recognitionRef.current = recognition;
     recognition.start();
   };
 
   const toggleVoiceRecording = () => {
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      toast({
-        title: "Not supported",
-        description: "Voice recording is not supported in your browser. Please try Chrome or Edge.",
-        variant: "destructive",
-      });
+    if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
+      toast({ title: "Not supported", description: "Voice recording is not supported in your browser.", variant: "destructive" });
       return;
     }
-
-    if (!isRecording && !isPaused) {
-      // Start recording
-      startRecording();
-    } else if (isRecording && !isPaused) {
-      // Pause recording
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
-      }
+    if (!isRecording && !isPaused) startRecording();
+    else if (isRecording && !isPaused) {
+      recognitionRef.current?.stop();
       setIsPaused(true);
-      toast({
-        title: "Recording paused",
-        description: "Click Resume to continue",
-      });
-    } else if (isPaused) {
-      // Resume recording
-      startRecording();
-    }
+      toast({ title: "Recording paused" });
+    } else if (isPaused) startRecording();
   };
 
   const stopRecording = () => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-    }
+    recognitionRef.current?.stop();
     setIsRecording(false);
     setIsPaused(false);
-    toast({
-      title: "Recording stopped",
-      description: "Your voice has been converted to text",
-    });
+    toast({ title: "Recording stopped" });
   };
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
-
     const maxPhotos = 10;
     const remainingSlots = maxPhotos - photos.length;
-
     if (files.length > remainingSlots) {
-      toast({
-        title: "Too many photos",
-        description: `You can only add ${remainingSlots} more photo(s). Maximum ${maxPhotos} photos per entry.`,
-        variant: "destructive",
-      });
+      toast({ title: "Too many photos", description: `You can only add ${remainingSlots} more photo(s).`, variant: "destructive" });
       return;
     }
-
     setUploading(true);
     const uploadedUrls: string[] = [];
-
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error("You must be logged in to upload photos");
-      }
-
+      if (!user) throw new Error("You must be logged in to upload photos");
       for (const file of Array.from(files)) {
-        // Validate file
         if (file.size > 5 * 1024 * 1024) {
-          toast({
-            title: "File too large",
-            description: `${file.name} is too large. Photos must be less than 5MB`,
-            variant: "destructive",
-          });
+          toast({ title: "File too large", description: `${file.name} must be less than 5MB`, variant: "destructive" });
           continue;
         }
-
-        if (!file.type.startsWith("image/")) {
-          toast({
-            title: "Invalid file type",
-            description: `${file.name} is not an image file`,
-            variant: "destructive",
-          });
-          continue;
-        }
-
-        // Upload to Supabase Storage
-        const fileExt = file.name.split('.').pop();
+        if (!file.type.startsWith("image/")) continue;
+        const fileExt = file.name.split(".").pop();
         const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-        
-        const { error: uploadError } = await supabase.storage
-          .from('diary-photos')
-          .upload(fileName, file);
-
-        if (uploadError) {
-          console.error("Upload error:", uploadError);
-          toast({
-            title: "Upload failed",
-            description: `Failed to upload ${file.name}`,
-            variant: "destructive",
-          });
-          continue;
-        }
-
-        // Get public URL
-        const { data: { publicUrl } } = supabase.storage
-          .from('diary-photos')
-          .getPublicUrl(fileName);
-
+        const { error: uploadError } = await supabase.storage.from("diary-photos").upload(fileName, file);
+        if (uploadError) continue;
+        const { data: { publicUrl } } = supabase.storage.from("diary-photos").getPublicUrl(fileName);
         uploadedUrls.push(publicUrl);
       }
-
       if (uploadedUrls.length > 0) {
         setPhotos((prev) => [...prev, ...uploadedUrls]);
-        toast({
-          title: "Photos uploaded",
-          description: `${uploadedUrls.length} photo(s) uploaded successfully`,
-        });
+        toast({ title: "Photos uploaded", description: `${uploadedUrls.length} photo(s) uploaded` });
       }
     } catch (error: any) {
-      console.error("Error uploading photos:", error);
-      toast({
-        title: "Upload error",
-        description: error.message || "Failed to upload photos",
-        variant: "destructive",
-      });
+      toast({ title: "Upload error", description: error.message || "Failed to upload photos", variant: "destructive" });
     } finally {
       setUploading(false);
-      e.target.value = '';
+      e.target.value = "";
     }
   };
 
-  const removePhoto = (index: number) => {
-    setPhotos((prev) => prev.filter((_, i) => i !== index));
-  };
+  const removePhoto = (index: number) => setPhotos((prev) => prev.filter((_, i) => i !== index));
 
-  const handleSave = () => {
-    // Prepare entry data with trimmed values
+  const handleSave = useCallback(() => {
     const entryData = {
       title: title.trim() || undefined,
       content: content.trim(),
@@ -296,20 +257,11 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
       mood: selectedMood.trim() || undefined,
       tags,
     };
-
-    // Validate using Zod schema
     const validation = diaryEntrySchema.safeParse(entryData);
-    
     if (!validation.success) {
-      const firstError = validation.error.errors[0];
-      toast({
-        title: "Validation Error",
-        description: firstError.message,
-        variant: "destructive",
-      });
+      toast({ title: "Validation Error", description: validation.error.errors[0].message, variant: "destructive" });
       return;
     }
-    
     onSave({
       id: editEntry?.id,
       title: entryData.title || `Entry from ${new Date().toLocaleDateString()}`,
@@ -320,82 +272,47 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
       mood: entryData.mood,
       tags: entryData.tags,
     });
-    
-    // Reset form only if not editing
+    // clear draft on save
     if (!editEntry) {
-      setTitle("");
-      setContent("");
-      setLocation("");
-      setMusic("");
-      setSelectedMood("");
-      setPhotos([]);
-      setTags([]);
-      setNewTag("");
+      try { localStorage.removeItem(DRAFT_KEY); } catch {}
+      setTitle(""); setContent(""); setLocation(""); setMusic("");
+      setSelectedMood(""); setPhotos([]); setTags([]); setNewTag("");
     }
     onClose();
-  };
+  }, [title, content, location, music, photos, selectedMood, tags, editEntry, onSave, onClose, toast]);
 
   const addTag = () => {
     const trimmedTag = newTag.trim();
-    
-    // Validate tag
     if (!trimmedTag) return;
-    
-    if (trimmedTag.length > 50) {
-      toast({
-        title: "Tag too long",
-        description: "Tags must be less than 50 characters",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    if (tags.length >= 20) {
-      toast({
-        title: "Too many tags",
-        description: "Maximum 20 tags allowed per entry",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    if (tags.includes(trimmedTag)) {
-      toast({
-        title: "Duplicate tag",
-        description: "This tag has already been added",
-        variant: "destructive",
-      });
-      return;
-    }
-    
+    if (trimmedTag.length > 50) return toast({ title: "Tag too long", variant: "destructive" });
+    if (tags.length >= 20) return toast({ title: "Too many tags", variant: "destructive" });
+    if (tags.includes(trimmedTag)) return toast({ title: "Duplicate tag", variant: "destructive" });
     setTags([...tags, trimmedTag]);
     setNewTag("");
   };
 
-  const removeTag = (tagToRemove: string) => {
-    setTags(tags.filter(tag => tag !== tagToRemove));
-  };
-
+  const removeTag = (tagToRemove: string) => setTags(tags.filter((t) => t !== tagToRemove));
   const insertPrompt = (prompt: string) => {
-    setContent(prev => prev + (prev ? "\n\n" : "") + prompt + " ");
+    setContent((prev) => prev + (prev ? "\n\n" : "") + prompt + " ");
+    textareaRef.current?.focus();
   };
 
-  // Keyboard shortcut for saving (Ctrl+Enter)
+  // Ctrl/Cmd+Enter save
   useEffect(() => {
+    if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
         e.preventDefault();
-        if (content.trim() && !uploading) {
-          handleSave();
-        }
+        if (content.trim() && !uploading) handleSave();
+      }
+      if (e.key === "Escape" && focusMode) {
+        e.preventDefault();
+        setFocusMode(false);
       }
     };
-
-    if (isOpen) {
-      window.addEventListener("keydown", handleKeyDown);
-      return () => window.removeEventListener("keydown", handleKeyDown);
-    }
-  }, [isOpen, content, uploading, handleSave]);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, content, uploading, handleSave, focusMode]);
 
   // Cleanup voice recognition when modal closes
   useEffect(() => {
@@ -403,357 +320,301 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
       recognitionRef.current.stop();
       setIsRecording(false);
       setIsPaused(false);
+      setFocusMode(false);
     }
   }, [isOpen]);
 
+  // Scroll active input into view when mobile keyboard opens
+  const scrollIntoView = (el: HTMLElement) => {
+    setTimeout(() => el.scrollIntoView({ block: "center", behavior: "smooth" }), 200);
+  };
+
+  const wordCount = content.trim() ? content.trim().split(/\s+/).length : 0;
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl h-[90vh] overflow-hidden bg-[#8B7355] shadow-2xl border-8 border-[#654321] animate-scale-in p-0 flex">
-        {/* Book binding on left */}
-        <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-[#654321] to-[#8B7355] border-r-4 border-[#543210]">
-          <div className="flex flex-col h-full justify-evenly px-1">
-            {[...Array(15)].map((_, i) => (
-              <div key={i} className="h-1 bg-[#543210] rounded"></div>
-            ))}
+      <DialogContent
+        className="p-0 gap-0 border-0 sm:border-8 sm:border-[#654321] bg-[#8B7355] sm:shadow-2xl animate-scale-in overflow-hidden flex flex-col
+                   w-screen h-[100dvh] max-w-none rounded-none
+                   sm:w-[95vw] sm:max-w-4xl sm:h-[90vh] sm:rounded-lg"
+      >
+        {/* Sticky top bar (mobile-friendly) */}
+        <div className="flex items-center justify-between gap-2 px-3 sm:px-6 py-2.5 bg-[#654321] text-[#FFF8DC] border-b border-[#543210] shrink-0">
+          <div className="flex items-center gap-2 min-w-0">
+            <Sparkles className="w-4 h-4 shrink-0" />
+            <div className="min-w-0">
+              <div className="text-sm font-serif truncate" style={{ fontFamily: "Georgia, serif" }}>
+                {editEntry ? "Edit Entry" : "Dear Diary"}
+              </div>
+              <div className="text-[10px] opacity-70 truncate">
+                {saveState === "saving" && "Saving draft…"}
+                {saveState === "saved" && (<span className="inline-flex items-center gap-1"><Check className="w-3 h-3" />Draft saved</span>)}
+                {saveState === "idle" && new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-1">
+            <Button
+              type="button" variant="ghost" size="icon"
+              onClick={() => setFocusMode((v) => !v)}
+              className="text-[#FFF8DC] hover:bg-white/10 h-9 w-9"
+              title={focusMode ? "Exit focus mode" : "Focus mode"}
+            >
+              {focusMode ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+            </Button>
+            <Button
+              type="button" size="sm"
+              onClick={handleSave}
+              disabled={!content.trim() || uploading}
+              className="bg-[#FFF8DC] text-[#654321] hover:bg-white h-9 px-3"
+              style={{ fontFamily: "Georgia, serif" }}
+            >
+              <Save className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Save</span>
+            </Button>
+            <Button
+              type="button" variant="ghost" size="icon"
+              onClick={onClose}
+              className="text-[#FFF8DC] hover:bg-white/10 h-9 w-9"
+              aria-label="Close"
+            >
+              <X className="w-4 h-4" />
+            </Button>
           </div>
         </div>
 
-        {/* Paper pages */}
-        <div className="ml-12 bg-[#FFF8DC] flex-1 flex flex-col relative" style={{
-          backgroundImage: `repeating-linear-gradient(transparent, transparent 31px, #E8DCC4 31px, #E8DCC4 32px)`,
-          backgroundSize: '100% 32px'
-        }}>
-          {/* Red margin line */}
-          <div className="absolute left-16 top-0 bottom-0 w-[2px] bg-red-300" />
-          
-          {/* Coffee stain decoration */}
-          <div className="absolute top-8 right-8 w-16 h-16 rounded-full bg-[#D2691E] opacity-5" />
-          
-          {/* Scrollable content area */}
-          <div className="flex-1 overflow-y-auto">
-            <div className="relative pl-20 pr-8 py-8">
-            <DialogHeader className="relative mb-6">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <DialogTitle className="text-3xl font-serif text-[#654321] flex items-center gap-3 mb-2" style={{ fontFamily: 'Georgia, serif' }}>
-                    <Sparkles className="w-6 h-6 text-[#8B7355] animate-pulse-slow" />
-                    <span>{editEntry ? "Edit Entry" : "Dear Diary"}</span>
-                  </DialogTitle>
-                  <p className="text-sm text-[#654321]/70 font-light italic" style={{ fontFamily: 'Georgia, serif' }}>
-                    {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <Button 
-                    onClick={handleSave}
-                    disabled={!content.trim() || uploading}
-                    className="bg-[#8B7355] text-white hover:bg-[#654321] shadow-md disabled:opacity-50"
-                    style={{ fontFamily: 'Georgia, serif' }}
-                  >
-                    <Save className="w-4 h-4 mr-2" />
-                    Save Entry
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    onClick={onClose}
-                    className="text-[#654321]/70 hover:text-[#654321] hover:bg-[#8B7355]/10"
-                    style={{ fontFamily: 'Georgia, serif' }}
-                  >
-                    <X className="w-4 h-4 mr-2" />
-                    Close
-                  </Button>
-                </div>
-              </div>
+        {/* Body: paper */}
+        <div
+          className="flex-1 min-h-0 bg-[#FFF8DC] overflow-y-auto overscroll-contain"
+          style={{
+            backgroundImage: `repeating-linear-gradient(transparent, transparent 31px, #E8DCC4 31px, #E8DCC4 32px)`,
+            backgroundSize: "100% 32px",
+          }}
+        >
+          <div className={`relative px-4 sm:px-10 py-4 sm:py-8 ${focusMode ? "max-w-3xl mx-auto" : ""}`}>
+            <DialogHeader className="sr-only">
+              <DialogTitle>{editEntry ? "Edit Diary Entry" : "New Diary Entry"}</DialogTitle>
             </DialogHeader>
 
-            <div className="space-y-6 relative">
-              {/* Title */}
-              <div className="group">
-                <Label htmlFor="title" className="text-sm font-medium text-[#654321] mb-2 block" style={{ fontFamily: 'Georgia, serif' }}>
-                  Dear Diary,
-                </Label>
-                <Input
-                  id="title"
-                  placeholder="Today's chapter..."
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  maxLength={200}
-                  className="border-none bg-transparent text-xl text-[#654321] placeholder:text-[#654321]/40 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 font-light"
-                  style={{ fontFamily: 'Courier New, monospace' }}
-                />
-              </div>
+            {/* Title */}
+            <div className={focusMode ? "hidden" : "mb-4"}>
+              <Label htmlFor="title" className="text-xs font-medium text-[#654321]/70 mb-1 block italic" style={{ fontFamily: "Georgia, serif" }}>
+                Dear Diary,
+              </Label>
+              <Input
+                id="title"
+                placeholder="Today's chapter…"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                onFocus={(e) => scrollIntoView(e.currentTarget)}
+                maxLength={200}
+                className="h-11 border-none bg-transparent text-xl text-[#654321] placeholder:text-[#654321]/40 focus-visible:ring-0 focus-visible:ring-offset-0 px-0"
+                style={{ fontFamily: "Courier New, monospace" }}
+              />
+            </div>
 
-              {/* Photos */}
-              <div className="group">
-                <Label className="text-xs font-medium text-[#654321]/70 mb-3 block flex items-center gap-2 italic" style={{ fontFamily: 'Georgia, serif' }}>
-                  <Camera className="w-3 h-3" />
-                  Memories in pictures
+            {/* Writing area */}
+            <div className="mb-4">
+              <div className="flex items-center justify-between mb-2 gap-2">
+                <Label className="text-xs font-medium text-[#654321]/70 italic" style={{ fontFamily: "Georgia, serif" }}>
+                  Pour your heart out…
                 </Label>
-                <input
-                  type="file"
-                  id="photo-upload"
-                  accept="image/*"
-                  multiple
-                  onChange={handlePhotoUpload}
-                  className="hidden"
-                />
-                <label htmlFor="photo-upload">
+                <div className="flex gap-1.5">
                   <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full border-dashed border-[#8B7355]/40 hover:bg-[#8B7355]/10 py-8 transition-all bg-transparent"
-                    disabled={uploading}
-                    asChild
+                    type="button" size="sm"
+                    onClick={toggleVoiceRecording}
+                    className={`h-8 px-2.5 text-xs ${
+                      isRecording && !isPaused ? "bg-red-500 hover:bg-red-600 animate-pulse"
+                      : isPaused ? "bg-yellow-500 hover:bg-yellow-600"
+                      : "bg-[#8B7355] hover:bg-[#654321]"
+                    } text-white`}
                   >
-                    <div>
-                      <div className="flex flex-col items-center gap-2">
-                        <Camera className="w-5 h-5 text-[#8B7355]" />
-                        <div className="text-center">
-                          <div className="text-xs text-[#654321]/70" style={{ fontFamily: 'Georgia, serif' }}>
-                            {uploading ? "Uploading photos..." : "Attach photos (max 10, 5MB each)"}
-                          </div>
-                          {photos.length > 0 && (
-                            <div className="text-xs text-[#654321] font-medium mt-1">
-                              {photos.length}/10 photos
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                    {isRecording && !isPaused ? <Pause className="w-3.5 h-3.5 sm:mr-1.5" /> : <Mic className="w-3.5 h-3.5 sm:mr-1.5" />}
+                    <span className="hidden sm:inline">
+                      {isRecording && !isPaused ? "Pause" : isPaused ? "Resume" : "Voice"}
+                    </span>
                   </Button>
-                </label>
-                
-                {photos.length > 0 && (
-                  <div className="mt-3 grid grid-cols-3 gap-2">
-                    {photos.map((photo, index) => (
-                      <div key={index} className="relative group/photo">
-                         <img
-                          src={photo}
-                          alt={`Memory ${index + 1}`}
-                          className="w-full h-20 object-cover rounded border-2 border-[#8B7355]/30"
-                        />
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="icon"
-                          className="absolute -top-2 -right-2 w-5 h-5 rounded-full opacity-0 group-hover/photo:opacity-100 transition-opacity text-xs"
-                          onClick={() => removePhoto(index)}
-                        >
-                          <X className="w-3 h-3" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Writing Prompts */}
-              <div className="p-4 bg-[#FFF8DC] border-l-4 border-[#D2691E] my-4">
-                <Label className="text-xs font-medium text-[#654321]/70 mb-3 block italic" style={{ fontFamily: 'Georgia, serif' }}>
-                  Need inspiration?
-                </Label>
-                <div className="flex flex-wrap gap-2">
-                  {writingPrompts.slice(0, 4).map((prompt, index) => (
-                    <Button
-                      key={prompt}
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => insertPrompt(prompt)}
-                      className="text-xs text-[#654321]/70 hover:text-[#654321] hover:bg-[#8B7355]/10 transition-all"
-                      style={{ fontFamily: 'Georgia, serif' }}
-                    >
-                      {prompt}
+                  {(isRecording || isPaused) && (
+                    <Button type="button" size="sm" onClick={stopRecording} className="h-8 px-2.5 text-xs bg-gray-600 hover:bg-gray-700 text-white">
+                      <MicOff className="w-3.5 h-3.5" />
                     </Button>
-                  ))}
+                  )}
                 </div>
               </div>
+              <Textarea
+                id="content"
+                ref={textareaRef}
+                placeholder="Today was…"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                onFocus={(e) => scrollIntoView(e.currentTarget)}
+                maxLength={10000}
+                className={`w-full border-none bg-transparent text-[#654321] placeholder:text-[#654321]/30 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none text-base leading-8 px-0
+                            ${focusMode ? "min-h-[70dvh]" : "min-h-[45dvh] sm:min-h-[280px]"}`}
+                style={{ fontFamily: "Courier New, monospace" }}
+              />
+              <div className="flex items-center justify-between text-[11px] text-[#654321]/50 mt-1 italic" style={{ fontFamily: "Georgia, serif" }}>
+                <span>{wordCount} words · {content.length}/10,000</span>
+                <span className="hidden sm:inline">⌘/Ctrl + Enter to save</span>
+              </div>
+            </div>
 
-              {/* Main Content */}
-              <div className="group">
-                <div className="flex items-center justify-between mb-2">
-                  <Label className="text-xs font-medium text-[#654321]/70 italic" style={{ fontFamily: 'Georgia, serif' }}>
-                    Pour your heart out...
+            {!focusMode && (
+              <>
+                {/* Prompts */}
+                <div className="p-3 bg-[#FFF8DC] border-l-4 border-[#D2691E] mb-4">
+                  <Label className="text-xs font-medium text-[#654321]/70 mb-2 block italic" style={{ fontFamily: "Georgia, serif" }}>
+                    Need inspiration?
                   </Label>
-                  <div className="flex gap-2">
-                    <Button
-                      type="button"
-                      size="sm"
-                      onClick={toggleVoiceRecording}
-                      className={`${
-                        isRecording && !isPaused
-                          ? 'bg-red-500 hover:bg-red-600 animate-pulse' 
-                          : isPaused
-                          ? 'bg-yellow-500 hover:bg-yellow-600'
-                          : 'bg-[#8B7355] hover:bg-[#654321]'
-                      } text-white transition-all`}
-                      style={{ fontFamily: 'Georgia, serif' }}
-                    >
-                      {isRecording && !isPaused ? (
-                        <>
-                          <Pause className="w-4 h-4 mr-2" />
-                          Pause
-                        </>
-                      ) : isPaused ? (
-                        <>
-                          <Mic className="w-4 h-4 mr-2" />
-                          Resume
-                        </>
-                      ) : (
-                        <>
-                          <Mic className="w-4 h-4 mr-2" />
-                          Start Recording
-                        </>
-                      )}
-                    </Button>
-                    {(isRecording || isPaused) && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {writingPrompts.slice(0, 4).map((prompt) => (
                       <Button
-                        type="button"
-                        size="sm"
-                        onClick={stopRecording}
-                        className="bg-gray-600 hover:bg-gray-700 text-white"
-                        style={{ fontFamily: 'Georgia, serif' }}
+                        key={prompt} variant="ghost" size="sm"
+                        onClick={() => insertPrompt(prompt)}
+                        className="h-7 px-2 text-xs text-[#654321]/70 hover:text-[#654321] hover:bg-[#8B7355]/10"
+                        style={{ fontFamily: "Georgia, serif" }}
                       >
-                        <MicOff className="w-4 h-4 mr-2" />
-                        Stop
+                        {prompt}
                       </Button>
-                    )}
-                  </div>
-                </div>
-                <div className="relative">
-                  <Textarea
-                    id="content"
-                    placeholder="Today was..."
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    maxLength={10000}
-                    className="min-h-[280px] border-none bg-transparent text-[#654321] placeholder:text-[#654321]/30 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none text-base leading-8 px-0"
-                    style={{ fontFamily: 'Courier New, monospace' }}
-                  />
-                  <div className="text-xs text-[#654321]/40 mt-1 italic" style={{ fontFamily: 'Georgia, serif' }}>
-                    {content.length} / 10,000 words
-                  </div>
-                </div>
-              </div>
-
-              {/* Mood Selection */}
-              <div className="p-4 bg-[#FFF8DC] border border-[#D2691E]/20 rounded">
-                <Label className="text-xs font-medium text-[#654321]/70 mb-3 block italic" style={{ fontFamily: 'Georgia, serif' }}>
-                  Today I'm feeling...
-                </Label>
-                <div className="flex flex-wrap gap-2">
-                  {moodOptions.map((mood, index) => (
-                    <Button
-                      key={mood}
-                      variant={selectedMood === mood ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => setSelectedMood(selectedMood === mood ? "" : mood)}
-                      className={selectedMood === mood 
-                        ? "bg-[#8B7355] text-white hover:bg-[#654321]" 
-                        : "text-[#654321] hover:bg-[#8B7355]/10"
-                      }
-                      style={{ fontFamily: 'Georgia, serif' }}
-                    >
-                      {mood}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Location */}
-              <div className="group">
-                <Label htmlFor="location" className="text-xs font-medium text-[#654321]/70 mb-2 block flex items-center gap-2 italic" style={{ fontFamily: 'Georgia, serif' }}>
-                  <MapPin className="w-3 h-3" />
-                  Where am I?
-                </Label>
-                <Input
-                  id="location"
-                  placeholder="My favorite place..."
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  maxLength={200}
-                  className="border-none border-b border-[#654321]/20 bg-transparent text-[#654321] placeholder:text-[#654321]/30 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none px-0"
-                  style={{ fontFamily: 'Courier New, monospace' }}
-                />
-              </div>
-
-              {/* Music */}
-              <div className="group">
-                <Label htmlFor="music" className="text-xs font-medium text-[#654321]/70 mb-2 block flex items-center gap-2 italic" style={{ fontFamily: 'Georgia, serif' }}>
-                  <Music className="w-3 h-3" />
-                  What am I listening to?
-                </Label>
-                <Input
-                  id="music"
-                  placeholder="Song name, artist, or music URL..."
-                  value={music}
-                  onChange={(e) => setMusic(e.target.value)}
-                  maxLength={500}
-                  className="border-none border-b border-[#654321]/20 bg-transparent text-[#654321] placeholder:text-[#654321]/30 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none px-0"
-                  style={{ fontFamily: 'Courier New, monospace' }}
-                />
-              </div>
-
-              {/* Tags */}
-              <div className="p-4 bg-[#FFF8DC] border border-[#D2691E]/20 rounded">
-                <Label className="text-xs font-medium text-[#654321]/70 mb-3 block italic" style={{ fontFamily: 'Georgia, serif' }}>
-                  Tags & memories
-                </Label>
-                <div className="flex gap-2 mb-3">
-                  <Input
-                    placeholder="Add a tag..."
-                    value={newTag}
-                    onChange={(e) => setNewTag(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        addTag();
-                      }
-                    }}
-                    maxLength={50}
-                    className="flex-1 border-none border-b border-[#654321]/20 bg-transparent text-[#654321] placeholder:text-[#654321]/30 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none px-0 text-sm"
-                    style={{ fontFamily: 'Courier New, monospace' }}
-                  />
-                  <Button 
-                    variant="ghost" 
-                    onClick={addTag}
-                    size="sm"
-                    className="text-[#654321] hover:bg-[#8B7355]/10"
-                  >
-                    Add
-                  </Button>
-                </div>
-                {tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2 animate-fade-in">
-                    {tags.map((tag, index) => (
-                      <Badge
-                        key={tag}
-                        variant="secondary"
-                        className="bg-[#8B7355]/20 text-[#654321] border-[#8B7355]/30 cursor-pointer hover:bg-[#8B7355]/30 transition-all"
-                        onClick={() => removeTag(tag)}
-                        style={{ fontFamily: 'Georgia, serif' }}
-                      >
-                        #{tag} ×
-                      </Badge>
                     ))}
                   </div>
-                )}
-              </div>
-            </div> {/* Close space-y-6 relative - form fields */}
-            </div> {/* Close relative pl-20 pr-8 py-8 - padding */}
-          </div> {/* Close flex-1 overflow-y-auto - scrollable area */}
-          
-          {/* Save Button - Fixed at Bottom */}
-          <div className="bg-[#FFF8DC] border-t-2 border-[#8B7355]/30 px-8 py-4 flex justify-end">
-            <Button 
-              onClick={handleSave}
-              disabled={!content.trim() || uploading}
-              className="bg-[#8B7355] text-white hover:bg-[#654321] shadow-md disabled:opacity-50 px-8"
-              style={{ fontFamily: 'Georgia, serif' }}
-            >
-              <Save className="w-4 h-4 mr-2" />
-              Save Entry
-            </Button>
+                </div>
+
+                {/* Photos */}
+                <div className="mb-4">
+                  <Label className="text-xs font-medium text-[#654321]/70 mb-2 flex items-center gap-2 italic" style={{ fontFamily: "Georgia, serif" }}>
+                    <Camera className="w-3 h-3" /> Memories in pictures
+                  </Label>
+                  <input type="file" id="photo-upload" accept="image/*" multiple onChange={handlePhotoUpload} className="hidden" />
+                  <label htmlFor="photo-upload" className="block">
+                    <div className="w-full border border-dashed border-[#8B7355]/40 hover:bg-[#8B7355]/10 py-5 rounded transition-colors cursor-pointer text-center">
+                      <Camera className="w-5 h-5 text-[#8B7355] mx-auto mb-1" />
+                      <div className="text-xs text-[#654321]/70" style={{ fontFamily: "Georgia, serif" }}>
+                        {uploading ? "Uploading…" : "Attach photos (max 10, 5MB)"}
+                      </div>
+                      {photos.length > 0 && (
+                        <div className="text-xs text-[#654321] font-medium mt-1">{photos.length}/10 photos</div>
+                      )}
+                    </div>
+                  </label>
+                  {photos.length > 0 && (
+                    <div className="mt-2 grid grid-cols-3 sm:grid-cols-4 gap-2">
+                      {photos.map((photo, index) => (
+                        <div key={index} className="relative">
+                          <img src={photo} alt={`Memory ${index + 1}`} className="w-full h-20 object-cover rounded border-2 border-[#8B7355]/30" />
+                          <Button
+                            type="button" variant="destructive" size="icon"
+                            className="absolute -top-2 -right-2 w-6 h-6 rounded-full"
+                            onClick={() => removePhoto(index)}
+                          >
+                            <X className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Mood */}
+                <div className="p-3 bg-[#FFF8DC] border border-[#D2691E]/20 rounded mb-4">
+                  <Label className="text-xs font-medium text-[#654321]/70 mb-2 block italic" style={{ fontFamily: "Georgia, serif" }}>
+                    Today I'm feeling…
+                  </Label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {moodOptions.map((mood) => (
+                      <Button
+                        key={mood} variant={selectedMood === mood ? "default" : "ghost"} size="sm"
+                        onClick={() => setSelectedMood(selectedMood === mood ? "" : mood)}
+                        className={`h-8 px-2.5 text-xs ${selectedMood === mood ? "bg-[#8B7355] text-white hover:bg-[#654321]" : "text-[#654321] hover:bg-[#8B7355]/10"}`}
+                        style={{ fontFamily: "Georgia, serif" }}
+                      >
+                        {mood}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Location */}
+                <div className="mb-4">
+                  <Label htmlFor="location" className="text-xs font-medium text-[#654321]/70 mb-1 flex items-center gap-2 italic" style={{ fontFamily: "Georgia, serif" }}>
+                    <MapPin className="w-3 h-3" /> Where am I?
+                  </Label>
+                  <Input
+                    id="location" placeholder="My favorite place…"
+                    value={location} onChange={(e) => setLocation(e.target.value)}
+                    onFocus={(e) => scrollIntoView(e.currentTarget)} maxLength={200}
+                    className="h-10 border-none bg-transparent text-[#654321] placeholder:text-[#654321]/30 focus-visible:ring-0 rounded-none px-0 border-b border-[#654321]/20"
+                    style={{ fontFamily: "Courier New, monospace" }}
+                  />
+                </div>
+
+                {/* Music */}
+                <div className="mb-4">
+                  <Label htmlFor="music" className="text-xs font-medium text-[#654321]/70 mb-1 flex items-center gap-2 italic" style={{ fontFamily: "Georgia, serif" }}>
+                    <Music className="w-3 h-3" /> What am I listening to?
+                  </Label>
+                  <Input
+                    id="music" placeholder="Song, artist, or URL…"
+                    value={music} onChange={(e) => setMusic(e.target.value)}
+                    onFocus={(e) => scrollIntoView(e.currentTarget)} maxLength={500}
+                    className="h-10 border-none bg-transparent text-[#654321] placeholder:text-[#654321]/30 focus-visible:ring-0 rounded-none px-0 border-b border-[#654321]/20"
+                    style={{ fontFamily: "Courier New, monospace" }}
+                  />
+                </div>
+
+                {/* Tags */}
+                <div className="p-3 bg-[#FFF8DC] border border-[#D2691E]/20 rounded mb-4">
+                  <Label className="text-xs font-medium text-[#654321]/70 mb-2 block italic" style={{ fontFamily: "Georgia, serif" }}>
+                    Tags & memories
+                  </Label>
+                  <div className="flex gap-2 mb-2">
+                    <Input
+                      placeholder="Add a tag…" value={newTag}
+                      onChange={(e) => setNewTag(e.target.value)}
+                      onFocus={(e) => scrollIntoView(e.currentTarget)}
+                      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addTag(); } }}
+                      maxLength={50}
+                      className="h-10 flex-1 border-none bg-transparent text-[#654321] placeholder:text-[#654321]/30 focus-visible:ring-0 rounded-none px-0 border-b border-[#654321]/20 text-sm"
+                      style={{ fontFamily: "Courier New, monospace" }}
+                    />
+                    <Button variant="ghost" onClick={addTag} size="sm" className="text-[#654321] hover:bg-[#8B7355]/10">Add</Button>
+                  </div>
+                  {tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 animate-fade-in">
+                      {tags.map((tag) => (
+                        <Badge
+                          key={tag} variant="secondary"
+                          className="bg-[#8B7355]/20 text-[#654321] border-[#8B7355]/30 cursor-pointer hover:bg-[#8B7355]/30"
+                          onClick={() => removeTag(tag)}
+                          style={{ fontFamily: "Georgia, serif" }}
+                        >
+                          #{tag} ×
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+
+            {/* Bottom spacer so mobile keyboard doesn't hide last field */}
+            <div className="h-24" />
           </div>
+        </div>
+
+        {/* Sticky bottom save bar */}
+        <div className="shrink-0 bg-[#FFF8DC] border-t-2 border-[#8B7355]/30 px-3 sm:px-8 py-2.5 flex items-center justify-between gap-3"
+             style={{ paddingBottom: "max(0.625rem, env(safe-area-inset-bottom))" }}>
+          <div className="text-[11px] text-[#654321]/60 italic truncate" style={{ fontFamily: "Georgia, serif" }}>
+            {saveState === "saved" ? "Draft saved locally" : saveState === "saving" ? "Saving draft…" : `${wordCount} words`}
+          </div>
+          <Button
+            onClick={handleSave} disabled={!content.trim() || uploading}
+            className="bg-[#8B7355] text-white hover:bg-[#654321] shadow-md disabled:opacity-50 h-10 px-6"
+            style={{ fontFamily: "Georgia, serif" }}
+          >
+            <Save className="w-4 h-4 mr-2" /> Save Entry
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
