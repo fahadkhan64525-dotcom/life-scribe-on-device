@@ -75,6 +75,7 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
   const [isPaused, setIsPaused] = useState(false);
   const [focusMode, setFocusMode] = useState(false);
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
+  const [locating, setLocating] = useState(false);
   const recognitionRef = useRef<any>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const autosaveTimer = useRef<number | null>(null);
