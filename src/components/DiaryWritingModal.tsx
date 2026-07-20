@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { X, Camera, MapPin, Save, Sparkles, Music, Mic, MicOff, Pause, Maximize2, Minimize2, Check } from "lucide-react";
+import { X, Camera, MapPin, Save, Sparkles, Music, Mic, MicOff, Pause, Maximize2, Minimize2, Check, Loader2, LocateFixed } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -75,6 +75,7 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
   const [isPaused, setIsPaused] = useState(false);
   const [focusMode, setFocusMode] = useState(false);
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
+  const [locating, setLocating] = useState(false);
   const recognitionRef = useRef<any>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const autosaveTimer = useRef<number | null>(null);
@@ -246,6 +247,45 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
   };
 
   const removePhoto = (index: number) => setPhotos((prev) => prev.filter((_, i) => i !== index));
+
+  const detectLocation = () => {
+    if (!("geolocation" in navigator)) {
+      toast({ title: "Not supported", description: "Geolocation isn't available in this browser.", variant: "destructive" });
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=14`);
+          if (res.ok) {
+            const data = await res.json();
+            const a = data.address || {};
+            const label = [a.suburb || a.neighbourhood || a.village || a.town || a.city, a.state, a.country]
+              .filter(Boolean).join(", ");
+            setLocation(label || `${latitude.toFixed(3)}, ${longitude.toFixed(3)}`);
+          } else {
+            setLocation(`${latitude.toFixed(3)}, ${longitude.toFixed(3)}`);
+          }
+          toast({ title: "Location added" });
+        } catch {
+          setLocation(`${latitude.toFixed(3)}, ${longitude.toFixed(3)}`);
+        } finally {
+          setLocating(false);
+        }
+      },
+      (err) => {
+        setLocating(false);
+        toast({
+          title: "Couldn't get location",
+          description: err.code === err.PERMISSION_DENIED ? "Permission denied." : "Please try again.",
+          variant: "destructive",
+        });
+      },
+      { enableHighAccuracy: false, timeout: 8000 }
+    );
+  };
 
   const handleSave = useCallback(() => {
     const entryData = {
@@ -457,7 +497,65 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
                 <span>{wordCount} words · {content.length}/10,000</span>
                 <span className="hidden sm:inline">⌘/Ctrl + Enter to save</span>
               </div>
+
+              {/* Inline attachment strip — always accessible, works in focus mode */}
+              <div className="mt-3 flex flex-wrap items-center gap-2 pt-3 border-t border-[#8B7355]/20">
+                <input
+                  type="file" id="focus-photo-upload" accept="image/*" multiple
+                  onChange={handlePhotoUpload} className="hidden"
+                />
+                <Button
+                  type="button" size="sm" variant="ghost"
+                  onClick={() => document.getElementById("focus-photo-upload")?.click()}
+                  disabled={uploading || photos.length >= 10}
+                  className="h-8 px-2.5 text-xs text-[#654321] hover:bg-[#8B7355]/10"
+                  style={{ fontFamily: "Georgia, serif" }}
+                  title="Attach photos"
+                >
+                  {uploading ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <Camera className="w-3.5 h-3.5 mr-1.5" />}
+                  Photo{photos.length > 0 ? ` · ${photos.length}` : ""}
+                </Button>
+
+                <div className="flex items-center gap-1 flex-1 min-w-[160px]">
+                  <MapPin className="w-3.5 h-3.5 text-[#654321]/60 shrink-0" />
+                  <Input
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    onFocus={(e) => scrollIntoView(e.currentTarget)}
+                    placeholder="Add a location…"
+                    maxLength={200}
+                    className="h-8 border-none bg-transparent text-[#654321] placeholder:text-[#654321]/40 focus-visible:ring-0 focus-visible:ring-offset-0 px-1 text-sm"
+                    style={{ fontFamily: "Georgia, serif" }}
+                  />
+                  <Button
+                    type="button" size="icon" variant="ghost"
+                    onClick={detectLocation} disabled={locating}
+                    className="h-7 w-7 text-[#654321] hover:bg-[#8B7355]/10 shrink-0"
+                    title="Use my current location"
+                  >
+                    {locating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <LocateFixed className="w-3.5 h-3.5" />}
+                  </Button>
+                </div>
+              </div>
+
+              {photos.length > 0 && (
+                <div className="mt-2 grid grid-cols-4 sm:grid-cols-6 gap-2 animate-fade-in">
+                  {photos.map((photo, index) => (
+                    <div key={`inline-${index}`} className="relative group">
+                      <img src={photo} alt={`Attached ${index + 1}`} className="w-full h-16 object-cover rounded border border-[#8B7355]/30" />
+                      <Button
+                        type="button" variant="destructive" size="icon"
+                        className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full"
+                        onClick={() => removePhoto(index)}
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
+
 
             {!focusMode && (
               <>
