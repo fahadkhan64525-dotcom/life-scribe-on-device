@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { X, Camera, MapPin, Save, Sparkles, Music, Mic, MicOff, Pause, Maximize2, Minimize2, Check } from "lucide-react";
+import { X, Camera, MapPin, Save, Sparkles, Music, Mic, MicOff, Pause, Maximize2, Minimize2, Check, Loader2, LocateFixed } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
