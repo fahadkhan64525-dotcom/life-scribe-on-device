@@ -248,6 +248,45 @@ export function DiaryWritingModal({ isOpen, onClose, onSave, editEntry }: DiaryW
 
   const removePhoto = (index: number) => setPhotos((prev) => prev.filter((_, i) => i !== index));
 
+  const detectLocation = () => {
+    if (!("geolocation" in navigator)) {
+      toast({ title: "Not supported", description: "Geolocation isn't available in this browser.", variant: "destructive" });
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=14`);
+          if (res.ok) {
+            const data = await res.json();
+            const a = data.address || {};
+            const label = [a.suburb || a.neighbourhood || a.village || a.town || a.city, a.state, a.country]
+              .filter(Boolean).join(", ");
+            setLocation(label || `${latitude.toFixed(3)}, ${longitude.toFixed(3)}`);
+          } else {
+            setLocation(`${latitude.toFixed(3)}, ${longitude.toFixed(3)}`);
+          }
+          toast({ title: "Location added" });
+        } catch {
+          setLocation(`${latitude.toFixed(3)}, ${longitude.toFixed(3)}`);
+        } finally {
+          setLocating(false);
+        }
+      },
+      (err) => {
+        setLocating(false);
+        toast({
+          title: "Couldn't get location",
+          description: err.code === err.PERMISSION_DENIED ? "Permission denied." : "Please try again.",
+          variant: "destructive",
+        });
+      },
+      { enableHighAccuracy: false, timeout: 8000 }
+    );
+  };
+
   const handleSave = useCallback(() => {
     const entryData = {
       title: title.trim() || undefined,
